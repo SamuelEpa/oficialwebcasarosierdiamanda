@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ExperienceItem, ExperienceKind } from "@/data/types";
 import { getOfferingBySlug, getOfferings } from "@/lib/cms/offerings";
 import { normalizeHeroSettings } from "@/lib/cms/hero-settings";
+import { DEFAULT_DESCRIPTION_TYPOGRAPHY, DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography } from "@/lib/cms/rich-text-typography";
 import type { CalendarLabel, ClassOfferingDetails, Offering } from "@/lib/cms/types";
 
 type LegacyProgramItem = {
@@ -264,6 +265,7 @@ function cmsOfferingToExperienceItem(offering: Offering): ExperienceItem {
     homeEyebrow: stringValue(homeCard?.eyebrow) || defaultHomeEyebrow,
     homeTitle: stringValue(homeCard?.title) || offering.title,
     homeExcerpt: stringValue(homeCard?.excerpt) || stringValue(classDetails?.homeExcerpt) || offering.excerpt,
+    homeExcerptTypography: normalizeRichTextTypography(homeCard?.excerptTypography),
     heroImage: hero.heroImage || offering.cover_image_url || "img/hero-bg.jpg",
     heroImageMobile: hero.heroImageMobile || undefined,
     heroVideoUrl: hero.heroVideoUrl || undefined,
@@ -345,8 +347,12 @@ function cmsOfferingToExperienceItem(offering: Offering): ExperienceItem {
     heroTitle: hero.heroTitle || offering.title,
     listingTitle: offering.title,
     listingSubtitle: details.heroSubtitle || "",
+    subtitleTypography: normalizeRichTextTypography(details.subtitleTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY),
     detailQuestion,
+    detailQuestionTypography: normalizeRichTextTypography(details.detailQuestionTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY),
     introHighlight: details.highlightDescription || stringValue(details.introHighlight) || offering.excerpt,
+    introHighlightTypography: normalizeRichTextTypography(details.highlightDescriptionTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY),
+    descriptionTypography: normalizeRichTextTypography(details.descriptionTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY),
     galleryImages: galleryImages.length ? galleryImages : [offering.cover_image_url || details.heroImage || "img/hero-bg.jpg"],
     videoCardImage: details.videoPoster || stringValue(details.videoCardImage) || undefined,
     videoCardLabel: details.videoUrl ? "VIDEO" : details.videoPoster || stringValue(details.videoCardImage) ? stringValue(details.videoCardLabel) || "IMAGEN" : "",

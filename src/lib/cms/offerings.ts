@@ -1,14 +1,18 @@
 import { randomUUID } from "crypto";
+import { deleteOfferingMediaAssets } from "./offering-media";
 import { createAdminClient } from "../supabase/admin";
 import { addTrashItem, getCurrentUserEmail, getTrashItemByEntity, removeTrashItem } from "./trash";
 import { readJsonFile, writeJsonFile } from "./local-storage";
 import { isOfferingStatus, isOfferingType } from "./types";
 import type { ClassOfferingDetails, Offering, OfferingStatus, OfferingType } from "./types";
+import { DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography, type RichTextTypography } from "./rich-text-typography";
 import type { Json } from "../supabase/types";
 import { logAction } from "./history-logs";
 
 const TABLE = "offerings";
 const HERO_SETTINGS_TABLE = "offering_public_hero_settings";
+const HOME_CARD_SETTINGS_TABLE = "offering_home_card_settings";
+const DETAIL_TEXT_SETTINGS_TABLE = "offering_detail_text_settings";
 const FILE_NAME = "offerings.json";
 const SUPABASE_READ_TIMEOUT_MS = 1_500;
 const OFFERINGS_CACHE_TTL_MS = 15_000;
@@ -158,7 +162,13 @@ function normalizeOffering(input: OfferingInput, existing?: Offering, allItems: 
 }
 
 function rowToOffering(row: Record<string, unknown>): Offering {
-  const details = mergeHeroSettingsIntoDetails(normalizeDetails(row.details), row.public_hero_settings);
+  const details = mergeDetailTextSettingsIntoDetails(
+    mergeHomeCardSettingsIntoDetails(
+      mergeHeroSettingsIntoDetails(normalizeDetails(row.details), row.public_hero_settings),
+      row.home_card_settings,
+    ),
+    row.detail_text_settings,
+  );
   return {
     ...row,
     schedule: Array.isArray(row.schedule) ? row.schedule : [],
@@ -334,6 +344,211 @@ function mergeHeroSettingsIntoDetails(details: Offering["details"], settings: un
   return { ...details, class: nextClass };
 }
 
+function homeCardFromClassDetails(classDetails: Record<string, unknown>) {
+  const homeCard = classDetails.homeCard && typeof classDetails.homeCard === "object" && !Array.isArray(classDetails.homeCard)
+    ? classDetails.homeCard as Record<string, unknown>
+    : {};
+  const text = (value: unknown) => (typeof value === "string" ? value.trim() : "");
+  const typographySource = homeCard.excerptTypography;
+  const typography = normalizeRichTextTypography(typographySource);
+
+  return {
+    image: text(homeCard.image),
+    image_alt: text(homeCard.imageAlt),
+    eyebrow: text(homeCard.eyebrow),
+    title: text(homeCard.title),
+    excerpt: text(homeCard.excerpt) || text(classDetails.homeExcerpt),
+    excerpt_font_size: typography.fontSize,
+    excerpt_font_weight: typography.weight,
+    excerpt_font_width: typography.width,
+    excerpt_italic: typography.italic,
+  };
+}
+
+function homeCardSettingsFromDetails(offering: Offering) {
+  if (!["class", "workshop", "experience", "gift_card"].includes(offering.type)) return null;
+  const details = normalizeDetails(offering.details);
+  const classDetails = details.class && typeof details.class === "object" && !Array.isArray(details.class)
+    ? details.class as Record<string, unknown>
+    : {};
+
+  return {
+    offering_id: offering.id,
+    ...homeCardFromClassDetails(classDetails),
+    updated_at: offering.updated_at,
+  };
+}
+
+function mergeHomeCardSettingsIntoDetails(details: Offering["details"], settings: unknown): Offering["details"] {
+  if (!settings || typeof settings !== "object" || Array.isArray(settings)) return details;
+  const row = settings as Record<string, unknown>;
+  const classDetails = details.class && typeof details.class === "object" && !Array.isArray(details.class)
+    ? details.class as Record<string, unknown>
+    : {};
+  const existingHomeCard = classDetails.homeCard && typeof classDetails.homeCard === "object" && !Array.isArray(classDetails.homeCard)
+    ? classDetails.homeCard as Record<string, unknown>
+    : {};
+  const text = (key: string, fallback = "") => {
+    const value = row[key];
+    return typeof value === "string" ? value : fallback;
+  };
+  const num = (key: string, fallback: number) => {
+    const value = Number(row[key]);
+    return Number.isFinite(value) ? value : fallback;
+  };
+  const excerptTypography = normalizeRichTextTypography({
+    fontSize: num("excerpt_font_size", Number(existingHomeCard.excerptTypography && typeof existingHomeCard.excerptTypography === "object" ? (existingHomeCard.excerptTypography as Record<string, unknown>).fontSize : 28) || 28),
+    weight: num("excerpt_font_weight", Number(existingHomeCard.excerptTypography && typeof existingHomeCard.excerptTypography === "object" ? (existingHomeCard.excerptTypography as Record<string, unknown>).weight : 400) || 400),
+    width: num("excerpt_font_width", Number(existingHomeCard.excerptTypography && typeof existingHomeCard.excerptTypography === "object" ? (existingHomeCard.excerptTypography as Record<string, unknown>).width : 100) || 100),
+    italic: typeof row.excerpt_italic === "boolean" ? row.excerpt_italic : Boolean(existingHomeCard.excerptTypography && typeof existingHomeCard.excerptTypography === "object" ? (existingHomeCard.excerptTypography as Record<string, unknown>).italic : false),
+  });
+  const homeCard = {
+    image: text("image", String(existingHomeCard.image ?? "")),
+    imageAlt: text("image_alt", String(existingHomeCard.imageAlt ?? "")),
+    eyebrow: text("eyebrow", String(existingHomeCard.eyebrow ?? "")),
+    title: text("title", String(existingHomeCard.title ?? "")),
+    excerpt: text("excerpt", String(existingHomeCard.excerpt ?? classDetails.homeExcerpt ?? "")),
+    excerptTypography,
+  };
+  const nextClass = {
+    ...classDetails,
+    homeCard,
+    homeExcerpt: homeCard.excerpt,
+  } as Partial<ClassOfferingDetails>;
+  return { ...details, class: nextClass };
+}
+
+function typographyFromRow(row: Record<string, unknown>, prefix: string, fallback: RichTextTypography): RichTextTypography {
+  return normalizeRichTextTypography({
+    fontSize: Number(row[`${prefix}_font_size`]),
+    weight: Number(row[`${prefix}_font_weight`]),
+    width: Number(row[`${prefix}_font_width`]),
+    italic: typeof row[`${prefix}_italic`] === "boolean" ? row[`${prefix}_italic`] : fallback.italic,
+  });
+}
+
+function detailTextSettingsFromDetails(offering: Offering) {
+  if (!["class", "workshop", "experience", "gift_card"].includes(offering.type)) return null;
+  const details = normalizeDetails(offering.details);
+  const classDetails = details.class && typeof details.class === "object" && !Array.isArray(details.class)
+    ? details.class as Record<string, unknown>
+    : {};
+
+  const subtitleTypography = normalizeRichTextTypography(classDetails.subtitleTypography);
+  const detailQuestionTypography = normalizeRichTextTypography(classDetails.detailQuestionTypography);
+  const highlightTypography = normalizeRichTextTypography(classDetails.highlightDescriptionTypography);
+  const descriptionTypography = normalizeRichTextTypography(
+    classDetails.descriptionTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 18 },
+  );
+
+  return {
+    offering_id: offering.id,
+    subtitle_font_size: subtitleTypography.fontSize,
+    subtitle_font_weight: subtitleTypography.weight,
+    subtitle_font_width: subtitleTypography.width,
+    subtitle_italic: subtitleTypography.italic,
+    detail_question_font_size: detailQuestionTypography.fontSize,
+    detail_question_font_weight: detailQuestionTypography.weight,
+    detail_question_font_width: detailQuestionTypography.width,
+    detail_question_italic: detailQuestionTypography.italic,
+    highlight_font_size: highlightTypography.fontSize,
+    highlight_font_weight: highlightTypography.weight,
+    highlight_font_width: highlightTypography.width,
+    highlight_italic: highlightTypography.italic,
+    description_font_size: descriptionTypography.fontSize,
+    description_font_weight: descriptionTypography.weight,
+    description_font_width: descriptionTypography.width,
+    description_italic: descriptionTypography.italic,
+    updated_at: offering.updated_at,
+  };
+}
+
+function mergeDetailTextSettingsIntoDetails(details: Offering["details"], settings: unknown): Offering["details"] {
+  if (!settings || typeof settings !== "object" || Array.isArray(settings)) return details;
+  const row = settings as Record<string, unknown>;
+  const classDetails = details.class && typeof details.class === "object" && !Array.isArray(details.class)
+    ? details.class as Record<string, unknown>
+    : {};
+
+  const nextClass = {
+    ...classDetails,
+    subtitleTypography: typographyFromRow(row, "subtitle", normalizeRichTextTypography(classDetails.subtitleTypography)),
+    detailQuestionTypography: typographyFromRow(row, "detail_question", normalizeRichTextTypography(classDetails.detailQuestionTypography)),
+    highlightDescriptionTypography: typographyFromRow(row, "highlight", normalizeRichTextTypography(classDetails.highlightDescriptionTypography)),
+    descriptionTypography: typographyFromRow(
+      row,
+      "description",
+      normalizeRichTextTypography(classDetails.descriptionTypography ?? { fontSize: 18 }),
+    ),
+  } as Partial<ClassOfferingDetails>;
+
+  return { ...details, class: nextClass };
+}
+
+async function readHomeCardSettingsMap(ids: string[]) {
+  if (ids.length === 0) return new Map<string, Record<string, unknown>>();
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase.from(HOME_CARD_SETTINGS_TABLE).select("*").in("offering_id", ids);
+    if (error || !data) return new Map<string, Record<string, unknown>>();
+    return new Map((data as Array<Record<string, unknown>>).map((item) => [String(item.offering_id), item]));
+  } catch {
+    return new Map<string, Record<string, unknown>>();
+  }
+}
+
+async function readOneHomeCardSettings(id: string) {
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase.from(HOME_CARD_SETTINGS_TABLE).select("*").eq("offering_id", id).maybeSingle();
+    if (error || !data) return null;
+    return data as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+async function syncHomeCardSettingsToSupabase(item: Offering): Promise<void> {
+  const row = homeCardSettingsFromDetails(item);
+  if (!row) return;
+  try {
+    const supabase = createAdminClient();
+    await supabase.from(HOME_CARD_SETTINGS_TABLE).upsert(row, { onConflict: "offering_id" });
+  } catch { /* best-effort until the migration exists in every environment */ }
+}
+
+async function readDetailTextSettingsMap(ids: string[]) {
+  if (ids.length === 0) return new Map<string, Record<string, unknown>>();
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase.from(DETAIL_TEXT_SETTINGS_TABLE).select("*").in("offering_id", ids);
+    if (error || !data) return new Map<string, Record<string, unknown>>();
+    return new Map((data as Array<Record<string, unknown>>).map((item) => [String(item.offering_id), item]));
+  } catch {
+    return new Map<string, Record<string, unknown>>();
+  }
+}
+
+async function readOneDetailTextSettings(id: string) {
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase.from(DETAIL_TEXT_SETTINGS_TABLE).select("*").eq("offering_id", id).maybeSingle();
+    if (error || !data) return null;
+    return data as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+async function syncDetailTextSettingsToSupabase(item: Offering): Promise<void> {
+  const row = detailTextSettingsFromDetails(item);
+  if (!row) return;
+  try {
+    const supabase = createAdminClient();
+    await supabase.from(DETAIL_TEXT_SETTINGS_TABLE).upsert(row, { onConflict: "offering_id" });
+  } catch { /* best-effort until the migration exists in every environment */ }
+}
+
 async function readHeroSettingsMap(ids: string[]) {
   if (ids.length === 0) return new Map<string, Record<string, unknown>>();
   try {
@@ -475,8 +690,17 @@ async function readAllFromSupabase(): Promise<Offering[] | null> {
     if (error) throw error;
     if (!data || data.length === 0) return null;
     const rows = data as Array<Record<string, unknown>>;
-    const settings = await readHeroSettingsMap(rows.map((row) => String(row.id)));
-    return rows.map((row) => rowToOffering({ ...row, public_hero_settings: settings.get(String(row.id)) }));
+    const [settings, homeCards, detailTextSettings] = await Promise.all([
+      readHeroSettingsMap(rows.map((row) => String(row.id))),
+      readHomeCardSettingsMap(rows.map((row) => String(row.id))),
+      readDetailTextSettingsMap(rows.map((row) => String(row.id))),
+    ]);
+    return rows.map((row) => rowToOffering({
+      ...row,
+      public_hero_settings: settings.get(String(row.id)),
+      home_card_settings: homeCards.get(String(row.id)),
+      detail_text_settings: detailTextSettings.get(String(row.id)),
+    }));
   } catch {
     return null;
   }
@@ -488,8 +712,13 @@ async function readOneFromSupabase(column: "id" | "slug", value: string): Promis
     const { data, error } = await supabase.from(TABLE).select("*").eq(column, value).maybeSingle();
     if (error || !data) return null;
     const row = data as Record<string, unknown>;
-    const settings = column === "id" ? await readOneHeroSettings(value) : await readOneHeroSettings(String(row.id));
-    return rowToOffering({ ...row, public_hero_settings: settings });
+    const offeringId = column === "id" ? value : String(row.id);
+    const [settings, homeCardSettings, detailTextSettings] = await Promise.all([
+      readOneHeroSettings(offeringId),
+      readOneHomeCardSettings(offeringId),
+      readOneDetailTextSettings(offeringId),
+    ]);
+    return rowToOffering({ ...row, public_hero_settings: settings, home_card_settings: homeCardSettings, detail_text_settings: detailTextSettings });
   } catch {
     return null;
   }
@@ -499,7 +728,11 @@ async function upsertToSupabase(item: Offering): Promise<void> {
   try {
     const supabase = createAdminClient();
     await supabase.from(TABLE).upsert(offeringToRow(item), { onConflict: "id" });
-    await syncHeroSettingsToSupabase(item);
+    await Promise.all([
+      syncHeroSettingsToSupabase(item),
+      syncHomeCardSettingsToSupabase(item),
+      syncDetailTextSettingsToSupabase(item),
+    ]);
   } catch { /* best-effort */ }
 }
 
@@ -507,7 +740,11 @@ async function saveToSupabase(item: Offering): Promise<void> {
   const supabase = createAdminClient();
   const { error } = await supabase.from(TABLE).upsert(offeringToRow(item), { onConflict: "id" });
   if (error) throw error;
-  await syncHeroSettingsToSupabase(item);
+  await Promise.all([
+    syncHeroSettingsToSupabase(item),
+    syncHomeCardSettingsToSupabase(item),
+    syncDetailTextSettingsToSupabase(item),
+  ]);
 }
 
 async function seedSupabase(items: Offering[]): Promise<void> {
@@ -521,7 +758,12 @@ async function seedSupabase(items: Offering[]): Promise<void> {
 async function deleteFromSupabase(id: string): Promise<void> {
   try {
     const supabase = createAdminClient();
-    await supabase.from(TABLE).delete().eq("id", id);
+    await Promise.all([
+      supabase.from(TABLE).delete().eq("id", id),
+      supabase.from(HERO_SETTINGS_TABLE).delete().eq("offering_id", id),
+      supabase.from(HOME_CARD_SETTINGS_TABLE).delete().eq("offering_id", id),
+      supabase.from(DETAIL_TEXT_SETTINGS_TABLE).delete().eq("offering_id", id),
+    ]);
   } catch { /* best-effort */ }
 }
 
@@ -669,12 +911,16 @@ export async function restoreOffering(id: string) {
 
 export async function deleteOfferingPermanently(id: string) {
   const offerings = await readJsonFile<Offering[]>(FILE_NAME, []);
-  const item = offerings.find((o) => o.id === id);
-  const next = offerings.filter((item) => item.id !== id);
+  const item = offerings.find((o) => o.id === id) ?? (await getOfferingById(id));
+  const next = offerings.filter((entry) => entry.id !== id);
 
   const trashItem = await getTrashItemByEntity(id);
-  const changed = next.length !== offerings.length || Boolean(trashItem);
+  const changed = next.length !== offerings.length || Boolean(trashItem) || Boolean(item);
   if (!changed) return false;
+
+  if (item) {
+    await deleteOfferingMediaAssets(item);
+  }
 
   await writeJsonFile(FILE_NAME, next);
   cacheOfferings(next);

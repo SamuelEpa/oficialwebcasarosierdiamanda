@@ -33,6 +33,10 @@ export interface RichTextEditorProps extends Omit<HTMLAttributes<HTMLDivElement>
   required?: boolean;
   maxLength?: number;
   placeholder?: string;
+  hideLabel?: boolean;
+  layout?: "default" | "compact";
+  typography?: TypographyState;
+  onTypographyChange?: (typography: TypographyState) => void;
 }
 
 export type MediaSourceMode = "library" | "upload" | "url";

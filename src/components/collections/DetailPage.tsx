@@ -7,6 +7,7 @@ import { Gallery } from "@/components/collections/Gallery";
 import { MarkdownContent, renderInlineMarkdown } from "@/components/ui/MarkdownContent";
 import type { ExperienceItem } from "@/data/types";
 import { assetPath } from "@/lib/assets";
+import { detailTextTypographyStyle, DEFAULT_DESCRIPTION_TYPOGRAPHY, DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography } from "@/lib/cms/rich-text-typography";
 import { addCartItem } from "@/lib/cart";
 
 function includedText(value: string) {
@@ -239,12 +240,29 @@ export function DetailPage({
 
           <section className="class-detail__content-column">
             <header className="class-detail__head">
-              <DetailTitle className="class-detail__title">{renderInlineMarkdown(titleMarkdownToInline(item.subtitle) || item.title)}</DetailTitle>
-              <MarkdownContent source={item.detailQuestion} className="class-detail__question" />
-              <MarkdownContent source={item.introHighlight} className="class-detail__highlight" />
+              <DetailTitle
+                className="class-detail__title class-detail__title--styled"
+                style={detailTextTypographyStyle(normalizeRichTextTypography(item.subtitleTypography), "subtitle")}
+              >
+                {renderInlineMarkdown(titleMarkdownToInline(item.subtitle) || item.title)}
+              </DetailTitle>
+              <MarkdownContent
+                source={item.detailQuestion}
+                className="class-detail__question class-detail__question--styled"
+                style={detailTextTypographyStyle(normalizeRichTextTypography(item.detailQuestionTypography), "detailQuestion")}
+              />
+              <MarkdownContent
+                source={item.introHighlight}
+                className="class-detail__highlight class-detail__highlight--styled"
+                style={detailTextTypographyStyle(normalizeRichTextTypography(item.introHighlightTypography), "highlight")}
+              />
             </header>
 
-            <MarkdownContent source={item.description} className="class-detail__copy" />
+            <MarkdownContent
+              source={item.description}
+              className="class-detail__copy class-detail__copy--styled"
+              style={detailTextTypographyStyle(normalizeRichTextTypography(item.descriptionTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY), "description")}
+            />
 
             <section className="class-detail__info-column">
               <section className="class-detail__facts">

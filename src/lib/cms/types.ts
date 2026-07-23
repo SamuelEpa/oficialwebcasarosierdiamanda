@@ -47,12 +47,20 @@ export interface ClassOfferingModule {
   order: number;
 }
 
+export interface RichTextTypography {
+  italic: boolean;
+  weight: number;
+  width: number;
+  fontSize: number;
+}
+
 export interface ClassHomeCard {
   image: string;
   imageAlt: string;
   eyebrow: string;
   title: string;
   excerpt: string;
+  excerptTypography?: RichTextTypography;
 }
 
 export interface ClassOfferingActivityItem {
@@ -218,6 +226,10 @@ export interface ClassOfferingDetails {
   showEnrollCta: boolean;
   detailQuestion: string;
   highlightDescription: string;
+  subtitleTypography?: RichTextTypography;
+  detailQuestionTypography?: RichTextTypography;
+  highlightDescriptionTypography?: RichTextTypography;
+  descriptionTypography?: RichTextTypography;
   homeCard: ClassHomeCard;
   /** Compatibilidad con registros anteriores a la tarjeta de Home independiente. */
   homeExcerpt: string;

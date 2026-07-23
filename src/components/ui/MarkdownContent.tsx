@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 type TextAlign = "left" | "center" | "right";
 
@@ -13,6 +13,7 @@ type MarkdownBlock =
 interface MarkdownContentProps {
   source: string | string[];
   className?: string;
+  style?: CSSProperties;
 }
 
 function safeHref(href: string) {
@@ -248,14 +249,14 @@ function parseMarkdownBlocks(source: string): MarkdownBlock[] {
   return blocks;
 }
 
-export function MarkdownContent({ source, className }: MarkdownContentProps) {
+export function MarkdownContent({ source, className, style }: MarkdownContentProps) {
   const text = Array.isArray(source) ? source.join("\n") : source;
   const blocks = parseMarkdownBlocks(text);
 
   if (!blocks.length) return null;
 
   return (
-    <div className={className ? `markdown-content ${className}` : "markdown-content"}>
+    <div className={className ? `markdown-content ${className}` : "markdown-content"} style={style}>
       {blocks.map((block, index) => {
         const key = `${block.type}-${index}`;
         if (block.type === "heading") {

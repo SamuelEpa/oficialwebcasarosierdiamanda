@@ -124,3 +124,143 @@
     transform: translateY(-50%);
   }
 }
+
+/* Class edit detail page — mobile refinements */
+
+@media (max-width: 899px) {
+  .class-edit-detail-nav__copy small {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .class-edit-detail-main__footer .class-edit-detail-main__progress {
+    display: none;
+  }
+
+  .class-edit-home-main__title {
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .class-edit-home-preview {
+    order: 2;
+  }
+}
+
+@media (max-width: 560px) {
+  .class-edit-detail-main__footer {
+    bottom: 68px;
+  }
+
+  .class-edit-field-grid--identity,
+  .class-edit-field-grid--meta {
+    grid-template-columns: 1fr;
+  }
+
+  .tiptap-editor--compact .tiptap-typography-panel--inline {
+    grid-template-columns: 1fr;
+  }
+
+  .tiptap-editor--compact .tiptap-editor__toolbar {
+    gap: 4px;
+    padding: 8px;
+    overflow-x: auto;
+  }
+}
+
+/* Offerings category admin — responsive table/cards */
+
+@media (max-width: 899px) {
+  .offerings-category-toolbar__search-row {
+    grid-template-columns: 1fr;
+  }
+
+  .offerings-category-toolbar__search-input {
+    padding-right: 14px;
+  }
+
+  .offerings-category-toolbar__search-row > button {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: stretch;
+    margin-right: 0;
+  }
+
+  .offerings-category-toolbar__meta {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .offerings-category-toolbar__sort {
+    width: 100%;
+  }
+
+  .offerings-category-table {
+    min-width: 0;
+  }
+
+  .offerings-category-table thead {
+    display: none;
+  }
+
+  .offerings-category-table tbody tr {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    border-bottom: 1px solid #ebe7f2;
+  }
+
+  .offerings-category-table tbody td {
+    display: grid;
+    gap: 6px;
+    border-bottom: 0;
+    padding: 0;
+  }
+
+  .offerings-category-table tbody td::before {
+    content: attr(data-label);
+    color: #494552;
+    font: 800 10px/14px var(--font-inter), Inter, sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .offerings-category-table tbody td:first-child::before {
+    display: none;
+  }
+
+  .offerings-category-table__actions-cell::before {
+    display: none;
+  }
+
+  .offerings-category-table__actions-head {
+    display: none;
+  }
+
+  .offerings-category-row-actions {
+    justify-content: flex-start;
+  }
+
+  .offerings-category-row-actions__label {
+    display: none;
+  }
+
+  .offerings-category-row-actions__btn {
+    min-width: 36px;
+    justify-content: center;
+    padding-inline: 8px;
+  }
+
+  .offerings-category-status-switch {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .offerings-category-status-switch__hint {
+    max-width: none;
+    font-size: 9px;
+    line-height: 12px;
+  }
+}

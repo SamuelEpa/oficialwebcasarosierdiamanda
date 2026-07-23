@@ -1,35 +1,20 @@
 import AdminShell from "@/components/admin/AdminShell";
 import ClassOfferingsTable from "@/components/admin/ClassOfferingsTable";
+import { OfferingsCategoryPagination } from "@/components/admin/offerings-category/OfferingsCategoryPagination";
+import { OfferingsCategoryStats } from "@/components/admin/offerings-category/OfferingsCategoryStats";
+import { OfferingsCategoryToolbar } from "@/components/admin/offerings-category/OfferingsCategoryToolbar";
+import {
+  isSortKey,
+  OFFERINGS_PAGE_SIZE,
+  type CategorySearchParams,
+  type SortKey,
+} from "@/components/admin/offerings-category/utils";
 import TopBar from "@/components/layout/TopBar";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import EmptyState from "@/components/ui/EmptyState";
-import Pagination from "@/components/ui/Pagination";
 import { getOfferingsPage } from "@/lib/cms/offerings";
 import type { OfferingType } from "@/lib/cms/types";
-
-type SortKey = "recent" | "old";
-type CategorySearchParams = { q?: string; sort?: string; page?: string };
-
-const sortLabels: Record<SortKey, string> = {
-  recent: "Más recientes",
-  old: "Más antiguos",
-};
-
-const pageSize = 8;
-
-function isSortKey(value: string): value is SortKey {
-  return ["recent", "old"].includes(value);
-}
-
-function buildHref(basePath: string, params: { q?: string; sort?: SortKey; page?: number }) {
-  const search = new URLSearchParams();
-  if (params.q) search.set("q", params.q);
-  if (params.sort && params.sort !== "recent") search.set("sort", params.sort);
-  if (params.page && params.page > 1) search.set("page", String(params.page));
-  const query = search.toString();
-  return query ? `${basePath}?${query}` : basePath;
-}
 
 export default async function OfferingsCategoryPage({
   title,
@@ -54,82 +39,99 @@ export default async function OfferingsCategoryPage({
   createLabel: string;
   searchParams?: CategorySearchParams | Promise<CategorySearchParams>;
 }) {
-  const resolvedSearchParams = await searchParams;
-  const rawQuery = (resolvedSearchParams?.q ?? "").trim();
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const rawQuery = (resolvedSearchParams.q ?? "").trim();
   const q = rawQuery.toLowerCase();
-  const sort = isSortKey(resolvedSearchParams?.sort ?? "") ? resolvedSearchParams?.sort as SortKey : "recent";
+  const rawSort = resolvedSearchParams.sort ?? "";
+  const sort: SortKey = isSortKey(rawSort) ? rawSort : "recent";
   const page = Math.max(1, Number(resolvedSearchParams?.page ?? 1) || 1);
+  const hasSearch = Boolean(q);
 
-  const result = await getOfferingsPage({
+  const resultPromise = getOfferingsPage({
     type,
     status: ["draft", "published"],
     q: rawQuery,
     sort,
     page,
-    pageSize,
+    pageSize: OFFERINGS_PAGE_SIZE,
   });
+
+  const statsPromise = hasSearch
+    ? null
+    : Promise.all([
+        getOfferingsPage({ type, status: "published", page: 1, pageSize: 1 }),
+        getOfferingsPage({ type, status: "draft", page: 1, pageSize: 1 }),
+      ]);
+
+  const [result, stats] = await Promise.all([resultPromise, statsPromise]);
+
   const currentPage = result.page;
   const totalPages = result.totalPages;
   const visible = result.items;
-  const hasSearch = Boolean(q);
   const hasAnyItems = result.total > 0;
+  const publishedTotal = stats?.[0].total ?? 0;
+  const draftTotal = stats?.[1].total ?? 0;
 
   return (
     <AdminShell>
       <TopBar
         title={title}
         subtitle={subtitle}
-        actions={<Button href={`${basePath}/new`} icon="add">{createLabel}</Button>}
+        actions={
+          <Button href={`${basePath}/new`} icon="add">
+            {createLabel}
+          </Button>
+        }
       />
 
-      <Card padding="md" className="mb-6">
-        <form method="get" className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
-          <input type="hidden" name="sort" value={sort} />
-          <input
-            name="q"
-            defaultValue={rawQuery}
-            placeholder={`Buscar ${title.toLowerCase()}...`}
-            className="block h-12 w-full rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2.5 text-body-md text-on-surface transition-colors focus:outline-none focus:ring-2 focus:ring-secondary-container"
+      <div className="offerings-category-layout">
+        {hasAnyItems ? (
+          <OfferingsCategoryStats
+            total={result.total}
+            published={publishedTotal}
+            draft={draftTotal}
+            typeLabel={typeLabel}
+            isFiltered={hasSearch}
           />
+        ) : null}
 
-          <div className="flex items-center">
-            <Button type="submit" variant="ghost" size="sm">Buscar</Button>
-          </div>
-        </form>
-
-        <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-outline-variant pt-4">
-          <span className="mr-1 text-label-md font-semibold text-on-surface-variant">Ordenar por:</span>
-          {(Object.entries(sortLabels) as [SortKey, string][]).map(([key, label]) => (
-            <Button
-              key={key}
-              href={buildHref(basePath, { q: rawQuery, sort: key, page: 1 })}
-              variant={sort === key ? "solid" : "ghost"}
-              size="sm"
-            >
-              {label}
-            </Button>
-          ))}
-        </div>
-      </Card>
-
-      {visible.length ? (
-        <>
-          <ClassOfferingsTable offerings={visible} basePath={basePath} typeLabel={typeLabel} />
-          <Pagination
-            page={currentPage}
-            totalPages={totalPages}
-            prevHref={currentPage > 1 ? buildHref(basePath, { q: rawQuery, sort, page: currentPage - 1 }) : undefined}
-            nextHref={currentPage < totalPages ? buildHref(basePath, { q: rawQuery, sort, page: currentPage + 1 }) : undefined}
-          />
-        </>
-      ) : (
-        <EmptyState
-          icon={emptyIcon}
-          title={hasAnyItems && hasSearch ? "No se encontraron resultados." : emptyTitle}
-          description={hasAnyItems && hasSearch ? "Prueba con otra búsqueda." : emptyDescription}
-          action={<Button href={`${basePath}/new`} icon="add">{createLabel}</Button>}
+        <OfferingsCategoryToolbar
+          basePath={basePath}
+          title={title}
+          rawQuery={rawQuery}
+          sort={sort}
+          total={result.total}
+          page={currentPage}
+          pageSize={OFFERINGS_PAGE_SIZE}
+          visibleCount={visible.length}
         />
-      )}
+
+        {visible.length ? (
+          <Card padding="none" className="offerings-category-table-card">
+            <ClassOfferingsTable offerings={visible} basePath={basePath} typeLabel={typeLabel} />
+            <OfferingsCategoryPagination
+              basePath={basePath}
+              page={currentPage}
+              totalPages={totalPages}
+              rawQuery={rawQuery}
+              sort={sort}
+            />
+          </Card>
+        ) : (
+          <Card padding="lg" className="offerings-category-empty-card">
+            <EmptyState
+              icon={emptyIcon}
+              title={hasAnyItems && hasSearch ? "No se encontraron resultados." : emptyTitle}
+              description={hasAnyItems && hasSearch ? "Prueba con otra búsqueda o limpia el filtro." : emptyDescription}
+              action={
+                <Button href={`${basePath}/new`} icon="add">
+                  {createLabel}
+                </Button>
+              }
+            />
+          </Card>
+        )}
+      </div>
     </AdminShell>
   );
 }

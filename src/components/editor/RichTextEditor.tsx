@@ -7,6 +7,7 @@ import EditorToolbar, { defaultRichTextEditorControls } from "./EditorToolbar";
 import TypographyPanel from "./TypographyPanel";
 import { editorExtensions } from "./editor-extensions";
 import { htmlRootToMarkdown, markdownToHtml } from "./markdown-codec";
+import { DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography, richTextTypographyStyle } from "@/lib/cms/rich-text-typography";
 import type { RichTextEditorProps, TypographyState } from "./editor-types";
 
 export default function RichTextEditor({
@@ -20,10 +21,22 @@ export default function RichTextEditor({
   required,
   maxLength,
   placeholder,
+  hideLabel = false,
+  layout = "default",
+  typography: typographyProp,
+  onTypographyChange,
+  style,
   ...props
 }: RichTextEditorProps) {
   const [mediaKind, setMediaKind] = useState<"image" | "iframe" | null>(null);
-  const [typography, setTypography] = useState<TypographyState>({ italic: false, weight: 400, width: 100, fontSize: 28 });
+  const [internalTypography, setInternalTypography] = useState<TypographyState>(DEFAULT_RICH_TEXT_TYPOGRAPHY);
+  const typography = typographyProp ?? internalTypography;
+  const setTypography = (next: TypographyState | ((current: TypographyState) => TypographyState)) => {
+    const resolved = typeof next === "function" ? next(typography) : next;
+    const normalized = normalizeRichTextTypography(resolved);
+    if (!typographyProp) setInternalTypography(normalized);
+    onTypographyChange?.(normalized);
+  };
   const lastMarkdownRef = useRef(value);
   const editorShellRef = useRef<HTMLDivElement | null>(null);
   const descriptionId = `${label.replace(/\s+/g, "-").toLowerCase()}-editor-description`;
@@ -59,27 +72,52 @@ export default function RichTextEditor({
   const plainTextLength = editor?.state.doc.textContent.length ?? 0;
   const overLimit = typeof maxLength === "number" && plainTextLength > maxLength;
   const previewStyle = {
-    "--tiptap-preview-font-size": `${typography.fontSize}px`,
-    "--tiptap-preview-font-weight": typography.weight,
-    "--tiptap-preview-font-stretch": `${typography.width}%`,
-    "--tiptap-preview-font-width": typography.width,
-    "--tiptap-preview-font-style": typography.italic ? "italic" : "normal",
+    ...richTextTypographyStyle(typography),
+    ...style,
   } as CSSProperties;
 
   return (
-    <div {...props} className={`tiptap-editor ${className ?? ""}`} ref={editorShellRef}>
-      <div className="tiptap-editor__label-row">
-        <label className="tiptap-editor__label">{label}{required ? " *" : ""}</label>
-        {typeof maxLength === "number" ? (
-          <span className={overLimit ? "tiptap-editor__count is-over" : "tiptap-editor__count"} id={descriptionId}>
-            {plainTextLength}/{maxLength}
-          </span>
-        ) : null}
-      </div>
+    <div
+      {...props}
+      style={previewStyle}
+      className={`tiptap-editor${layout === "compact" ? " tiptap-editor--compact" : ""} ${className ?? ""}`}
+      ref={editorShellRef}
+    >
+      {!hideLabel || typeof maxLength === "number" ? (
+        layout !== "compact" ? (
+          <div className="tiptap-editor__label-row">
+            {!hideLabel ? (
+              <label className="tiptap-editor__label">{label}{required ? " *" : ""}</label>
+            ) : null}
+            {typeof maxLength === "number" ? (
+              <span className={overLimit ? "tiptap-editor__count is-over" : "tiptap-editor__count"} id={descriptionId}>
+                {plainTextLength}/{maxLength}
+              </span>
+            ) : null}
+          </div>
+        ) : null
+      ) : null}
       {editor ? (
         <>
-          <div className="tiptap-editor__workspace" style={previewStyle}>
-            <TypographyPanel typography={typography} onChange={setTypography} />
+          <div className="tiptap-editor__workspace">
+            {layout === "compact" && !hideLabel ? (
+              <div className="tiptap-editor__label-row tiptap-editor__label-row--inset">
+                <label className="tiptap-editor__label">{label}{required ? " *" : ""}</label>
+                {typeof maxLength === "number" ? (
+                  <span className={overLimit ? "tiptap-editor__count is-over" : "tiptap-editor__count"} id={descriptionId}>
+                    {plainTextLength}/{maxLength}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
+            {layout === "compact" ? (
+              <details className="tiptap-typography-drawer">
+                <summary>Tipografía del bloque</summary>
+                <TypographyPanel typography={typography} onChange={setTypography} variant="inline" />
+              </details>
+            ) : (
+              <TypographyPanel typography={typography} onChange={setTypography} />
+            )}
             <div className="tiptap-editor__main">
               <EditorToolbar
                 editor={editor}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MarkdownContent } from "@/components/ui/MarkdownContent";
 import type { ExperienceItem } from "@/data/types";
 import { assetPath } from "@/lib/assets";
+import { DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography, richTextTypographyStyle } from "@/lib/cms/rich-text-typography";
 import { experienceHref } from "@/lib/routes";
 
 interface FeaturedSectionProps {
@@ -51,7 +52,11 @@ export function FeaturedSection({
                     <span className="content-card__title card__title">
                       {item.homeTitle || item.title}
                     </span>
-                    <MarkdownContent className="content-card__excerpt body-text" source={item.homeExcerpt || item.excerpt} />
+                    <MarkdownContent
+                      className="content-card__excerpt body-text content-card__excerpt--styled"
+                      style={richTextTypographyStyle(normalizeRichTextTypography(item.homeExcerptTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY))}
+                      source={item.homeExcerpt || item.excerpt}
+                    />
                     <span className="content-card__cta" aria-hidden="true">
                       leer mas
                     </span>

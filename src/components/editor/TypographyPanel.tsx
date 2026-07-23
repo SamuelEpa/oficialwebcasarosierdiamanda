@@ -7,16 +7,36 @@ function AxisInfo({ title }: { title: string }) {
   return <span className="tiptap-typography-panel__info" title={title} aria-hidden="true">i</span>;
 }
 
-export default function TypographyPanel({ typography, onChange }: { typography: TypographyState; onChange: Dispatch<SetStateAction<TypographyState>> }) {
+export default function TypographyPanel({
+  typography,
+  onChange,
+  variant = "sidebar",
+}: {
+  typography: TypographyState;
+  onChange: Dispatch<SetStateAction<TypographyState>>;
+  variant?: "sidebar" | "inline";
+}) {
   return (
-    <aside className="tiptap-typography-panel" aria-label="Variable axes">
+    <aside
+      className={`tiptap-typography-panel${variant === "inline" ? " tiptap-typography-panel--inline" : ""}`}
+      aria-label="Tipografía del bloque"
+    >
       <div className="tiptap-typography-panel__head">
-        <span>Variable Axes</span>
-        <button type="button" aria-label="Restablecer ejes" onClick={() => onChange({ italic: false, weight: 400, width: 100, fontSize: 28 })}>reset</button>
+        <span>{variant === "inline" ? "Tipografía del bloque" : "Variable Axes"}</span>
+        <button
+          type="button"
+          aria-label="Restablecer tipografía del bloque"
+          onClick={() => onChange({ italic: false, weight: 400, width: 100, fontSize: typography.fontSize })}
+        >
+          reset
+        </button>
       </div>
 
       <label className="tiptap-typography-panel__toggle">
-        <span>Italic <AxisInfo title="Activa la variante cursiva de la fuente." /></span>
+        <span>
+          Cursiva global
+          <AxisInfo title="Aplica la variante cursiva a todo el bloque. Para énfasis parcial usa negrita o subrayado en la barra superior." />
+        </span>
         <input
           type="checkbox"
           checked={typography.italic}

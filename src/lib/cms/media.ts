@@ -236,6 +236,17 @@ async function deleteFileFromStorage(filePath: string): Promise<boolean> {
   }
 }
 
+export async function deleteStorageFiles(filePaths: string[]): Promise<string[]> {
+  const uniquePaths = [...new Set(filePaths.map((path) => path.trim()).filter(Boolean))];
+  if (!uniquePaths.length) return [];
+
+  const deleted: string[] = [];
+  for (const filePath of uniquePaths) {
+    if (await deleteFileFromStorage(filePath)) deleted.push(filePath);
+  }
+  return deleted;
+}
+
 // ── Public API ──
 
 export async function getMediaAssets(options: { includeStorage?: boolean } = {}) {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MarkdownContent } from "@/components/ui/MarkdownContent";
 import type { ExperienceItem } from "@/data/types";
 import { assetPath } from "@/lib/assets";
+import { DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography, richTextTypographyStyle } from "@/lib/cms/rich-text-typography";
 import { experienceHref } from "@/lib/routes";
 import { Carousel } from "@/components/ui/Carousel";
 
@@ -38,7 +39,11 @@ function GiftCard({ item }: { item: ExperienceItem }) {
       <span className="gift-carousel__body">
         {content.eyebrow ? <span className="gift-carousel__eyebrow">{content.eyebrow}</span> : null}
         <span className="gift-carousel__title">{content.title}</span>
-        <MarkdownContent className="gift-carousel__text" source={content.excerpt} />
+        <MarkdownContent
+          className="gift-carousel__text content-card__excerpt--styled"
+          style={richTextTypographyStyle(normalizeRichTextTypography(item.homeExcerptTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY))}
+          source={content.excerpt}
+        />
         <span className="gift-carousel__cta" aria-hidden="true">
           ver mas
         </span>

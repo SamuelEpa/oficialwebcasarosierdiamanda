@@ -1,4 +1,4 @@
-import type { CalendarLabel, CmsHeroSettings } from "@/lib/cms/types";
+import type { CalendarLabel, CmsHeroSettings, RichTextTypography } from "@/lib/cms/types";
 
 export type ExperienceKind =
   | "class"
@@ -37,6 +37,7 @@ export interface ExperienceItem {
   homeEyebrow?: string;
   homeTitle?: string;
   homeExcerpt?: string;
+  homeExcerptTypography?: RichTextTypography;
   heroImage: string;
   heroImageMobile?: string;
   heroVideoUrl?: string;
@@ -121,8 +122,12 @@ export interface ExperienceItem {
   heroTitle: string;
   listingTitle: string;
   listingSubtitle: string;
+  subtitleTypography?: import("@/lib/cms/rich-text-typography").RichTextTypography;
   detailQuestion: string;
+  detailQuestionTypography?: import("@/lib/cms/rich-text-typography").RichTextTypography;
   introHighlight: string;
+  introHighlightTypography?: import("@/lib/cms/rich-text-typography").RichTextTypography;
+  descriptionTypography?: import("@/lib/cms/rich-text-typography").RichTextTypography;
   galleryImages: string[];
   videoCardImage?: string;
   videoCardLabel: string;
