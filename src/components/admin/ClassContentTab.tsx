@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Switch from "@/components/ui/Switch";
@@ -73,7 +74,7 @@ function TextField({
 
 export { defaultContent, type ClassOfferingContent };
 
-export default function ClassContentTab({ content, onChange, onDirty }: ClassContentTabProps) {
+export default memo(function ClassContentTab({ content, onChange, onDirty }: ClassContentTabProps) {
   function update(field: keyof ClassOfferingContent, value: unknown) {
     onChange({ ...content, [field]: value });
     onDirty();
@@ -316,4 +317,4 @@ export default function ClassContentTab({ content, onChange, onDirty }: ClassCon
       </Card>
     </div>
   );
-}
+});

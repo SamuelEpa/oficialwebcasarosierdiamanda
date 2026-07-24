@@ -1,4 +1,5 @@
 import type { CmsHeroSettings } from "./types";
+import { DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography } from "./rich-text-typography";
 
 export const DEFAULT_HERO_IMAGE = "/img/hero-bg.jpg";
 
@@ -124,6 +125,10 @@ export function normalizeHeroSettings(input: unknown, fallback?: Partial<CmsHero
     heroSubtitle: firstText(merged.heroSubtitle, fallback?.heroSubtitle),
     heroPresentationText: firstText(merged.heroPresentationText),
     heroPresentationSubtitle: firstText(merged.heroPresentationSubtitle),
+    heroPresentationTextTypography: normalizeRichTextTypography(merged.heroPresentationTextTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY),
+    heroPresentationSubtitleTypography: normalizeRichTextTypography(
+      merged.heroPresentationSubtitleTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 22 },
+    ),
     heroPresentationTextColor: firstText(merged.heroPresentationTextColor, defaultHeroSettings.heroPresentationTextColor),
     heroPresentationCtaEnabled: Boolean(merged.heroPresentationCtaEnabled),
     heroPresentationCtaLabel: firstText(merged.heroPresentationCtaLabel, defaultHeroSettings.heroPresentationCtaLabel),

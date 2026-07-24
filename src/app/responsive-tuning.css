@@ -102,6 +102,31 @@
     width: 70px;
     height: 70px;
   }
+
+  .testimonial-admin-view {
+    gap: 14px;
+    padding-bottom: 104px;
+  }
+
+  .testimonials-admin-stats {
+    gap: 6px;
+  }
+
+  .testimonials-order-bar {
+    bottom: 10px;
+    padding: 12px;
+  }
+
+  .testimonials-form-actions {
+    position: sticky;
+    bottom: 10px;
+    z-index: 12;
+    padding: 10px;
+    border: 1px solid #d8d2e2;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 12px 28px rgba(11, 28, 48, 0.1);
+  }
 }
 /* Browser-requested blog spacing and internal mobile bar height. */
 .blog-post-nav--article {
@@ -262,5 +287,92 @@
     max-width: none;
     font-size: 9px;
     line-height: 12px;
+  }
+}
+
+/* Footer editor — campos del formulario en columna estrecha */
+@media (max-width: 900px) {
+  .cms-footer-contact-field-card__grid,
+  .cms-footer-contact-field-card__toggles {
+    grid-template-columns: 1fr;
+  }
+
+  .cms-footer-contact-field-card__head {
+    grid-template-areas:
+      "identity"
+      "actions"
+      "chips";
+  }
+
+  .cms-footer-contact-field-card__actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .cms-footer-contact-field-card {
+    grid-template-columns: 1fr;
+  }
+
+  .cms-footer-contact-field-card__rail {
+    padding: 12px 12px 0;
+  }
+
+  .cms-footer-contact-field-card__order {
+    width: 100%;
+    min-height: 32px;
+  }
+
+  .cms-footer-contact-field-card__main {
+    padding: 12px;
+  }
+
+  .cms-footer-contact-field-card__title {
+    white-space: normal;
+  }
+
+  .cms-footer-form-fields-summary {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .cms-footer-form-fields-summary__dot {
+    display: none;
+  }
+}
+
+/* Product editor — mobile action bar and gallery touch targets */
+@media (max-width: 720px) {
+  .shop-product-editor {
+    padding-bottom: 118px;
+  }
+
+  .shop-product-editor__actions.admin-sticky-actionbar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .shop-product-editor__actions .admin-sticky-actionbar__meta {
+    grid-column: 1 / -1;
+    white-space: normal;
+  }
+
+  .shop-product-editor__actions .secondary-btn,
+  .shop-product-editor__actions .primary-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .shop-product-editor__gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shop-product-editor__icon-btn {
+    width: 40px;
+    height: 40px;
   }
 }

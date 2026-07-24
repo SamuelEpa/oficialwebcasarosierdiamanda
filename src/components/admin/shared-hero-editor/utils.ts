@@ -1,5 +1,12 @@
+import type { CSSProperties } from "react";
 import type { CmsHeroSettings } from "@/lib/cms/types";
 import type { DeviceFieldKeys, DeviceKey } from "./types";
+
+function responsivePreviewValue<T>(device: DeviceKey, desktop: T, tablet: T, phone: T) {
+  if (device === "phone") return phone;
+  if (device === "tablet") return tablet;
+  return desktop;
+}
 
 export function heroVideoEmbedUrl(rawUrl: string) {
   if (!rawUrl) return "";
@@ -120,4 +127,192 @@ export function patchDeviceField(
   value: string | number,
 ): Partial<CmsHeroSettings> {
   return { [key]: value } as Partial<CmsHeroSettings>;
+}
+
+/** Stable revision when preview copy / variant inputs change (not position-only edits). */
+export function heroPreviewContentRevision(
+  details: CmsHeroSettings,
+  titleFallback: string,
+  subtitleFallback?: string,
+): string {
+  return [
+    details.heroVariant,
+    details.heroTitle,
+    details.heroSubtitle,
+    details.heroPresentationText,
+    details.heroPresentationSubtitle,
+    details.heroPresentationTextColor,
+    details.heroPresentationImage,
+    details.titleImage,
+    details.heroPresentationCtaEnabled,
+    details.heroPresentationCtaLabel,
+    details.heroPresentationCtaHref,
+    titleFallback,
+    subtitleFallback ?? "",
+  ].join("\u001f");
+}
+
+/** Stable revision for preview layout CSS (positions, logo, menu, media background). */
+export function heroPreviewLayoutRevision(details: CmsHeroSettings, device: DeviceKey): string {
+  const keys = deviceKeys(device);
+  return [
+    device,
+    details.heroVariant,
+    details.heroMenuColor,
+    details.heroMenuTone,
+    details.heroMenuScale,
+    details.heroImage,
+    details.heroImageMobile,
+    details.heroVideoUrl,
+    details.heroVideoUrlMobile,
+    details.heroVideoPoster,
+    heroText(details, keys.logoX),
+    heroText(details, keys.logoY),
+    heroText(details, keys.logoWidth),
+    heroText(details, keys.menuY),
+    heroText(details, keys.titlePosX),
+    heroText(details, keys.titlePosY),
+    heroScale(details, keys.titleScale),
+    heroText(details, keys.titleSecondaryPosX),
+    heroText(details, keys.titleSecondaryPosY),
+    heroScale(details, keys.titleSecondaryScale),
+    heroText(details, keys.heroTitleX),
+    heroText(details, keys.heroTitleY),
+    heroScale(details, keys.heroTitleScale),
+    heroText(details, keys.presentationTextX),
+    heroText(details, keys.presentationTextY),
+    heroScale(details, keys.presentationTextScale),
+    heroText(details, keys.presentationImageX),
+    heroText(details, keys.presentationImageY),
+    heroScale(details, keys.presentationImageScale),
+  ].join("\u001f");
+}
+
+/** CSS variables for the admin hero preview frame (mirrors PreviewHeader + device tab). */
+export function buildHeroPreviewCssVariables(details: CmsHeroSettings, device: DeviceKey): CSSProperties {
+  const keys = deviceKeys(device);
+  const navColor = details.heroMenuColor || (details.heroMenuTone === "light" ? "#ffffff" : "#3f3933");
+
+  const presentationTextX = heroText(details, keys.presentationTextX) || "8%";
+  const presentationTextY = heroText(details, keys.presentationTextY) || "50%";
+  const presentationTextScale = heroScale(details, keys.presentationTextScale);
+  const presentationImageX = heroText(details, keys.presentationImageX) || "70%";
+  const presentationImageY = heroText(details, keys.presentationImageY) || "50%";
+  const presentationImageScale = heroScale(details, keys.presentationImageScale);
+
+  return {
+    "--hero-menu-color": navColor,
+    "--hero-menu-scale": details.heroMenuScale ?? 1,
+    "--hero-logo-position-x": responsivePreviewValue(
+      device,
+      details.heroLogoPositionX || "50%",
+      details.heroLogoTabletPositionX || details.heroLogoPositionX || "50%",
+      details.heroLogoMobilePositionX || details.heroLogoPositionX || "50%",
+    ),
+    "--hero-logo-position-y": responsivePreviewValue(
+      device,
+      details.heroLogoPositionY || "46px",
+      details.heroLogoTabletPositionY || details.heroLogoPositionY || "42px",
+      details.heroLogoMobilePositionY || "34px",
+    ),
+    "--hero-logo-width": responsivePreviewValue(
+      device,
+      details.heroLogoWidth || "118px",
+      details.heroLogoTabletWidth || details.heroLogoWidth || "106px",
+      details.heroLogoMobileWidth || "92px",
+    ),
+    "--title-image-scale": details.titleImageScale ?? 1,
+    "--title-image-scale-tablet": details.titleImageScaleTablet ?? details.titleImageScale ?? 1,
+    "--title-image-scale-mobile": details.titleImageScaleMobile ?? details.titleImageScale ?? 1,
+    "--title-image-position-x": details.titleImagePositionX ?? "50%",
+    "--title-image-position-y": details.titleImagePositionY ?? "50%",
+    "--title-image-position-x-tablet": details.titleImagePositionXTablet ?? details.titleImagePositionX ?? "50%",
+    "--title-image-position-y-tablet": details.titleImagePositionYTablet ?? details.titleImagePositionY ?? "50%",
+    "--title-image-position-x-mobile": details.titleImagePositionXMobile ?? details.titleImagePositionX ?? "50%",
+    "--title-image-position-y-mobile": details.titleImagePositionYMobile ?? "50%",
+    "--title-image-secondary-scale": details.titleImageSecondaryScale ?? 1,
+    "--title-image-secondary-scale-tablet": details.titleImageSecondaryScaleTablet ?? details.titleImageSecondaryScale ?? 1,
+    "--title-image-secondary-scale-mobile": details.titleImageSecondaryScaleMobile ?? details.titleImageSecondaryScale ?? 1,
+    "--title-image-secondary-position-x": details.titleImageSecondaryPositionX ?? "50%",
+    "--title-image-secondary-position-y": details.titleImageSecondaryPositionY ?? "50%",
+    "--title-image-secondary-position-x-tablet": details.titleImageSecondaryPositionXTablet ?? details.titleImageSecondaryPositionX ?? "50%",
+    "--title-image-secondary-position-y-tablet": details.titleImageSecondaryPositionYTablet ?? details.titleImageSecondaryPositionY ?? "50%",
+    "--title-image-secondary-position-x-mobile": details.titleImageSecondaryPositionXMobile ?? details.titleImageSecondaryPositionX ?? "50%",
+    "--title-image-secondary-position-y-mobile": details.titleImageSecondaryPositionYMobile ?? "50%",
+    "--hero-title-position-x": responsivePreviewValue(
+      device,
+      details.heroTitlePositionX ?? "50%",
+      details.heroTitlePositionXTablet ?? details.heroTitlePositionX ?? "50%",
+      details.heroTitlePositionXMobile ?? "50%",
+    ),
+    "--hero-title-position-y": responsivePreviewValue(
+      device,
+      details.heroTitlePositionY ?? "50%",
+      details.heroTitlePositionYTablet ?? details.heroTitlePositionY ?? "50%",
+      details.heroTitlePositionYMobile ?? "50%",
+    ),
+    "--hero-title-scale": responsivePreviewValue(
+      device,
+      details.heroTitleScale ?? 1,
+      details.heroTitleScaleTablet ?? details.heroTitleScale ?? 1,
+      details.heroTitleScaleMobile ?? 1,
+    ),
+    "--presentation-text-position-x": details.presentationTextPositionX ?? "8%",
+    "--presentation-text-position-y": details.presentationTextPositionY ?? "50%",
+    "--presentation-text-position-x-tablet": details.presentationTextPositionXTablet ?? details.presentationTextPositionX ?? "8%",
+    "--presentation-text-position-y-tablet": details.presentationTextPositionYTablet ?? details.presentationTextPositionY ?? "50%",
+    "--presentation-text-position-x-mobile": details.presentationTextPositionXMobile ?? details.presentationTextPositionX ?? "8%",
+    "--presentation-text-position-y-mobile": details.presentationTextPositionYMobile ?? "50%",
+    "--presentation-text-scale": details.presentationTextScale ?? 1,
+    "--presentation-text-scale-tablet": details.presentationTextScaleTablet ?? details.presentationTextScale ?? 1,
+    "--presentation-text-scale-mobile": details.presentationTextScaleMobile ?? 1,
+    "--presentation-image-position-x": details.presentationImagePositionX ?? "70%",
+    "--presentation-image-position-y": details.presentationImagePositionY ?? "50%",
+    "--presentation-image-position-x-tablet": details.presentationImagePositionXTablet ?? details.presentationImagePositionX ?? "70%",
+    "--presentation-image-position-y-tablet": details.presentationImagePositionYTablet ?? details.presentationImagePositionY ?? "50%",
+    "--presentation-image-position-x-mobile": details.presentationImagePositionXMobile ?? details.presentationImagePositionX ?? "70%",
+    "--presentation-image-position-y-mobile": details.presentationImagePositionYMobile ?? "50%",
+    "--presentation-image-scale": details.presentationImageScale ?? 1,
+    "--presentation-image-scale-tablet": details.presentationImageScaleTablet ?? details.presentationImageScale ?? 1,
+    "--presentation-image-scale-mobile": details.presentationImageScaleMobile ?? 1,
+    "--preview-presentation-text-x": presentationTextX,
+    "--preview-presentation-text-y": presentationTextY,
+    "--preview-presentation-text-scale": presentationTextScale,
+    "--preview-presentation-image-x": presentationImageX,
+    "--preview-presentation-image-y": presentationImageY,
+    "--preview-presentation-image-scale": presentationImageScale,
+  } as CSSProperties;
+}
+
+export function buildHeroPreviewHero(
+  details: CmsHeroSettings,
+  titleFallback: string,
+  subtitleFallback?: string,
+): CmsHeroSettings {
+  const heroTitle = details.heroTitle || titleFallback;
+  const heroSubtitle = details.heroSubtitle || subtitleFallback || "";
+  const normalized = resolvePresentationHeroContent({
+    ...details,
+    heroTitle,
+    heroSubtitle,
+  });
+
+  return {
+    ...normalized,
+    heroTitle,
+    heroSubtitle,
+  };
+}
+
+/** Keeps presentation copy fields aligned with typographic hero fields when migrating variants. */
+export function resolvePresentationHeroContent<T extends Pick<CmsHeroSettings, "heroVariant" | "heroTitle" | "heroSubtitle" | "heroPresentationText" | "heroPresentationSubtitle">>(
+  details: T,
+): T {
+  if (details.heroVariant !== "presentation") return details;
+
+  return {
+    ...details,
+    heroPresentationText: details.heroPresentationText?.trim() || details.heroTitle?.trim() || "",
+    heroPresentationSubtitle: details.heroPresentationSubtitle?.trim() || details.heroSubtitle?.trim() || "",
+  };
 }

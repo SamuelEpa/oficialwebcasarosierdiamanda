@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { SectionCard } from "@/components/admin/class-edit/components/SectionCard";
 import type { CmsHeroSettings } from "@/lib/cms/types";
 import type { SharedHeroEditorState } from "../types";
@@ -8,15 +9,13 @@ import { HeroPositionPreview } from "./HeroPositionPreview";
 
 type HeroPreviewPanelProps = {
   details: CmsHeroSettings;
-  titleFallback: string;
-  subtitleFallback?: string;
+  previewHero: CmsHeroSettings;
   editor: SharedHeroEditorState;
 };
 
-export function HeroPreviewPanel({
+function HeroPreviewPanelComponent({
   details,
-  titleFallback,
-  subtitleFallback,
+  previewHero,
   editor,
 }: HeroPreviewPanelProps) {
   return (
@@ -27,12 +26,9 @@ export function HeroPreviewPanel({
       className="class-edit-hero-preview-card"
       action={<HeroDeviceTabs editor={editor} />}
     >
-      <HeroPositionPreview
-        details={details}
-        titleFallback={titleFallback}
-        subtitleFallback={subtitleFallback}
-        editor={editor}
-      />
+      <HeroPositionPreview details={details} previewHero={previewHero} editor={editor} />
     </SectionCard>
   );
 }
+
+export const HeroPreviewPanel = memo(HeroPreviewPanelComponent);

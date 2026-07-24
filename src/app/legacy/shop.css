@@ -77,6 +77,20 @@
   color: #b86d38;
 }
 
+.shop-filter:hover,
+.shop-filter:focus-visible {
+  border-color: #d07f45;
+  color: #b86d38;
+  outline: none;
+}
+
+.shop-empty {
+  margin: 48px 0 0;
+  text-align: center;
+  color: #8a7e71;
+  font: 300 16px/1.6 var(--font-menu);
+}
+
 .shop-pagination {
   display: flex;
   flex-wrap: wrap;

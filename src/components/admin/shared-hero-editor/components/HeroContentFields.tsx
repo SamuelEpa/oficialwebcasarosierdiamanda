@@ -1,12 +1,20 @@
 "use client";
 
+import { useMemo } from "react";
 import { AdminInput } from "@/components/ui/AdminField";
 import { AdminRichTextField } from "@/components/ui/AdminRichTextField";
 import ColorPickerField from "@/components/admin/ColorPickerField";
 import MediaSelectField from "@/components/admin/MediaSelectField";
 import { DETAIL_PAGE_RICH_TEXT_CONTROLS } from "@/components/admin/class-edit/constants/rich-text-controls";
+import { defaultClassDetails } from "@/components/admin/class-edit/constants";
+import {
+  DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  normalizeRichTextTypography,
+} from "@/lib/cms/rich-text-typography";
 import type { CmsHeroSettings } from "@/lib/cms/types";
+import { presentationHeroDisplayValues } from "../heroEditorModel";
 import type { SharedHeroEditorState } from "../types";
+import { heroPreviewContentRevision } from "../utils";
 
 type HeroContentFieldsProps = {
   details: CmsHeroSettings;
@@ -86,8 +94,23 @@ function HeroImageVariantFields({ details, onChange }: Pick<HeroContentFieldsPro
 
 function HeroPresentationVariantFields({
   details,
+  titleFallback,
+  subtitleFallback,
   onChange,
-}: Pick<HeroContentFieldsProps, "details" | "onChange">) {
+}: Pick<HeroContentFieldsProps, "details" | "titleFallback" | "subtitleFallback" | "onChange">) {
+  const displayRevision = heroPreviewContentRevision(details, titleFallback, subtitleFallback);
+  const display = useMemo(
+    () => presentationHeroDisplayValues(details, titleFallback, subtitleFallback),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- displayRevision tracks presentation copy inputs
+    [displayRevision],
+  );
+  const presentationTextTypography = normalizeRichTextTypography(
+    details.heroPresentationTextTypography ?? defaultClassDetails.heroPresentationTextTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  );
+  const presentationSubtitleTypography = normalizeRichTextTypography(
+    details.heroPresentationSubtitleTypography ?? defaultClassDetails.heroPresentationSubtitleTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 22 },
+  );
+
   return (
     <div className="class-edit-hero-presentation-grid">
       <div className="class-edit-hero-presentation-grid__copy class-edit-rich-text-stack">
@@ -95,25 +118,29 @@ function HeroPresentationVariantFields({
           label="Texto de presentación"
           labelPlacement="editor"
           layout="compact"
-          value={details.heroPresentationText}
+          value={display.heroPresentationText}
+          typography={presentationTextTypography}
           controls={DETAIL_PAGE_RICH_TEXT_CONTROLS}
           minHeight="160px"
           onChange={(heroPresentationText) => onChange({ heroPresentationText })}
+          onTypographyChange={(heroPresentationTextTypography) => onChange({ heroPresentationTextTypography })}
         />
         <AdminRichTextField
           label="Texto sub-título"
           labelPlacement="editor"
           layout="compact"
-          value={details.heroPresentationSubtitle}
+          value={display.heroPresentationSubtitle}
+          typography={presentationSubtitleTypography}
           controls={DETAIL_PAGE_RICH_TEXT_CONTROLS}
           minHeight="120px"
           onChange={(heroPresentationSubtitle) => onChange({ heroPresentationSubtitle })}
+          onTypographyChange={(heroPresentationSubtitleTypography) => onChange({ heroPresentationSubtitleTypography })}
         />
       </div>
       <aside className="class-edit-hero-presentation-grid__side space-y-4">
         <MediaSelectField
           label="Imagen lateral"
-          value={details.heroPresentationImage}
+          value={display.heroPresentationImage}
           onChange={(heroPresentationImage) => onChange({ heroPresentationImage })}
           previewClassName="cms-shared-hero-side-preview"
         />
@@ -199,7 +226,12 @@ export function HeroContentFields({
       {editor.isPresentationHero ? <HeroBackgroundFields details={details} onChange={onChange} /> : null}
       {editor.isImageHero ? <HeroImageVariantFields details={details} onChange={onChange} /> : null}
       {editor.isPresentationHero ? (
-        <HeroPresentationVariantFields details={details} onChange={onChange} />
+        <HeroPresentationVariantFields
+          details={details}
+          titleFallback={titleFallback}
+          subtitleFallback={subtitleFallback}
+          onChange={onChange}
+        />
       ) : null}
     </div>
   );

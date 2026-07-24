@@ -1,42 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { DetailPage } from "@/components/collections/DetailPage";
 import { PublicFooterContent } from "@/components/layout/PublicFooterContent";
 import type { ClassEditorPreviewChrome } from "@/lib/cms/class-editor-preview";
-import type { ClassOfferingDetails, Offering } from "@/lib/cms/types";
+import type { ClassOfferingDetails } from "@/lib/cms/types";
+import type { ExperienceItem } from "@/data/types";
 import { PREVIEW_DEVICES } from "../constants";
 import type { PreviewDevice } from "../types";
-import { buildPreviewItem } from "../utils";
 import { PreviewHeader } from "./PreviewHeader";
+import { PreviewSerpSnippet } from "./PreviewSerpSnippet";
 import { PublicSocialGalleryPreview } from "./PublicSocialGalleryPreview";
 
-export function PreviewPane({
-  offeringType,
-  title,
-  slug,
-  subtitle,
-  description,
+function PreviewPaneComponent({
+  previewItem,
   status,
   details,
   previewChrome,
+  seoTitle,
+  seoDescription,
+  title,
+  slug,
+  description,
 }: {
-  offeringType: Offering["type"];
-  title: string;
-  slug: string;
-  subtitle: string;
-  description: string;
+  previewItem: ExperienceItem;
   status: "draft" | "published";
   details: ClassOfferingDetails;
   previewChrome: ClassEditorPreviewChrome;
+  seoTitle: string;
+  seoDescription: string;
+  title: string;
+  slug: string;
+  description: string;
 }) {
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>("desktop");
-  const activePreviewDevice = PREVIEW_DEVICES.find((device) => device.key === previewDevice) ?? PREVIEW_DEVICES[2];
-  const previewItem = buildPreviewItem({ offeringType, title, slug, subtitle, description, details });
-  const promoPage = previewItem.kind === "private-booking" ? undefined : previewItem.kind.replace("-card", "");
+
+  const activePreviewDevice = useMemo(
+    () => PREVIEW_DEVICES.find((device) => device.key === previewDevice) ?? PREVIEW_DEVICES[2],
+    [previewDevice],
+  );
+
+  const promoPage = useMemo(
+    () => (previewItem.kind === "private-booking" ? undefined : previewItem.kind.replace("-card", "")),
+    [previewItem.kind],
+  );
+
+  const handleDeviceChange = useCallback((device: PreviewDevice) => {
+    setPreviewDevice(device);
+  }, []);
+
+  const viewportStyle = useMemo(
+    () => ({ width: `${activePreviewDevice.width}px`, maxWidth: "100%" }),
+    [activePreviewDevice.width],
+  );
+
+  const showSocialGallery = previewItem.showIdeaPromptSection === true;
 
   return (
-    <div className="cms-preview-frame">
+    <div className="cms-preview-frame space-y-4">
+      <PreviewSerpSnippet
+        seoTitle={seoTitle}
+        seoDescription={seoDescription}
+        title={title}
+        slug={slug}
+        description={description}
+      />
+
       <div className="cms-public-preview__toolbar">
         <span>Vista previa · {status === "published" ? "Publicado" : "Borrador"}</span>
         <div className="cms-public-preview__devices" role="tablist" aria-label="Dispositivo de vista previa">
@@ -47,29 +76,42 @@ export function PreviewPane({
               role="tab"
               aria-selected={previewDevice === device.key}
               className={previewDevice === device.key ? "is-active" : ""}
-              onClick={() => setPreviewDevice(device.key)}
+              onClick={() => handleDeviceChange(device.key)}
             >
               {device.label}
             </button>
           ))}
         </div>
       </div>
+
       <div className="cms-public-preview__viewport">
         <div
           className={`cms-public-preview class-detail-page cms-public-preview--${previewDevice}`}
           data-promo-page={promoPage}
-          style={{ width: `${activePreviewDevice.width}px`, maxWidth: "100%" }}
+          style={viewportStyle}
         >
           <div className="cms-public-preview__scale">
-            <PreviewHeader item={previewItem} details={details} previewChrome={previewChrome} previewDevice={previewDevice} />
+            <PreviewHeader
+              item={previewItem}
+              details={details}
+              previewChrome={previewChrome}
+              previewDevice={previewDevice}
+            />
             <div className="cms-public-preview__body">
-              <DetailPage item={previewItem} />
-              {previewItem.showIdeaPromptSection ? <PublicSocialGalleryPreview previewChrome={previewChrome} /> : null}
+              <DetailPage item={previewItem} titleLevel={previewItem.heroVariant === "text" ? "h2" : "h1"} />
+              {showSocialGallery ? <PublicSocialGalleryPreview previewChrome={previewChrome} /> : null}
             </div>
-            <PublicFooterContent footer={previewChrome.footer} preview />
+            <PublicFooterContent
+              footer={previewChrome.footer}
+              contactForm={previewChrome.footerContactForm}
+              siteContact={previewChrome.siteContact}
+              preview
+            />
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+export const PreviewPane = memo(PreviewPaneComponent);

@@ -1,5 +1,5 @@
 ﻿import Image from "next/image";
-import { TestimonialSlider } from "@/components/home/TestimonialSlider";
+import { mapCmsTestimonialsToSlides, TestimonialSlider } from "@/components/home/testimonial-slider";
 import { HeaderInterno } from "@/components/layout/HeaderInterno";
 import { MarkdownContent } from "@/components/ui/MarkdownContent";
 import { IdeaPromptSection } from "@/features/shared/contextual-sections/IdeaPromptSection";
@@ -19,13 +19,7 @@ export async function StudioPage() {
     getStudioPageSettings(),
   ]);
   const faqSection = await getPublicPageFaqSectionBySlug("el-estudio");
-  const testimonials = cmsTestimonials
-    .map((item) => ({
-      image: item.avatar_id || "/img/avatar-1.jpg",
-      alt: `Foto de ${item.name}`,
-      quote: item.text,
-      author: item.role ? `${item.name} — ${item.role}` : item.name,
-    }));
+  const testimonials = mapCmsTestimonialsToSlides(cmsTestimonials);
   const specialists = teachers
     .filter((teacher) => teacher.status === "published" && teacher.deleted_at === null)
     .sort((a, b) => a.sort_order - b.sort_order);

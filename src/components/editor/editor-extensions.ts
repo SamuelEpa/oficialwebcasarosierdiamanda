@@ -63,7 +63,12 @@ export function editorExtensions(placeholder?: string) {
     Link.configure({
       openOnClick: false,
       autolink: true,
+      linkOnPaste: true,
       protocols: ["http", "https", "mailto", "tel"],
+      HTMLAttributes: {
+        class: "tiptap-editor__link",
+        rel: "noopener noreferrer",
+      },
     }),
     Image.configure({ allowBase64: false, inline: false }),
     TextAlign.configure({

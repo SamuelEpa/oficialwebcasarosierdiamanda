@@ -28,40 +28,40 @@ export function DetailPageSectionNav({
         return (
           <div key={group.key} className="class-edit-detail-nav__group">
             <p className="class-edit-detail-nav__group-label">{group.label}</p>
-            <div className="class-edit-detail-nav__list" role="list">
+            <ul className="class-edit-detail-nav__list">
               {items.map((section) => {
                 const globalIndex = DETAIL_PAGE_SECTIONS.findIndex((item) => item.key === section.key);
                 const isActive = activeSection === section.key;
                 const hasError = sectionsWithErrors.has(section.key);
 
                 return (
-                  <button
-                    key={section.key}
-                    type="button"
-                    role="listitem"
-                    className={`class-edit-detail-nav__item${isActive ? " is-active" : ""}${hasError ? " has-error" : ""}`}
-                    aria-current={isActive ? "step" : undefined}
-                    onClick={() => onSectionChange(section.key)}
-                  >
-                    <span className="class-edit-detail-nav__icon" aria-hidden="true">
-                      <span className="material-symbols-outlined">{section.icon}</span>
-                    </span>
-                    <span className="class-edit-detail-nav__copy">
-                      <strong>{section.label}</strong>
-                      <small>{section.description}</small>
-                    </span>
-                    <span className="class-edit-detail-nav__index" aria-hidden="true">
-                      {String(globalIndex + 1).padStart(2, "0")}
-                    </span>
-                    {hasError ? (
-                      <span className="class-edit-detail-nav__badge" aria-label="Requiere atención">
-                        !
+                  <li key={section.key}>
+                    <button
+                      type="button"
+                      className={`class-edit-detail-nav__item${isActive ? " is-active" : ""}${hasError ? " has-error" : ""}`}
+                      aria-current={isActive ? "step" : undefined}
+                      onClick={() => onSectionChange(section.key)}
+                    >
+                      <span className="class-edit-detail-nav__icon" aria-hidden="true">
+                        <span className="material-symbols-outlined">{section.icon}</span>
                       </span>
-                    ) : null}
-                  </button>
+                      <span className="class-edit-detail-nav__copy">
+                        <strong>{section.label}</strong>
+                        <small>{section.description}</small>
+                      </span>
+                      <span className="class-edit-detail-nav__index" aria-hidden="true">
+                        {String(globalIndex + 1).padStart(2, "0")}
+                      </span>
+                      {hasError ? (
+                        <span className="class-edit-detail-nav__badge" aria-label="Requiere atención">
+                          !
+                        </span>
+                      ) : null}
+                    </button>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           </div>
         );
       })}

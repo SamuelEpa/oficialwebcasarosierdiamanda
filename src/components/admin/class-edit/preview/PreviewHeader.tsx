@@ -119,7 +119,10 @@ export function PreviewHeader({
           <PublicHeroContent
             hero={{
               ...details,
-              heroPresentationText: details.heroPresentationText || "# Chagall, Master Drawings\n\nFebruary 27-May 28, 2018",
+              heroPresentationText: details.heroPresentationText,
+              heroPresentationSubtitle: details.heroPresentationSubtitle,
+              heroPresentationTextTypography: item.heroPresentationTextTypography,
+              heroPresentationSubtitleTypography: item.heroPresentationSubtitleTypography,
             }}
           />
         ) : (

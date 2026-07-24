@@ -1,26 +1,32 @@
 "use client";
 
 import { useCallback, useMemo, useState, useSyncExternalStore, type CSSProperties } from "react";
-import type { ClassHeroVariant, CmsHeroSettings } from "@/lib/cms/types";
+import type { ClassHeroVariant } from "@/lib/cms/types";
 import { HERO_DEVICES } from "../constants";
+import { buildHeroVariantPatch } from "../heroEditorModel";
 import type { DeviceKey, SharedHeroEditorProps } from "../types";
 import {
+  buildHeroPreviewCssVariables,
   deviceKeys,
   heroBackgroundImage,
+  heroPreviewLayoutRevision,
   heroPreviewVideoUrl,
-  heroScale,
   heroText,
   heroVideoEmbedUrl,
 } from "../utils";
+import { useLatest } from "./useLatest";
 
 const subscribeToHydration = () => () => {};
 
 export function useSharedHeroEditor({
   details,
   onChange,
-}: Pick<SharedHeroEditorProps, "details" | "onChange">) {
+  titleFallback,
+  subtitleFallback,
+}: SharedHeroEditorProps) {
   const [device, setDevice] = useState<DeviceKey>("desktop");
   const isHydrated = useSyncExternalStore(subscribeToHydration, () => true, () => false);
+  const latestDetails = useLatest(details);
 
   const preset = HERO_DEVICES.find((item) => item.key === device) ?? HERO_DEVICES[2];
   const keys = useMemo(() => deviceKeys(device), [device]);
@@ -33,22 +39,18 @@ export function useSharedHeroEditor({
   const previewVideoUrl = heroPreviewVideoUrl(details, device);
   const previewVideoEmbedUrl = heroVideoEmbedUrl(previewVideoUrl);
   const backgroundImage = heroBackgroundImage(details, device);
+  const layoutRevision = heroPreviewLayoutRevision(details, device);
 
   const frameStyle = useMemo(() => ({
     width: `${preset.width}px`,
     height: `${preset.height}px`,
-    "--presentation-text-position-x": heroText(details, keys.presentationTextX) || "8%",
-    "--presentation-text-position-y": heroText(details, keys.presentationTextY) || "50%",
-    "--presentation-text-scale": heroScale(details, keys.presentationTextScale),
-    "--presentation-image-position-x": heroText(details, keys.presentationImageX) || "70%",
-    "--presentation-image-position-y": heroText(details, keys.presentationImageY) || "50%",
-    "--presentation-image-scale": heroScale(details, keys.presentationImageScale),
+    ...buildHeroPreviewCssVariables(details, device),
     background: isPresentationHero
       ? `url("${backgroundImage}") center / cover no-repeat`
       : isImageHero
         ? `linear-gradient(to bottom, rgba(58,48,37,.2), rgba(251,250,246,.94)), url("${backgroundImage}") center / cover no-repeat`
         : "#fbfaf6",
-  }) as CSSProperties, [backgroundImage, details, isImageHero, isPresentationHero, keys, preset.height, preset.width]);
+  }) as CSSProperties, [backgroundImage, device, isImageHero, isPresentationHero, layoutRevision, preset.height, preset.width]);
 
   const menuStyle = useMemo(() => ({
     top: heroText(details, keys.menuY) || "132px",
@@ -69,12 +71,15 @@ export function useSharedHeroEditor({
   }) as CSSProperties, [device, navColor]);
 
   const setVariant = useCallback((heroVariant: ClassHeroVariant) => {
-    onChange({
-      heroVariant,
-      heroMenuTone: heroVariant === "text" ? "dark" : "light",
-      heroMenuColor: heroVariant === "text" ? "#3f3933" : "#ffffff",
-    });
-  }, [onChange]);
+    onChange(
+      buildHeroVariantPatch(
+        latestDetails.current,
+        heroVariant,
+        titleFallback,
+        subtitleFallback,
+      ),
+    );
+  }, [onChange, subtitleFallback, titleFallback]);
 
   const updateMenuColor = useCallback((heroMenuColor: string) => {
     onChange({

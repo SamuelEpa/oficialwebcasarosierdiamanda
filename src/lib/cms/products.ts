@@ -93,7 +93,7 @@ function normalizeProduct(input: ProductInput, existing?: Product, allItems: Pro
     compare_at_price: input.compare_at_price !== undefined ? input.compare_at_price : (existing?.compare_at_price ?? null),
     stock,
     low_stock_threshold: lowStockThreshold,
-    category_id: String(input.category_id ?? existing?.category_id ?? "").trim(),
+    category_id: String(input.category_id ?? existing?.category_id ?? "").trim() || "",
     characteristics: String(input.characteristics ?? existing?.characteristics ?? "").trim(),
     weight: String(input.weight ?? existing?.weight ?? "").trim(),
     dimensions: String(input.dimensions ?? existing?.dimensions ?? "").trim(),
@@ -118,13 +118,17 @@ function rowToProduct(row: Record<string, unknown>): Product {
     compare_at_price: row.compare_at_price ?? null,
     stock: row.stock ?? null,
     low_stock_threshold: row.low_stock_threshold ?? 5,
+    category_id: typeof row.category_id === "string" ? row.category_id : row.category_id ? String(row.category_id) : "",
     cta_label: typeof row.cta_label === "string" ? row.cta_label : "",
     cta_url: typeof row.cta_url === "string" ? row.cta_url : "",
   } as unknown as Product;
 }
 
 function productToRow(product: Product): Record<string, unknown> {
-  return { ...product };
+  return {
+    ...product,
+    category_id: product.category_id?.trim() ? product.category_id.trim() : null,
+  };
 }
 
 // â”€â”€ Supabase helpers â”€â”€

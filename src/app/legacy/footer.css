@@ -148,6 +148,17 @@
   font: 300 11px/1.5 var(--font-menu);
 }
 
+.contact-info__map-link {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.contact-info__map-link:hover {
+  color: #2f2723;
+}
+
 .contact-info__social {
   margin-top: 4px;
   display: flex;

@@ -20,7 +20,7 @@ type ClassEditDetailPagePanelProps = {
 };
 
 export function ClassEditDetailPagePanel({ offering, form }: ClassEditDetailPagePanelProps) {
-  const { details, updateDetails, markDirty } = form;
+  const { details, handleContentChange } = form;
   const sections = useDetailPageSections(form);
   const current = DETAIL_PAGE_SECTIONS[sections.sectionIndex];
 
@@ -47,10 +47,10 @@ export function ClassEditDetailPagePanel({ offering, form }: ClassEditDetailPage
 
         <div className="class-edit-detail-main__panel" key={sections.activeSection}>
           {sections.activeSection === "basic-info" ? (
-            <BasicInfoSection offering={offering} form={form} />
+            <BasicInfoSection form={form} />
           ) : null}
           {sections.activeSection === "cta" ? (
-            <CtaButtonsSection offering={offering} form={form} />
+            <CtaButtonsSection offering={{ type: offering.type }} form={form} />
           ) : null}
           {sections.activeSection === "pricing" ? (
             <PricingSection form={form} />
@@ -67,8 +67,8 @@ export function ClassEditDetailPagePanel({ offering, form }: ClassEditDetailPage
           {sections.activeSection === "content" ? (
             <ClassContentTab
               content={details.content}
-              onChange={(content) => updateDetails({ content })}
-              onDirty={markDirty}
+              onChange={handleContentChange}
+              onDirty={form.markDirty}
             />
           ) : null}
         </div>

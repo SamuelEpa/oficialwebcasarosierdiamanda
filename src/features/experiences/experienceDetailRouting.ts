@@ -291,6 +291,8 @@ function cmsOfferingToExperienceItem(offering: Offering): ExperienceItem {
     heroTitleImageSecondary: details.titleImageSecondary,
     heroPresentationText: hero.heroPresentationText,
     heroPresentationSubtitle: hero.heroPresentationSubtitle,
+    heroPresentationTextTypography: hero.heroPresentationTextTypography,
+    heroPresentationSubtitleTypography: hero.heroPresentationSubtitleTypography,
     heroPresentationTextColor: hero.heroPresentationTextColor,
     heroPresentationImage: hero.heroPresentationImage,
     heroPresentationCtaEnabled: hero.heroPresentationCtaEnabled,
@@ -380,7 +382,9 @@ function cmsOfferingToExperienceItem(offering: Offering): ExperienceItem {
     whoCanJoin: splitParagraphs(hasClassParticipationContent ? content.participationContent : content.participationContent || details.whoCanJoin),
     paymentMethods,
     additionalInfo: hasClassExtraInfo ? stringValue(content.extraInfo) : stringValue(content.extraInfo) || stringValue(details.additionalInfo),
-    showIdeaPromptSection: details.showIdeaPromptSection === true,
+    showIdeaPromptSection: typeof classDetails?.showIdeaPromptSection === "boolean"
+      ? classDetails.showIdeaPromptSection
+      : true,
     ctaHref: consultHref,
     ctaConsultHref: consultHref,
     ctaEnrollHref: enrollHref,
@@ -415,13 +419,29 @@ export async function generateExperienceStaticParams(kind: ExperienceKind) {
 export async function generateExperienceMetadata(
   params: Promise<{ slug: string }>
 ): Promise<Metadata> {
-  const item = await bySlug((await params).slug);
-  return item
-    ? {
-        title: { absolute: item.seoTitle },
-        description: item.seoDescription
-      }
-    : {};
+  const offering = await getOfferingBySlug((await params).slug);
+  if (!offering || offering.status !== "published" || offering.deleted_at) return {};
+
+  const item = cmsOfferingToExperienceItem(offering);
+  const classDetails = (offering.details as LegacyOfferingDetails).class;
+  const ogImage = stringValue(classDetails?.seoImage) || stringValue(offering.cover_image_url);
+  const openGraphImages = ogImage ? [{ url: ogImage }] : undefined;
+
+  return {
+    title: { absolute: item.seoTitle },
+    description: item.seoDescription,
+    openGraph: {
+      title: item.seoTitle,
+      description: item.seoDescription,
+      images: openGraphImages,
+    },
+    twitter: {
+      card: ogImage ? "summary_large_image" : "summary",
+      title: item.seoTitle,
+      description: item.seoDescription,
+      images: ogImage ? [ogImage] : undefined,
+    },
+  };
 }
 
 export async function getExperienceRouteItem(

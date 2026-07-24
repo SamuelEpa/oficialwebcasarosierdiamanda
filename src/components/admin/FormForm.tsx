@@ -4,7 +4,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Form, FormField, FormFieldType } from "@/lib/cms/types";
 import { FORM_TYPES, FORM_FIELD_TYPES } from "@/lib/cms/types";
-import { randomUUID } from "crypto";
+import {
+  FOOTER_CONTACT_SLUG_RESERVED_MESSAGE,
+  isFooterContactFormSlug,
+  validateFormSlugForCreate,
+} from "@/lib/cms/form-slug-guards";
 
 const typeLabels: Record<string, string> = { contact: "Contacto", newsletter: "Newsletter", landing: "Landing", workshop: "Taller", gift_card: "Gift Card", private_booking: "Reserva privada", custom: "Custom" };
 const fieldTypeLabels: Record<string, string> = { text: "Texto", email: "Email", phone: "Teléfono", textarea: "Área de texto", select: "Select", checkbox: "Checkbox", radio: "Radio", date: "Fecha", number: "Número", hidden: "Oculto" };
@@ -38,6 +42,12 @@ export default function FormForm({ mode, item }: { mode: "create" | "edit"; item
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault(); setIsLoading(true); setError(null);
     if (!name.trim()) { setError("El nombre es obligatorio."); setIsLoading(false); return; }
+    if (mode === "create") {
+      const slugError = validateFormSlugForCreate(slug);
+      if (slugError) { setError(slugError); setIsLoading(false); return; }
+    } else if (item && isFooterContactFormSlug(slug) && !isFooterContactFormSlug(item.slug)) {
+      setError(FOOTER_CONTACT_SLUG_RESERVED_MESSAGE); setIsLoading(false); return;
+    }
     const res = await fetch(mode === "create" ? "/api/admin/formularios" : `/api/admin/formularios/${item?.id}`, {
       method: mode === "create" ? "POST" : "PUT", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, slug, type, status, title, description, success_message: successMessage, redirect_url: redirectUrl, email_notification_enabled: emailNotify, notification_email: notifEmail, fields: fields.map((f, i) => ({ ...f, sort_order: i })) }),
@@ -53,7 +63,7 @@ export default function FormForm({ mode, item }: { mode: "create" | "edit"; item
           <section className="form-block"><h3>Información general</h3>
             <div className="grid-2">
               <label className="field span-2"><span>Nombre</span><input value={name} onChange={(e) => setName(e.target.value)} /></label>
-              <label className="field span-2"><span>Slug</span><input value={slug} onChange={(e) => setSlug(e.target.value)} /></label>
+              <label className="field span-2"><span>Slug</span><input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="ej. newsletter-inscripcion" /></label>
               <label className="field"><span>Tipo</span><select value={type} onChange={(e) => setType(e.target.value as typeof type)}>{FORM_TYPES.map((t) => <option key={t} value={t}>{typeLabels[t]}</option>)}</select></label>
               <label className="field"><span>Estado</span><select value={status} onChange={(e) => setStatus(e.target.value as typeof status)}><option value="draft">Borrador</option><option value="active">Activo</option><option value="archived">Archivado</option></select></label>
             </div>

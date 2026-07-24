@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Button from "@/components/ui/Button";
 import { AdminInput } from "@/components/ui/AdminField";
 import type { ClassEditFormState } from "../hooks/useClassEditForm";
@@ -10,7 +11,11 @@ type PricingSectionProps = {
   form: ClassEditFormState;
 };
 
-export function PricingSection({ form }: PricingSectionProps) {
+function pricingRowKey(item: { description: string; price: number | null; order: number }) {
+  return `${item.order}-${item.price ?? "null"}-${item.description}`;
+}
+
+function PricingSectionComponent({ form }: PricingSectionProps) {
   const { details, errors, addPricing, updatePricing, removePricing } = form;
 
   return (
@@ -25,7 +30,7 @@ export function PricingSection({ form }: PricingSectionProps) {
       <div className="space-y-3">
         {details.pricing.length ? details.pricing.map((item, index) => (
           <div
-            key={index}
+            key={pricingRowKey(item)}
             className="grid grid-cols-1 gap-3 rounded-xl border border-outline-variant p-4 md:grid-cols-[1fr_140px_auto] md:items-start"
           >
             <AdminInput
@@ -59,3 +64,5 @@ export function PricingSection({ form }: PricingSectionProps) {
     </SectionCard>
   );
 }
+
+export const PricingSection = memo(PricingSectionComponent);

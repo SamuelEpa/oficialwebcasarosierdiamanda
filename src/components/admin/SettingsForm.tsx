@@ -296,7 +296,10 @@ export default function SettingsForm({ initial, initialMenu }: { initial: SiteSe
         </div>
       </SettingsSection>
 
-      <SettingsSection title="Contacto" description="Información de contacto del sitio.">
+      <SettingsSection
+        title="Contacto"
+        description="Email, teléfono y WhatsApp del sitio. El texto del bloque del footer se edita en Componentes → Footer (pestaña Información)."
+      >
         <div className="grid-2">
           <label className="field">
             <span>Email</span>

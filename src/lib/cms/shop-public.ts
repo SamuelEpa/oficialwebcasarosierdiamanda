@@ -64,13 +64,20 @@ export async function getPublicShopData() {
   const published = products
     .filter((product) => product.status === "published" && product.deleted_at === null)
     .map((product) => productToShopItem(product, categories))
-    .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+    .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name, "es"));
+
+  const usedCategoryIds = new Set(published.map((item) => item.category).filter(Boolean));
 
   const shopCategories: ShopCategory[] = [
     { key: "all", label: "Todas" },
     ...categories
-      .filter((category) => category.status === "active" && category.deleted_at === null)
-      .sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name))
+      .filter(
+        (category) =>
+          category.status === "active" &&
+          category.deleted_at === null &&
+          usedCategoryIds.has(category.id),
+      )
+      .sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name, "es"))
       .map((category) => ({ key: category.id, label: category.name })),
   ];
 

@@ -14,6 +14,7 @@ import { HeroVariantPicker } from "./HeroVariantPicker";
 
 type HeroEditorPanelProps = {
   details: CmsHeroSettings;
+  previewHero: CmsHeroSettings;
   titleFallback: string;
   subtitleFallback?: string;
   editor: SharedHeroEditorState;
@@ -22,6 +23,7 @@ type HeroEditorPanelProps = {
 
 export function HeroEditorPanel({
   details,
+  previewHero,
   titleFallback,
   subtitleFallback,
   editor,
@@ -91,8 +93,7 @@ export function HeroEditorPanel({
       <aside className="class-edit-hero-preview" aria-label="Vista previa del hero">
         <HeroPreviewPanel
           details={details}
-          titleFallback={titleFallback}
-          subtitleFallback={subtitleFallback}
+          previewHero={previewHero}
           editor={editor}
         />
       </aside>

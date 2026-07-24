@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import type { ClassHomeCard, ClassOfferingDetails, Offering } from "@/lib/cms/types";
+import type { ClassHomeCard, ClassOfferingContent, ClassOfferingDetails, Offering } from "@/lib/cms/types";
 import { MAX_CALENDAR_LABELS } from "../constants";
 import type {
   FormNotice,
@@ -134,6 +134,11 @@ export function useClassEditForm({
   const updateIncludedItems = useCallback((value: string) => {
     updateDetails({ includedItems: toLines(value) });
   }, [updateDetails]);
+
+  const handleContentChange = useCallback(
+    (content: ClassOfferingContent) => updateDetails({ content }),
+    [updateDetails],
+  );
 
   const addCalendarLabel = useCallback(() => {
     setDetails((current) => {
@@ -415,6 +420,7 @@ export function useClassEditForm({
     moveGalleryImage,
     removeGalleryImage,
     updateIncludedItems,
+    handleContentChange,
     addCalendarLabel,
     updateCalendarLabel,
     toggleCalendarDay,

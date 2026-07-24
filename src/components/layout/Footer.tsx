@@ -1,7 +1,7 @@
-import { getPublicFooter } from "@/lib/cms/footers";
-import { PublicFooterContent } from "./PublicFooterContent";
+import { getPublicFooterLayoutData } from "@/lib/cms/public-footer";
+import { PublicFooterContent } from "./footer/PublicFooterContent";
 
 export async function Footer({ socialTrack = false }: { socialTrack?: boolean }) {
-  const footer = await getPublicFooter();
-  return <PublicFooterContent footer={footer} socialTrack={socialTrack} />;
+  const { model } = await getPublicFooterLayoutData();
+  return <PublicFooterContent model={model} socialTrack={socialTrack} />;
 }

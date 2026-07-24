@@ -2,6 +2,12 @@ import { randomUUID } from "crypto";
 import { createAdminClient } from "../supabase/admin";
 import { addTrashItem, getCurrentUserEmail, getTrashItemByEntity, removeTrashItem } from "./trash";
 import { readJsonFile, writeJsonFile } from "./local-storage";
+import {
+  ensureFormFieldUuid,
+  errorMessageFromUnknown,
+  formFieldRowForInsert,
+  normalizeFormFieldVisibility,
+} from "./form-field-persistence";
 import { isFormFieldType, isFormStatus, isFormType } from "./types";
 import type { Form, FormField, FormFieldType, FormStatus, FormType } from "./types";
 import { logAction } from "./history-logs";
@@ -35,7 +41,7 @@ function normalizeFields(fields: unknown[]): FormField[] {
     const type = f.type ?? "text";
     if (!isFormFieldType(type)) throw new Error(`Tipo de campo no válido: ${type}`);
     return {
-      id: f.id ?? randomUUID(),
+      id: ensureFormFieldUuid(f.id),
       label: String(f.label ?? "").trim(),
       name: String(f.name ?? "").trim() || toFieldSlug(f.label ?? `field_${i}`),
       type,
@@ -44,7 +50,7 @@ function normalizeFields(fields: unknown[]): FormField[] {
       options: Array.isArray(f.options) ? f.options : [],
       default_value: String(f.default_value ?? "").trim(),
       sort_order: f.sort_order ?? i,
-      is_visible: f.is_visible !== false,
+      is_visible: normalizeFormFieldVisibility(f.is_visible),
     } satisfies FormField;
   });
 }
@@ -89,8 +95,8 @@ function rowToFormField(row: Record<string, unknown>): FormField {
   } as unknown as FormField;
 }
 
-function formFieldToRow(formId: string, field: FormField): Record<string, unknown> {
-  return { ...field, form_id: formId };
+function formFieldToRow(formId: string, field: FormField, sortOrder: number): Record<string, unknown> {
+  return formFieldRowForInsert(formId, field, sortOrder);
 }
 
 function rowToForm(row: Record<string, unknown>, fields: FormField[] = []): Form {
@@ -156,9 +162,26 @@ async function replaceFormFields(formId: string, fields: FormField[]): Promise<v
     const supabase = createAdminClient();
     await supabase.from(FIELDS_TABLE).delete().eq("form_id", formId);
     if (fields.length > 0) {
-      await supabase.from(FIELDS_TABLE).insert(fields.map((f) => formFieldToRow(formId, f)));
+      await supabase.from(FIELDS_TABLE).insert(fields.map((f, index) => formFieldToRow(formId, f, index)));
     }
   } catch { /* best-effort */ }
+}
+
+async function upsertFormStrict(form: Form): Promise<void> {
+  const supabase = createAdminClient();
+  const { error } = await supabase.from(TABLE).upsert(formToRow(form), { onConflict: "id" });
+  if (error) throw new Error(error.message);
+}
+
+async function replaceFormFieldsStrict(formId: string, fields: FormField[]): Promise<void> {
+  const supabase = createAdminClient();
+  const { error: deleteError } = await supabase.from(FIELDS_TABLE).delete().eq("form_id", formId);
+  if (deleteError) throw new Error(errorMessageFromUnknown(deleteError, "No se pudieron actualizar los campos del formulario."));
+  if (fields.length === 0) return;
+  const { error: insertError } = await supabase
+    .from(FIELDS_TABLE)
+    .insert(fields.map((f, index) => formFieldToRow(formId, f, index)));
+  if (insertError) throw new Error(errorMessageFromUnknown(insertError, "No se pudieron guardar los campos del formulario."));
 }
 
 async function seedSupabase(items: Form[]): Promise<void> {
@@ -169,7 +192,7 @@ async function seedSupabase(items: Form[]): Promise<void> {
       await supabase.from(TABLE).upsert(formToRow(form), { onConflict: "id" });
       await supabase.from(FIELDS_TABLE).delete().eq("form_id", form.id);
       if (form.fields.length > 0) {
-        await supabase.from(FIELDS_TABLE).insert(form.fields.map((f) => formFieldToRow(form.id, f)));
+        await supabase.from(FIELDS_TABLE).insert(form.fields.map((f, index) => formFieldToRow(form.id, f, index)));
       }
     }
   } catch { /* best-effort */ }
@@ -225,21 +248,27 @@ export async function createForm(data: FormInput) {
 }
 
 export async function updateForm(id: string, data: FormInput) {
-  const items = await readJsonFile<Form[]>(FILE_NAME, []);
-  const index = items.findIndex((f) => f.id === id);
-  if (index === -1) return null;
-  const old = items[index];
+  const existing = await getFormById(id);
+  if (!existing) return null;
+
+  const items = await getForms();
+  const old = existing;
   const next = normalizeForm(data, old, items);
-  items[index] = next;
-  await writeJsonFile(FILE_NAME, items);
-  await upsertForm(next);
-  await replaceFormFields(next.id, next.fields);
+
+  const index = items.findIndex((f) => f.id === id);
+  const nextItems = [...items];
+  if (index === -1) nextItems.push(next);
+  else nextItems[index] = next;
+
+  await writeJsonFile(FILE_NAME, nextItems);
+  await upsertFormStrict(next);
+  await replaceFormFieldsStrict(next.id, next.fields);
   if (old.status !== next.status) {
     if (next.status === "active") await logAction({ action: "publish", entity_type: "form", entity_id: next.id, entity_title: next.name, old_data: old, new_data: next });
     else if (old.status === "active") await logAction({ action: "unpublish", entity_type: "form", entity_id: next.id, entity_title: next.name, old_data: old, new_data: next });
   }
   await logAction({ action: "update", entity_type: "form", entity_id: next.id, entity_title: next.name, old_data: old, new_data: next });
-  return next;
+  return (await getFormById(id)) ?? next;
 }
 
 export async function duplicateForm(id: string) {

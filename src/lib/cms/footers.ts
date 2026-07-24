@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { createAdminClient } from "../supabase/admin";
 import { addTrashItem, getCurrentUserEmail, getTrashItemByEntity, removeTrashItem } from "./trash";
 import { readJsonFile, writeJsonFile } from "./local-storage";
+import { errorMessageFromUnknown } from "./form-field-persistence";
 import { isFooterStatus } from "./types";
 import type { FooterComponent, SocialLink } from "./types";
 import type { Json } from "../supabase/types";
@@ -13,6 +14,10 @@ const SUPABASE_READ_TIMEOUT_MS = 1_500;
 const FOOTERS_CACHE_TTL_MS = 15_000;
 
 let footersCache: { items: FooterComponent[]; expiresAt: number } | null = null;
+
+export function invalidateFootersCache() {
+  footersCache = null;
+}
 
 type Input = Partial<Omit<FooterComponent, "id" | "created_at" | "updated_at" | "deleted_at" | "social_links">> & {
   id?: string; deleted_at?: string | null; social_links?: SocialLink[];
@@ -90,6 +95,7 @@ function normalize(input: Input, existing?: FooterComponent) {
     contact_email: String(input.contact_email ?? existing?.contact_email ?? "").trim(),
     whatsapp: String(input.whatsapp ?? existing?.whatsapp ?? "").trim(),
     address: String(input.address ?? existing?.address ?? "").trim(),
+    map_url: String(input.map_url ?? existing?.map_url ?? "").trim(),
     legal_text: String(input.legal_text ?? existing?.legal_text ?? "").trim(),
     contact_title: String(input.contact_title ?? existing?.contact_title ?? "Contacto").trim(),
     contact_text: String(input.contact_text ?? existing?.contact_text ?? "+34 600 000 000\nBarcelona, Espana\nLunes a Sabado - 10:00 a 20:00\nSiguenos en Nuestras Redes:").trim(),
@@ -137,7 +143,7 @@ async function upsertToSupabase(item: FooterComponent): Promise<void> {
     const { error } = await supabase.from(TABLE).upsert(record, { onConflict: "id" });
     if (error) throw error;
   } catch (error) {
-    throw error instanceof Error ? error : new Error("No se pudo guardar el footer en Supabase.");
+    throw error instanceof Error ? error : new Error(errorMessageFromUnknown(error, "No se pudo guardar el footer en Supabase."));
   }
 }
 
@@ -163,11 +169,22 @@ export async function getFooters() {
   return localFooters;
 }
 
+/** Pick the one site footer: published first, then most recently updated. */
+export function selectCanonicalFooter(footers: FooterComponent[]): FooterComponent | null {
+  const active = footers.filter((item) => item.deleted_at === null);
+  if (!active.length) return null;
+
+  return [...active].sort((a, b) => {
+    const publishedScore = (item: FooterComponent) => (item.status === "published" ? 1 : 0);
+    const pubDiff = publishedScore(b) - publishedScore(a);
+    if (pubDiff !== 0) return pubDiff;
+    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+  })[0];
+}
+
 export async function getPublicFooter() {
   const footers = await getFooters();
-  return footers.find((item) => item.status === "published" && item.deleted_at === null)
-    ?? footers.find((item) => item.deleted_at === null)
-    ?? null;
+  return selectCanonicalFooter(footers);
 }
 
 export async function getFooterById(id: string) {
@@ -183,6 +200,7 @@ export async function getFooterById(id: string) {
 }
 
 export async function createFooter(data: Input) {
+  invalidateFootersCache();
   const all = await getFooters();
   const next = normalize(data);
   await writeJsonFile(FILE_NAME, [next, ...all]);
@@ -193,6 +211,7 @@ export async function createFooter(data: Input) {
 }
 
 export async function updateFooter(id: string, data: Input) {
+  invalidateFootersCache();
   const all = await getFooters();
   const idx = all.findIndex((x) => x.id === id);
   if (idx === -1) return null;

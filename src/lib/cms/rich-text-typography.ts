@@ -43,6 +43,11 @@ export function richTextTypographyStyle(typography: RichTextTypography): CSSProp
     "--content-card-excerpt-font-stretch": `${typography.width}%`,
     "--content-card-excerpt-font-width": typography.width,
     "--content-card-excerpt-font-style": typography.italic ? "italic" : "normal",
+    fontSize: `${typography.fontSize}px`,
+    fontWeight: typography.weight,
+    fontStretch: `${typography.width}%`,
+    fontStyle: typography.italic ? "italic" : "normal",
+    fontVariationSettings: `"wdth" ${typography.width}, "wght" ${typography.weight}`,
   } as CSSProperties;
 }
 

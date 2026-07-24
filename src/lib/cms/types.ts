@@ -107,6 +107,8 @@ export interface CmsHeroSettings {
   heroSubtitle: string;
   heroPresentationText: string;
   heroPresentationSubtitle: string;
+  heroPresentationTextTypography?: RichTextTypography;
+  heroPresentationSubtitleTypography?: RichTextTypography;
   heroPresentationTextColor: string;
   heroPresentationImage: string;
   heroPresentationCtaEnabled: boolean;
@@ -156,7 +158,7 @@ export interface CmsHeroSettings {
   titleImageSecondaryPositionYTablet: string;
   titleImageSecondaryPositionXMobile: string;
   titleImageSecondaryPositionYMobile: string;
-  /* Hero tipográfico: posición Y + escala del título */
+  /* Hero tipográfico: posición X/Y + escala del título */
   heroTitlePositionX: string;
   heroTitlePositionXTablet: string;
   heroTitlePositionXMobile: string;
@@ -194,6 +196,8 @@ export interface ClassOfferingDetails {
   heroSubtitle: string;
   heroPresentationText: string;
   heroPresentationSubtitle: string;
+  heroPresentationTextTypography?: RichTextTypography;
+  heroPresentationSubtitleTypography?: RichTextTypography;
   heroPresentationTextColor: string;
   heroPresentationImage: string;
   heroPresentationCtaEnabled: boolean;
@@ -678,6 +682,7 @@ export interface FooterComponent {
   contact_email: string;
   whatsapp: string;
   address: string;
+  map_url: string;
   legal_text: string;
   contact_title: string;
   contact_text: string;

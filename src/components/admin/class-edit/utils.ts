@@ -12,11 +12,15 @@ import {
   DEFAULT_DETAIL_QUESTION,
   DEFAULT_HERO_IMAGE,
   MAX_CALENDAR_LABELS,
+  SEO_MAX_DESCRIPTION_LENGTH,
+  SEO_MAX_TITLE_LENGTH,
   defaultClassDetails,
 } from "./constants";
 import type { LegacyOfferingDetails, TabKey } from "./types";
 import { defaultContent } from "@/components/admin/ClassContentTab";
 import { DEFAULT_RICH_TEXT_TYPOGRAPHY, DEFAULT_DESCRIPTION_TYPOGRAPHY, normalizeRichTextTypography } from "@/lib/cms/rich-text-typography";
+import { normalizePresentationHeroForPersist } from "@/components/admin/shared-hero-editor/heroEditorModel";
+import { resolvePresentationHeroContent } from "@/components/admin/shared-hero-editor/utils";
 
 export function formatFileSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
@@ -243,6 +247,15 @@ export function toClassDetails(offering: Offering): ClassOfferingDetails {
     ? fromDetails.heroVariant
     : "text";
   const persistedHomeCard = fromDetails.homeCard ?? defaultClassDetails.homeCard;
+  const heroTitle = firstText(fromDetails.heroTitle, offering.title);
+  const heroSubtitle = firstText(fromDetails.heroSubtitle, fromDetails.category, offering.subtitle);
+  const presentationContent = resolvePresentationHeroContent({
+    heroVariant,
+    heroTitle,
+    heroSubtitle,
+    heroPresentationText: firstText(fromDetails.heroPresentationText),
+    heroPresentationSubtitle: firstText(fromDetails.heroPresentationSubtitle),
+  });
 
   return {
     ...defaultClassDetails,
@@ -273,10 +286,12 @@ export function toClassDetails(offering: Offering): ClassOfferingDetails {
     ctaEnrollLabel: firstText(fromDetails.ctaEnrollLabel),
     showConsultCta: fromDetails.showConsultCta ?? true,
     showEnrollCta: fromDetails.showEnrollCta ?? true,
-    heroTitle: firstText(fromDetails.heroTitle, offering.title),
-    heroSubtitle: firstText(fromDetails.heroSubtitle, fromDetails.category, offering.subtitle),
-    heroPresentationText: firstText(fromDetails.heroPresentationText),
-    heroPresentationSubtitle: firstText(fromDetails.heroPresentationSubtitle),
+    heroTitle,
+    heroSubtitle,
+    heroPresentationText: presentationContent.heroPresentationText,
+    heroPresentationSubtitle: presentationContent.heroPresentationSubtitle,
+    heroPresentationTextTypography: normalizeRichTextTypography(fromDetails.heroPresentationTextTypography ?? defaultClassDetails.heroPresentationTextTypography),
+    heroPresentationSubtitleTypography: normalizeRichTextTypography(fromDetails.heroPresentationSubtitleTypography ?? defaultClassDetails.heroPresentationSubtitleTypography),
     heroPresentationTextColor: firstText(fromDetails.heroPresentationTextColor, defaultClassDetails.heroPresentationTextColor),
     heroPresentationImage: firstText(fromDetails.heroPresentationImage),
     heroPresentationCtaEnabled: Boolean(fromDetails.heroPresentationCtaEnabled),
@@ -344,6 +359,9 @@ export function toClassDetails(offering: Offering): ClassOfferingDetails {
       .sort((a, b) => (a.date || "9999-12-31").localeCompare(b.date || "9999-12-31") || a.order - b.order),
     whatsappNumber: firstText(fromDetails.whatsappNumber, fromDetails.content && typeof fromDetails.content === "object" ? (fromDetails.content as Partial<ClassOfferingDetails["content"]>).contactWhatsapp : ""),
     seoImage: fromDetails.seoImage ?? "",
+    showIdeaPromptSection: typeof fromDetails.showIdeaPromptSection === "boolean"
+      ? fromDetails.showIdeaPromptSection
+      : defaultClassDetails.showIdeaPromptSection,
     content: mergedContent,
   };
 }
@@ -370,10 +388,27 @@ function formatPreviewPrice(value: number | null) {
 }
 
 function previewSchedule(details: ClassOfferingDetails) {
-  if (!details.showScheduleOnFrontend) return [];
-  return details.scheduleDescription.trim()
-    ? [{ day: "Horario", slots: toLines(details.scheduleDescription).filter(Boolean) }]
-    : [];
+  if (details.showScheduleOnFrontend === false) return [];
+
+  const scheduleDescription = details.scheduleDescription.trim();
+  if (scheduleDescription) {
+    return [{ day: "Horario", slots: toLines(scheduleDescription).filter(Boolean) }];
+  }
+
+  if (details.scheduleDays?.length) {
+    return [...details.scheduleDays]
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      .map((item) => ({
+        day: item.title || item.date || "Disponible",
+        slots: [
+          item.startTime && item.endTime
+            ? `${item.startTime} a ${item.endTime}`
+            : item.description || "Consultar disponibilidad",
+        ].filter(Boolean),
+      }));
+  }
+
+  return [];
 }
 
 function previewProgram(details: ClassOfferingDetails) {
@@ -386,12 +421,35 @@ function previewProgram(details: ClassOfferingDetails) {
     .filter((item) => item.title || item.content);
 }
 
+export function buildClassEditSerpPreview({
+  seoTitle,
+  seoDescription,
+  title,
+  slug,
+  description,
+}: {
+  seoTitle: string;
+  seoDescription: string;
+  title: string;
+  slug: string;
+  description: string;
+}) {
+  const plainDescription = renderPlainText(description);
+  return {
+    title: seoTitle || title || "Título SEO",
+    url: slug ? `casarosierceramica.com/clases/${slug}` : "casarosierceramica.com/clases/ejemplo",
+    description: seoDescription || plainDescription || "Descripción SEO de la clase...",
+  };
+}
+
 export function buildPreviewItem({
   offeringType,
   title,
   slug,
   subtitle,
   description,
+  seoTitle,
+  seoDescription,
   details,
 }: {
   offeringType: Offering["type"];
@@ -399,6 +457,8 @@ export function buildPreviewItem({
   slug: string;
   subtitle: string;
   description: string;
+  seoTitle: string;
+  seoDescription: string;
   details: ClassOfferingDetails;
 }): ExperienceItem {
   const kind = kindForOfferingType(offeringType);
@@ -406,7 +466,12 @@ export function buildPreviewItem({
     .filter((item) => item.image)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
     .map((item) => item.image);
-  const fallbackImage = details.heroImage || details.videoPoster || DEFAULT_HERO_IMAGE;
+  const heroImage = details.heroVariant === "image" || details.heroVariant === "presentation"
+    ? details.heroImage || DEFAULT_HERO_IMAGE
+    : galleryImages[0] || details.videoPoster || details.heroImage || DEFAULT_HERO_IMAGE;
+  const coverImage = details.heroVariant === "image" || details.heroVariant === "presentation"
+    ? details.heroImage || DEFAULT_HERO_IMAGE
+    : galleryImages[0] || details.videoPoster || details.heroImage || DEFAULT_HERO_IMAGE;
   const fallbackCta = defaultCtaHref(details);
   const consultHref = details.showConsultCta === false ? "" : details.ctaConsultHref || details.ctaHref || fallbackCta;
   const enrollHref = details.showEnrollCta === false ? "" : details.ctaEnrollHref || details.ctaHref || fallbackCta;
@@ -420,6 +485,11 @@ export function buildPreviewItem({
   const paymentMethods = details.content.paymentMethodsList?.length
     ? details.content.paymentMethodsList
     : toLines(details.content.paymentMethods.replace(/,/g, "\n"));
+  const calendarLabels = sanitizeCalendarLabels(details.calendarLabels).filter(
+    (label) => label.active && label.days.length > 0,
+  );
+  const trimmedSeoTitle = seoTitle.trim();
+  const trimmedSeoDescription = seoDescription.trim();
 
   return {
     id: "preview",
@@ -430,14 +500,14 @@ export function buildPreviewItem({
     category: details.heroSubtitle || offeringType,
     excerpt: details.highlightDescription,
     description: toLines(description),
-    coverImage: galleryImages[0] || fallbackImage,
-    homeImage: details.homeCard.image || galleryImages[0] || fallbackImage,
+    coverImage,
+    homeImage: details.homeCard.image.trim() || galleryImages[0] || coverImage,
     homeImageAlt: details.homeCard.imageAlt || details.homeCard.title || title || "Tarjeta destacada",
     homeEyebrow: details.homeCard.eyebrow || details.heroSubtitle || offeringType,
     homeTitle: details.homeCard.title || title || "Título del producto",
     homeExcerpt: details.homeCard.excerpt || details.homeExcerpt || details.highlightDescription,
     homeExcerptTypography: normalizeRichTextTypography(details.homeCard.excerptTypography),
-    heroImage: fallbackImage,
+    heroImage,
     heroImageMobile: details.heroImageMobile || undefined,
     heroVideoUrl: details.heroVideoUrl || undefined,
     heroVideoUrlMobile: details.heroVideoUrlMobile || undefined,
@@ -462,6 +532,8 @@ export function buildPreviewItem({
     heroTitleImageSecondary: details.titleImageSecondary,
     heroPresentationText: details.heroPresentationText,
     heroPresentationSubtitle: details.heroPresentationSubtitle,
+    heroPresentationTextTypography: normalizeRichTextTypography(details.heroPresentationTextTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY),
+    heroPresentationSubtitleTypography: normalizeRichTextTypography(details.heroPresentationSubtitleTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 22 }),
     heroPresentationTextColor: details.heroPresentationTextColor,
     heroPresentationImage: details.heroPresentationImage,
     heroPresentationCtaEnabled: details.heroPresentationCtaEnabled,
@@ -472,16 +544,69 @@ export function buildPreviewItem({
     heroPresentationCtaTextColor: details.heroPresentationCtaTextColor,
     heroTitle: details.heroTitle || title || "Título del hero",
     listingTitle: title || "Título del producto",
-    listingSubtitle: details.heroSubtitle || "",
+    listingSubtitle: details.heroSubtitle || subtitle || "",
+    subtitleTypography: normalizeRichTextTypography(details.subtitleTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY),
     detailQuestion: details.detailQuestion || DEFAULT_DETAIL_QUESTION,
+    detailQuestionTypography: normalizeRichTextTypography(details.detailQuestionTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY),
     introHighlight: details.highlightDescription || "Texto remarcado color café.",
-    galleryImages: galleryImages.length ? galleryImages : [fallbackImage],
+    introHighlightTypography: normalizeRichTextTypography(details.highlightDescriptionTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY),
+    descriptionTypography: normalizeRichTextTypography(details.descriptionTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY),
+    titleImageScale: details.titleImageScale,
+    titleImageScaleTablet: details.titleImageScaleTablet,
+    titleImageScaleMobile: details.titleImageScaleMobile,
+    titleImagePositionX: details.titleImagePositionX,
+    titleImagePositionY: details.titleImagePositionY,
+    titleImagePositionXTablet: details.titleImagePositionXTablet,
+    titleImagePositionYTablet: details.titleImagePositionYTablet,
+    titleImagePositionXMobile: details.titleImagePositionXMobile,
+    titleImagePositionYMobile: details.titleImagePositionYMobile,
+    titleImageSecondaryScale: details.titleImageSecondaryScale,
+    titleImageSecondaryScaleTablet: details.titleImageSecondaryScaleTablet,
+    titleImageSecondaryScaleMobile: details.titleImageSecondaryScaleMobile,
+    titleImageSecondaryPositionX: details.titleImageSecondaryPositionX,
+    titleImageSecondaryPositionY: details.titleImageSecondaryPositionY,
+    titleImageSecondaryPositionXTablet: details.titleImageSecondaryPositionXTablet,
+    titleImageSecondaryPositionYTablet: details.titleImageSecondaryPositionYTablet,
+    titleImageSecondaryPositionXMobile: details.titleImageSecondaryPositionXMobile,
+    titleImageSecondaryPositionYMobile: details.titleImageSecondaryPositionYMobile,
+    heroTitlePositionX: details.heroTitlePositionX,
+    heroTitlePositionXTablet: details.heroTitlePositionXTablet,
+    heroTitlePositionXMobile: details.heroTitlePositionXMobile,
+    heroTitlePositionY: details.heroTitlePositionY,
+    heroTitlePositionYTablet: details.heroTitlePositionYTablet,
+    heroTitlePositionYMobile: details.heroTitlePositionYMobile,
+    heroTitleScale: details.heroTitleScale,
+    heroTitleScaleTablet: details.heroTitleScaleTablet,
+    heroTitleScaleMobile: details.heroTitleScaleMobile,
+    presentationTextPositionX: details.presentationTextPositionX,
+    presentationTextPositionY: details.presentationTextPositionY,
+    presentationTextPositionXTablet: details.presentationTextPositionXTablet,
+    presentationTextPositionYTablet: details.presentationTextPositionYTablet,
+    presentationTextPositionXMobile: details.presentationTextPositionXMobile,
+    presentationTextPositionYMobile: details.presentationTextPositionYMobile,
+    presentationTextScale: details.presentationTextScale,
+    presentationTextScaleTablet: details.presentationTextScaleTablet,
+    presentationTextScaleMobile: details.presentationTextScaleMobile,
+    presentationImagePositionX: details.presentationImagePositionX,
+    presentationImagePositionY: details.presentationImagePositionY,
+    presentationImagePositionXTablet: details.presentationImagePositionXTablet,
+    presentationImagePositionYTablet: details.presentationImagePositionYTablet,
+    presentationImagePositionXMobile: details.presentationImagePositionXMobile,
+    presentationImagePositionYMobile: details.presentationImagePositionYMobile,
+    presentationImageScale: details.presentationImageScale,
+    presentationImageScaleTablet: details.presentationImageScaleTablet,
+    presentationImageScaleMobile: details.presentationImageScaleMobile,
+    galleryImages: galleryImages.length ? galleryImages : [coverImage],
     videoCardImage: details.videoPoster || undefined,
     videoCardLabel: details.videoUrl ? "VIDEO" : details.videoPoster ? "IMAGEN" : "",
     videoUrl: details.videoUrl || undefined,
     priceOptions: priceOptions.length ? priceOptions : [{ label: "Precio", price: "0 EUR" }],
     duration: details.durationText || "Duración pendiente",
     schedule: previewSchedule(details),
+    showCalendarLabels: details.showCalendarLabels === true,
+    calendarLabelsTitle: details.calendarLabelsTitle.trim() || DEFAULT_CALENDAR_LABELS_TITLE,
+    calendarLabelsDescription: details.calendarLabelsDescription.trim() || DEFAULT_CALENDAR_LABELS_DESCRIPTION,
+    calendarLabels,
     included: details.includedItems.filter((item) => item.trim()),
     showIncludedSection: details.showIncludedSection,
     program: previewProgram(details),
@@ -496,14 +621,14 @@ export function buildPreviewItem({
     whoCanJoin: toLines(details.content.participationContent),
     paymentMethods: paymentMethods.map((method) => method.trim()).filter(Boolean),
     additionalInfo: details.content.extraInfo.trim(),
-    showIdeaPromptSection: details.showIdeaPromptSection,
+    showIdeaPromptSection: details.showIdeaPromptSection === true,
     ctaHref: consultHref,
     ctaConsultHref: consultHref,
     ctaEnrollHref: enrollHref,
     ctaConsultLabel: details.ctaConsultLabel.trim() || defaultConsultLabel(offeringType),
     ctaEnrollLabel: details.ctaEnrollLabel.trim() || defaultEnrollLabel(offeringType),
-    seoTitle: title || "Vista previa",
-    seoDescription: details.highlightDescription || renderPlainText(description),
+    seoTitle: trimmedSeoTitle || `${title || "Vista previa"} | Casa Rosier`,
+    seoDescription: trimmedSeoDescription || details.highlightDescription.trim() || renderPlainText(description),
     isPublished: false,
     order: 0,
   };
@@ -582,7 +707,14 @@ export function validateClassEditForm({
   if (!title.trim()) nextErrors.title = "La etiqueta interna es obligatoria.";
   if (!slug.trim()) nextErrors.slug = "El slug es obligatorio.";
   if (details.heroVariant === "text" && !details.heroTitle.trim()) nextErrors.heroTitle = "Agrega el título del hero.";
-  if (details.heroVariant === "presentation" && !details.heroPresentationText.trim()) nextErrors.heroTitle = "Agrega el texto de presentación.";
+  if (details.heroVariant === "presentation") {
+    const presentationText = normalizePresentationHeroForPersist(
+      details,
+      details.heroTitle.trim() || title.trim(),
+      details.heroSubtitle.trim(),
+    ).heroPresentationText;
+    if (!presentationText.trim()) nextErrors.heroTitle = "Agrega el texto de presentación.";
+  }
   if (details.whatsappNumber && !/^\d+$/.test(details.whatsappNumber)) nextErrors.whatsappNumber = "Usa solo números, sin espacios.";
   details.pricing.forEach((item, index) => {
     if (item.price !== null && Number(item.price) < 0) nextErrors[`pricing-${index}`] = "El precio no puede ser negativo.";
@@ -598,6 +730,141 @@ export function validateClassEditForm({
     if (details.showCalendarLabels && item.active && item.days.length === 0) nextErrors[`calendar-label-${index}`] = "Marca al menos un dia o desactiva esta etiqueta.";
   });
   return nextErrors;
+}
+
+function normalizeCtaFieldsForPersist(
+  details: ClassOfferingDetails,
+  offeringType: Offering["type"],
+): Pick<
+  ClassOfferingDetails,
+  "showConsultCta" | "showEnrollCta" | "ctaHref" | "ctaConsultHref" | "ctaEnrollHref" | "ctaConsultLabel" | "ctaEnrollLabel"
+> {
+  const showConsultCta = details.showConsultCta ?? true;
+  const showEnrollCta = details.showEnrollCta ?? true;
+  const consultHref = details.ctaConsultHref.trim() || details.ctaHref.trim();
+
+  return {
+    showConsultCta,
+    showEnrollCta,
+    ctaHref: showConsultCta ? consultHref : "",
+    ctaConsultHref: showConsultCta ? consultHref : "",
+    ctaEnrollHref: showEnrollCta ? details.ctaEnrollHref.trim() : "",
+    ctaConsultLabel: showConsultCta
+      ? details.ctaConsultLabel.trim() || defaultConsultLabel(offeringType)
+      : "",
+    ctaEnrollLabel: showEnrollCta
+      ? details.ctaEnrollLabel.trim() || defaultEnrollLabel(offeringType)
+      : "",
+  };
+}
+
+function normalizePricingForPersist(details: ClassOfferingDetails): ClassOfferingDetails["pricing"] {
+  return details.pricing
+    .filter((item) => item.description.trim() || item.price !== null)
+    .map((item, order) => ({
+      description: item.description.trim(),
+      price: item.price,
+      order,
+    }));
+}
+
+function normalizeCalendarFieldsForPersist(details: ClassOfferingDetails): Pick<
+  ClassOfferingDetails,
+  "showCalendarLabels" | "calendarLabelsTitle" | "calendarLabelsDescription" | "calendarLabels"
+> {
+  return {
+    showCalendarLabels: details.showCalendarLabels === true,
+    calendarLabelsTitle: details.calendarLabelsTitle.trim() || DEFAULT_CALENDAR_LABELS_TITLE,
+    calendarLabelsDescription: details.calendarLabelsDescription.trim() || DEFAULT_CALENDAR_LABELS_DESCRIPTION,
+    calendarLabels: sanitizeCalendarLabels(details.calendarLabels),
+  };
+}
+
+function primaryOfferingPrice(pricing: ClassOfferingDetails["pricing"]): number | null {
+  return pricing.find((item) => item.price !== null)?.price ?? null;
+}
+
+function normalizeGalleryImagesForPersist(details: ClassOfferingDetails): ClassOfferingDetails["galleryImages"] {
+  return details.galleryImages
+    .filter((item) => item.image)
+    .map((item, order) => ({
+      image: item.image,
+      alt: item.alt.trim(),
+      seoTitle: item.seoTitle?.trim() ?? "",
+      seoDescription: item.seoDescription?.trim() ?? "",
+      order,
+    }));
+}
+
+function normalizeSeoFieldsForPersist(
+  seoTitle: string,
+  seoDescription: string,
+  seoImage: string,
+): { seoTitle: string; seoDescription: string; seoImage: string } {
+  return {
+    seoTitle: seoTitle.trim().slice(0, SEO_MAX_TITLE_LENGTH),
+    seoDescription: seoDescription.trim().slice(0, SEO_MAX_DESCRIPTION_LENGTH),
+    seoImage: seoImage.trim(),
+  };
+}
+
+function normalizeAdditionsFieldsForPersist(
+  details: ClassOfferingDetails,
+): Pick<ClassOfferingDetails, "showIdeaPromptSection"> {
+  return {
+    showIdeaPromptSection: details.showIdeaPromptSection === true,
+  };
+}
+
+function normalizeMediaFieldsForPersist(
+  details: ClassOfferingDetails,
+): Pick<ClassOfferingDetails, "videoUrl" | "videoPoster" | "showIncludedSection" | "includedItems"> {
+  return {
+    videoUrl: details.videoUrl.trim(),
+    videoPoster: details.videoPoster.trim(),
+    showIncludedSection: Boolean(details.showIncludedSection),
+    includedItems: details.includedItems.map((item) => item.trim()).filter(Boolean),
+  };
+}
+
+function normalizeContentForPersist(content: ClassOfferingDetails["content"]): ClassOfferingDetails["content"] {
+  const paymentList = (content.paymentMethodsList?.length
+    ? content.paymentMethodsList
+    : toLines(content.paymentMethods))
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  return {
+    ...content,
+    learningSectionTitle: content.learningSectionTitle.trim(),
+    learningContent: content.learningContent.trim(),
+    participationSectionTitle: content.participationSectionTitle.trim(),
+    participationContent: content.participationContent.trim(),
+    paymentMethods: paymentList.join("\n"),
+    paymentMethodsList: paymentList,
+    contactWhatsapp: content.contactWhatsapp.trim(),
+    contactEmail: content.contactEmail.trim(),
+    extraInfo: content.extraInfo.trim(),
+    modulesSectionTitle: content.modulesSectionTitle.trim(),
+    modulesAccordionTitle: content.modulesAccordionTitle.trim(),
+    modules: content.modules.map((mod, order) => ({
+      ...mod,
+      title: mod.title.trim(),
+      description: mod.description.trim(),
+      order,
+    })),
+    activitiesSection: {
+      ...content.activitiesSection,
+      title: content.activitiesSection.title.trim(),
+      content: content.activitiesSection.content.trim(),
+      items: content.activitiesSection.items.map((item, order) => ({
+        ...item,
+        title: item.title.trim(),
+        description: item.description.trim(),
+        order,
+      })),
+    },
+  };
 }
 
 export function buildOfferingPayload({
@@ -621,14 +888,24 @@ export function buildOfferingPayload({
   seoTitle: string;
   seoDescription: string;
 }) {
-  const pricing = details.pricing.filter((item) => item.description.trim() || item.price !== null).map((item, order) => ({ ...item, order }));
-  const galleryImages = details.galleryImages.filter((item) => item.image).map((item, order) => ({ ...item, order }));
+  const pricing = normalizePricingForPersist(details);
+  const galleryImages = normalizeGalleryImagesForPersist(details);
+  const mediaFields = normalizeMediaFieldsForPersist(details);
+  const persistedContent = normalizeContentForPersist(details.content);
   const scheduleDays: ClassOfferingDetails["scheduleDays"] = [];
-  const calendarLabels = sanitizeCalendarLabels(details.calendarLabels);
-  const primaryPrice = pricing.find((item) => item.price !== null)?.price ?? null;
+  const calendarFields = normalizeCalendarFieldsForPersist(details);
+  const ctaFields = normalizeCtaFieldsForPersist(details, offering.type);
+  const primaryPrice = primaryOfferingPrice(pricing);
   const coverImage = details.heroVariant === "image" || details.heroVariant === "presentation"
     ? details.heroImage || DEFAULT_HERO_IMAGE
     : galleryImages[0]?.image || details.videoPoster || offering.cover_image_url;
+  const presentationPersisted = normalizePresentationHeroForPersist(
+    details,
+    details.heroTitle.trim() || title.trim(),
+    details.heroSubtitle.trim() || subtitle.trim(),
+  );
+  const seoFields = normalizeSeoFieldsForPersist(seoTitle, seoDescription, details.seoImage);
+  const additionsFields = normalizeAdditionsFieldsForPersist(details);
 
   return {
     title: title.trim(),
@@ -643,8 +920,8 @@ export function buildOfferingPayload({
     currency: "EUR",
     cover_image_url: coverImage,
     gallery: galleryImages.map((item) => item.image),
-    seo_title: seoTitle.trim(),
-    seo_description: seoDescription.trim(),
+    seo_title: seoFields.seoTitle,
+    seo_description: seoFields.seoDescription,
     details: {
       ...offering.details,
       videoCardImage: "",
@@ -654,14 +931,17 @@ export function buildOfferingPayload({
       paymentMethods: [],
       class: {
         ...details,
+        menuTitle: details.menuTitle.trim() || title.trim(),
         heroMenuTone: details.heroMenuTone,
         heroMenuColor: details.heroMenuColor,
         heroMenuScale: details.heroMenuScale,
         heroImage: details.heroVariant === "image" || details.heroVariant === "presentation" ? details.heroImage || DEFAULT_HERO_IMAGE : details.heroImage,
-        heroPresentationText: details.heroPresentationText.trim(),
-        heroPresentationSubtitle: details.heroPresentationSubtitle.trim(),
+        heroPresentationText: presentationPersisted.heroPresentationText,
+        heroPresentationSubtitle: presentationPersisted.heroPresentationSubtitle,
+        heroPresentationTextTypography: normalizeRichTextTypography(details.heroPresentationTextTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY),
+        heroPresentationSubtitleTypography: normalizeRichTextTypography(details.heroPresentationSubtitleTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 22 }),
         heroPresentationTextColor: details.heroPresentationTextColor.trim() || defaultClassDetails.heroPresentationTextColor,
-        heroPresentationImage: details.heroPresentationImage.trim(),
+        heroPresentationImage: presentationPersisted.heroPresentationImage,
         heroLogoPositionX: details.heroLogoPositionX.trim() || defaultClassDetails.heroLogoPositionX,
         heroLogoPositionY: details.heroLogoPositionY.trim() || defaultClassDetails.heroLogoPositionY,
         heroLogoWidth: details.heroLogoWidth.trim() || defaultClassDetails.heroLogoWidth,
@@ -674,23 +954,24 @@ export function buildOfferingPayload({
         heroMenuPositionY: details.heroMenuPositionY.trim() || defaultClassDetails.heroMenuPositionY,
         heroMenuTabletPositionY: details.heroMenuTabletPositionY.trim() || defaultClassDetails.heroMenuTabletPositionY,
         heroMenuMobilePositionY: details.heroMenuMobilePositionY.trim() || defaultClassDetails.heroMenuMobilePositionY,
-        showConsultCta: details.showConsultCta,
-        showEnrollCta: details.showEnrollCta,
-        ctaHref: details.showConsultCta ? details.ctaConsultHref.trim() || details.ctaHref.trim() : "",
-        ctaConsultHref: details.showConsultCta ? details.ctaConsultHref.trim() : "",
-        ctaEnrollHref: details.showEnrollCta ? details.ctaEnrollHref.trim() : "",
-        ctaConsultLabel: details.showConsultCta ? details.ctaConsultLabel.trim() || defaultConsultLabel(offering.type) : "",
-        ctaEnrollLabel: details.showEnrollCta ? details.ctaEnrollLabel.trim() || defaultEnrollLabel(offering.type) : "",
+        showConsultCta: ctaFields.showConsultCta,
+        showEnrollCta: ctaFields.showEnrollCta,
+        ctaHref: ctaFields.ctaHref,
+        ctaConsultHref: ctaFields.ctaConsultHref,
+        ctaEnrollHref: ctaFields.ctaEnrollHref,
+        ctaConsultLabel: ctaFields.ctaConsultLabel,
+        ctaEnrollLabel: ctaFields.ctaEnrollLabel,
         menuPlacement: menuPlacementForType(offering.type),
         homeSections: [],
         pricing,
         galleryImages,
         scheduleDays,
-        showCalendarLabels: details.showCalendarLabels,
-        calendarLabelsTitle: details.calendarLabelsTitle.trim() || DEFAULT_CALENDAR_LABELS_TITLE,
-        calendarLabelsDescription: details.calendarLabelsDescription.trim(),
-        calendarLabels,
-        includedItems: details.includedItems.map((item) => item.trim()).filter(Boolean),
+        showCalendarLabels: calendarFields.showCalendarLabels,
+        calendarLabelsTitle: calendarFields.calendarLabelsTitle,
+        calendarLabelsDescription: calendarFields.calendarLabelsDescription,
+        calendarLabels: calendarFields.calendarLabels,
+        includedItems: mediaFields.includedItems,
+        showIncludedSection: mediaFields.showIncludedSection,
         heroTitle: details.heroTitle.trim(),
         heroSubtitle: details.heroSubtitle.trim(),
         detailQuestion: details.detailQuestion.trim(),
@@ -712,32 +993,13 @@ export function buildOfferingPayload({
         whatsappNumber: details.whatsappNumber.trim(),
         scheduleDescription: details.scheduleDescription.trim(),
         showScheduleOnFrontend: details.showScheduleOnFrontend,
-        seoImage: details.seoImage,
-        videoUrl: details.videoUrl.trim(),
-        videoPoster: details.videoPoster.trim(),
+        seoImage: seoFields.seoImage,
+        showIdeaPromptSection: additionsFields.showIdeaPromptSection,
+        videoUrl: mediaFields.videoUrl,
+        videoPoster: mediaFields.videoPoster,
         videoCardImage: "",
         videoCardLabel: "",
-        content: {
-          ...details.content,
-          learningSectionTitle: details.content.learningSectionTitle.trim(),
-          learningContent: details.content.learningContent.trim(),
-          participationSectionTitle: details.content.participationSectionTitle.trim(),
-          participationContent: details.content.participationContent.trim(),
-          paymentMethods: (details.content.paymentMethodsList?.length ? details.content.paymentMethodsList : toLines(details.content.paymentMethods)).map((item) => item.trim()).filter(Boolean).join("\n"),
-          paymentMethodsList: (details.content.paymentMethodsList?.length ? details.content.paymentMethodsList : toLines(details.content.paymentMethods)).map((item) => item.trim()).filter(Boolean),
-          contactWhatsapp: details.content.contactWhatsapp.trim(),
-          contactEmail: details.content.contactEmail.trim(),
-          extraInfo: details.content.extraInfo.trim(),
-          modulesSectionTitle: details.content.modulesSectionTitle.trim(),
-          modulesAccordionTitle: details.content.modulesAccordionTitle.trim(),
-          modules: details.content.modules.map((mod, order) => ({ ...mod, title: mod.title.trim(), description: mod.description.trim(), order })),
-          activitiesSection: {
-            ...details.content.activitiesSection,
-            title: details.content.activitiesSection.title.trim(),
-            content: details.content.activitiesSection.content.trim(),
-            items: details.content.activitiesSection.items.map((item, order) => ({ ...item, title: item.title.trim(), description: item.description.trim(), order })),
-          },
-        },
+        content: persistedContent,
       },
     },
   };

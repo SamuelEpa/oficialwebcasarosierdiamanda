@@ -3,6 +3,11 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import { MarkdownContent } from "@/components/ui/MarkdownContent";
+import {
+  DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  normalizeRichTextTypography,
+  richTextTypographyStyle,
+} from "@/lib/cms/rich-text-typography";
 import type { CmsHeroSettings } from "@/lib/cms/types";
 
 export function PublicHeroContent({ hero }: { hero: CmsHeroSettings }) {
@@ -42,12 +47,27 @@ export function PublicHeroContent({ hero }: { hero: CmsHeroSettings }) {
   }
 
   if (hero.heroVariant === "presentation") {
+    const copyTypography = normalizeRichTextTypography(hero.heroPresentationTextTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY);
+    const subtitleTypography = normalizeRichTextTypography(
+      hero.heroPresentationSubtitleTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 22 },
+    );
+
     return (
       <div className="public-hero-content public-hero-content--presentation" style={{ position: "absolute", inset: 0, zIndex: 10, pointerEvents: "none" }}>
         <div className="page-hero__presentation-stage">
           <div className="page-hero__presentation-text" style={{ color: hero.heroPresentationTextColor || "#FFFFFF" }}>
-            <MarkdownContent source={hero.heroPresentationText || hero.heroTitle} className="page-hero__presentation-copy" />
-            {hero.heroPresentationSubtitle ? <MarkdownContent source={hero.heroPresentationSubtitle} className="page-hero__presentation-subtitle" /> : null}
+            <MarkdownContent
+              source={hero.heroPresentationText || hero.heroTitle}
+              className="page-hero__presentation-copy"
+              style={richTextTypographyStyle(copyTypography)}
+            />
+            {hero.heroPresentationSubtitle ? (
+              <MarkdownContent
+                source={hero.heroPresentationSubtitle}
+                className="page-hero__presentation-subtitle"
+                style={richTextTypographyStyle(subtitleTypography)}
+              />
+            ) : null}
             {hero.heroPresentationCtaEnabled && hero.heroPresentationCtaHref ? (
               <a
                 className="page-hero__presentation-cta"

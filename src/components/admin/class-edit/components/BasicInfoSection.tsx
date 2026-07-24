@@ -2,37 +2,28 @@
 
 import { AdminInput } from "@/components/ui/AdminField";
 import { AdminRichTextField } from "@/components/ui/AdminRichTextField";
-import {
-  DEFAULT_DESCRIPTION_TYPOGRAPHY,
-  DEFAULT_RICH_TEXT_TYPOGRAPHY,
-  normalizeRichTextTypography,
-} from "@/lib/cms/rich-text-typography";
-import type { Offering } from "@/lib/cms/types";
-import { DETAIL_PAGE_RICH_TEXT_CONTROLS } from "../constants/rich-text-controls";
 import type { ClassEditFormState } from "../hooks/useClassEditForm";
-import { useBasicTabFields } from "../hooks/useBasicTabFields";
+import { useBasicInfoFields } from "../hooks/useBasicInfoFields";
+import { useBasicInfoTypography } from "../hooks/useBasicInfoTypography";
+import { DETAIL_PAGE_RICH_TEXT_CONTROLS } from "../constants/rich-text-controls";
 import { SectionCard } from "./SectionCard";
 
 type BasicInfoSectionProps = {
-  offering: Offering;
   form: ClassEditFormState;
 };
 
-export function BasicInfoSection({ offering, form }: BasicInfoSectionProps) {
+export function BasicInfoSection({ form }: BasicInfoSectionProps) {
   const { title, slug, subtitle, description, details, errors } = form;
+  const typography = useBasicInfoTypography(details);
   const {
     handleSlugBlur,
     handleTitleChange,
     handleSlugChange,
     handleSubtitleChange,
     handleDescriptionChange,
+    updateMenuTitle,
     updateDetails,
-  } = useBasicTabFields(form, offering);
-
-  const subtitleTypography = normalizeRichTextTypography(details.subtitleTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY);
-  const detailQuestionTypography = normalizeRichTextTypography(details.detailQuestionTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY);
-  const highlightTypography = normalizeRichTextTypography(details.highlightDescriptionTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY);
-  const descriptionTypography = normalizeRichTextTypography(details.descriptionTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY);
+  } = useBasicInfoFields(form);
 
   return (
     <SectionCard compact>
@@ -44,7 +35,7 @@ export function BasicInfoSection({ offering, form }: BasicInfoSectionProps) {
           error={errors.menuTitle}
           validationKey="menuTitle"
           help="Nombre visible de esta página dentro del menú público."
-          onChange={(event) => updateDetails({ menuTitle: event.target.value })}
+          onChange={(event) => updateMenuTitle(event.target.value)}
         />
         <AdminInput
           label="Slug"
@@ -69,10 +60,10 @@ export function BasicInfoSection({ offering, form }: BasicInfoSectionProps) {
 
       <div className="class-edit-rich-text-stack">
         <AdminRichTextField
-          label="Titulo de pagina"
+          label="Título de página"
           labelPlacement="editor"
           value={subtitle}
-          typography={subtitleTypography}
+          typography={typography.subtitle}
           controls={DETAIL_PAGE_RICH_TEXT_CONTROLS}
           layout="compact"
           onChange={handleSubtitleChange}
@@ -84,7 +75,7 @@ export function BasicInfoSection({ offering, form }: BasicInfoSectionProps) {
           label="Pregunta / frase introductoria"
           labelPlacement="editor"
           value={details.detailQuestion}
-          typography={detailQuestionTypography}
+          typography={typography.detailQuestion}
           controls={DETAIL_PAGE_RICH_TEXT_CONTROLS}
           layout="compact"
           onChange={(value) => updateDetails({ detailQuestion: value })}
@@ -95,7 +86,7 @@ export function BasicInfoSection({ offering, form }: BasicInfoSectionProps) {
           label="Texto remarcado (café)"
           labelPlacement="editor"
           value={details.highlightDescription}
-          typography={highlightTypography}
+          typography={typography.highlight}
           controls={DETAIL_PAGE_RICH_TEXT_CONTROLS}
           layout="compact"
           onChange={(value) => updateDetails({ highlightDescription: value })}
@@ -106,7 +97,7 @@ export function BasicInfoSection({ offering, form }: BasicInfoSectionProps) {
           label="Texto normal / descripción"
           labelPlacement="editor"
           value={description}
-          typography={descriptionTypography}
+          typography={typography.description}
           controls={DETAIL_PAGE_RICH_TEXT_CONTROLS}
           layout="compact"
           onChange={handleDescriptionChange}

@@ -14,8 +14,8 @@ type BasicTabProps = {
 export function ClassEditBasicTab({ offering, form }: BasicTabProps) {
   return (
     <>
-      <BasicInfoSection offering={offering} form={form} />
-      <CtaButtonsSection offering={offering} form={form} />
+      <BasicInfoSection form={form} />
+      <CtaButtonsSection offering={{ type: offering.type }} form={form} />
       <PricingSection form={form} />
     </>
   );

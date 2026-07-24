@@ -8,6 +8,8 @@ import type { PreviewDevice, TabKey } from "./types";
 export const DEFAULT_HERO_IMAGE = "/img/hero-bg.jpg";
 export const MAX_CALENDAR_LABELS = 6;
 export const FORM_ID = "class-edit-form";
+export const SEO_MAX_TITLE_LENGTH = 70;
+export const SEO_MAX_DESCRIPTION_LENGTH = 160;
 
 export const MONTH_OPTIONS = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -129,6 +131,16 @@ export const FALLBACK_PREVIEW_CHROME: ClassEditorPreviewChrome = {
   },
   socialGallery: null,
   footer: null,
+  footerContactForm: null,
+  siteContact: {
+    email: "",
+    phone: "",
+    whatsapp: "",
+    address: "",
+    city: "",
+    country: "",
+    map_url: "",
+  },
 };
 
 export const defaultClassDetails: ClassOfferingDetails = {
@@ -138,6 +150,8 @@ export const defaultClassDetails: ClassOfferingDetails = {
   heroSubtitle: "",
   heroPresentationText: "",
   heroPresentationSubtitle: "",
+  heroPresentationTextTypography: { ...DEFAULT_RICH_TEXT_TYPOGRAPHY },
+  heroPresentationSubtitleTypography: { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 22 },
   heroPresentationTextColor: "#FFFFFF",
   heroPresentationImage: "",
   heroPresentationCtaEnabled: false,

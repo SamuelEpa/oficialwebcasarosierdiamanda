@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useMemo } from "react";
 import AdminActionModal from "@/components/admin/AdminActionModal";
 import MediaLibraryModal from "@/components/admin/MediaLibraryModal";
 import SharedHeroEditor from "@/components/admin/SharedHeroEditor";
@@ -30,9 +31,17 @@ export default function ClassEditForm({
   previewChrome?: ClassEditorPreviewChrome;
 }) {
   const form = useClassEditForm({ offering, mode, basePath });
-  const visibleTabs = offering.type === "experience"
-    ? CLASS_EDIT_TABS.filter((tab) => tab.key !== "home")
-    : CLASS_EDIT_TABS;
+  const { activeTab, updateDetails, title, subtitle } = form;
+
+  const visibleTabs = useMemo(
+    () => (offering.type === "experience" ? CLASS_EDIT_TABS.filter((tab) => tab.key !== "home") : CLASS_EDIT_TABS),
+    [offering.type],
+  );
+
+  const handleHeroDetailsChange = useCallback(
+    (next: Partial<ClassOfferingDetails>) => updateDetails(next),
+    [updateDetails],
+  );
 
   return (
     <>
@@ -46,26 +55,26 @@ export default function ClassEditForm({
         onClose={form.closeToast}
       />
 
-      <ClassEditTabBar tabs={visibleTabs} activeTab={form.activeTab} onTabChange={form.setActiveTab} />
+      <ClassEditTabBar tabs={visibleTabs} activeTab={activeTab} onTabChange={form.setActiveTab} />
 
       <form id={FORM_ID} onSubmit={form.handleSubmit} className="class-edit-form space-y-6">
-        {form.activeTab === "hero" ? (
+        {activeTab === "hero" ? (
           <SharedHeroEditor
             details={form.details}
-            titleFallback={form.title || "Título del hero"}
-            subtitleFallback={form.subtitle || "Clases - Iniciación"}
-            onChange={(next) => form.updateDetails(next as Partial<ClassOfferingDetails>)}
+            titleFallback={title || "Título del hero"}
+            subtitleFallback={subtitle || "Clases - Iniciación"}
+            onChange={handleHeroDetailsChange}
           />
         ) : null}
 
-        {form.activeTab === "home" ? <ClassEditHomeTab offering={offering} form={form} /> : null}
-        {form.activeTab === "basic" ? (
+        {activeTab === "home" ? <ClassEditHomeTab offering={offering} form={form} /> : null}
+        {activeTab === "basic" ? (
           <ClassEditDetailPagePanel offering={offering} form={form} />
         ) : null}
-        {form.activeTab === "schedule" ? <ClassEditScheduleTab form={form} /> : null}
-        {form.activeTab === "seo" ? <ClassEditSeoTab form={form} /> : null}
-        {form.activeTab === "additions" ? <ClassEditAdditionsTab form={form} previewChrome={previewChrome} /> : null}
-        {form.activeTab === "preview" ? (
+        {activeTab === "schedule" ? <ClassEditScheduleTab form={form} /> : null}
+        {activeTab === "seo" ? <ClassEditSeoTab form={form} /> : null}
+        {activeTab === "additions" ? <ClassEditAdditionsTab form={form} previewChrome={previewChrome} /> : null}
+        {activeTab === "preview" ? (
           <ClassEditPreviewTab offering={offering} form={form} previewChrome={previewChrome} />
         ) : null}
 

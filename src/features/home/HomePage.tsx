@@ -2,7 +2,7 @@ import { FeaturedSection } from "@/components/home/FeaturedSection";
 import { IntroSlider } from "@/components/home/IntroSlider";
 import { HeaderHome } from "@/components/layout/HeaderHome";
 import { PromoEntry } from "@/components/ui/PromoEntry";
-import { TestimonialSlider } from "@/components/home/TestimonialSlider";
+import { mapCmsTestimonialsToSlides, TestimonialSlider } from "@/components/home/testimonial-slider";
 import type { GiftCardItem } from "@/data/types";
 import { getPublicExperienceItems } from "@/features/experiences/experienceDetailRouting";
 import { HomeGiftCardSection } from "@/features/home/HomeGiftCardSection";
@@ -30,13 +30,7 @@ export async function HomePage() {
   const homeClasses = pickHomeItems(classes, homePage.classesFeaturedIds);
   const homeWorkshops = pickHomeItems(workshops, homePage.workshopsFeaturedIds);
   const homeGiftCards = pickHomeItems(giftCards, homePage.giftFeaturedIds);
-  const testimonials = cmsTestimonials
-    .map((item) => ({
-      image: item.avatar_id || "/img/avatar-1.jpg",
-      alt: `Foto de ${item.name}`,
-      quote: item.text,
-      author: item.role ? `${item.name} — ${item.role}` : item.name,
-    }));
+  const testimonials = mapCmsTestimonialsToSlides(cmsTestimonials);
 
   return (
     <SitePage

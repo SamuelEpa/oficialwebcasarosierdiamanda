@@ -15,6 +15,9 @@ export function ExperienceDetailPage({ item }: { item: ExperienceItem }) {
     heroTitle: item.heroTitle,
     heroSubtitle: item.subtitle ?? "",
     heroPresentationText: item.heroPresentationText ?? "",
+    heroPresentationSubtitle: item.heroPresentationSubtitle ?? "",
+    heroPresentationTextTypography: item.heroPresentationTextTypography,
+    heroPresentationSubtitleTypography: item.heroPresentationSubtitleTypography,
     heroPresentationTextColor: item.heroPresentationTextColor ?? "#FFFFFF",
     heroPresentationImage: item.heroPresentationImage ?? "",
     heroPresentationCtaEnabled: item.heroPresentationCtaEnabled ?? false,
@@ -164,7 +167,7 @@ export function ExperienceDetailPage({ item }: { item: ExperienceItem }) {
       }
     >
       <DetailPage item={item} titleLevel={hero.heroVariant === "text" ? "h2" : "h1"} />
-      {item.showIdeaPromptSection ?? true ? <IdeaPromptSection context="experience-detail" /> : null}
+      {item.showIdeaPromptSection ? <IdeaPromptSection context="experience-detail" /> : null}
     </SitePage>
   );
 }

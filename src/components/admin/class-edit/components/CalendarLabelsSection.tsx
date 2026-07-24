@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Button from "@/components/ui/Button";
 import Switch from "@/components/ui/Switch";
 import { AdminInput, AdminTextarea } from "@/components/ui/AdminField";
@@ -9,6 +10,7 @@ import {
   MAX_CALENDAR_LABELS,
 } from "../constants";
 import type { ClassEditFormState } from "../hooks/useClassEditForm";
+import { useCalendarSectionHandlers } from "../hooks/useCalendarSectionHandlers";
 import { CalendarLabelItem } from "./CalendarLabelItem";
 import { SectionCard } from "./SectionCard";
 
@@ -16,7 +18,7 @@ type CalendarLabelsSectionProps = {
   form: ClassEditFormState;
 };
 
-export function CalendarLabelsSection({ form }: CalendarLabelsSectionProps) {
+function CalendarLabelsSectionComponent({ form }: CalendarLabelsSectionProps) {
   const {
     details,
     errors,
@@ -25,8 +27,10 @@ export function CalendarLabelsSection({ form }: CalendarLabelsSectionProps) {
     toggleCalendarDay,
     removeCalendarLabel,
     moveCalendarLabel,
-    updateDetails,
-  } = form;
+    setShowCalendarLabels,
+    setCalendarLabelsTitle,
+    setCalendarLabelsDescription,
+  } = useCalendarSectionHandlers(form);
 
   return (
     <SectionCard
@@ -47,7 +51,7 @@ export function CalendarLabelsSection({ form }: CalendarLabelsSectionProps) {
         checked={details.showCalendarLabels}
         label="Mostrar etiquetas calendario"
         description="Si esta apagado, no se renderiza nada en el frontend publico."
-        onCheckedChange={(checked) => updateDetails({ showCalendarLabels: checked })}
+        onCheckedChange={setShowCalendarLabels}
       />
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -55,13 +59,13 @@ export function CalendarLabelsSection({ form }: CalendarLabelsSectionProps) {
           label="Título del encabezado"
           value={details.calendarLabelsTitle}
           placeholder={DEFAULT_CALENDAR_LABELS_TITLE}
-          onChange={(event) => updateDetails({ calendarLabelsTitle: event.target.value })}
+          onChange={(event) => setCalendarLabelsTitle(event.target.value)}
         />
         <AdminTextarea
           label="Texto del encabezado"
           value={details.calendarLabelsDescription}
           placeholder={DEFAULT_CALENDAR_LABELS_DESCRIPTION}
-          onChange={(event) => updateDetails({ calendarLabelsDescription: event.target.value })}
+          onChange={(event) => setCalendarLabelsDescription(event.target.value)}
           className="min-h-[120px]"
         />
       </div>
@@ -90,3 +94,5 @@ export function CalendarLabelsSection({ form }: CalendarLabelsSectionProps) {
     </SectionCard>
   );
 }
+
+export const CalendarLabelsSection = memo(CalendarLabelsSectionComponent);

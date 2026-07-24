@@ -19,12 +19,14 @@ export default function MediaSelectField({
   onChange,
   className,
   previewClassName,
+  folder = "general",
 }: {
   label: string;
   value: string;
   onChange: (url: string) => void;
   className?: string;
   previewClassName?: string;
+  folder?: string;
 }) {
   const [showPicker, setShowPicker] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -35,7 +37,7 @@ export default function MediaSelectField({
     setError(null);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("folder", "general");
+    formData.append("folder", folder);
 
     const response = await fetch("/api/admin/media/upload", {
       method: "POST",

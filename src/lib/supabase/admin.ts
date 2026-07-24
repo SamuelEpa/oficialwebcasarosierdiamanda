@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 let adminClient: SupabaseClient | null = null;
 const READ_CACHE_TTL_MS = Number(process.env.CMS_SUPABASE_READ_CACHE_MS ?? 0);
 const READ_TIMEOUT_MS = Number(process.env.CMS_SUPABASE_READ_TIMEOUT_MS ?? 8_000);
-const WRITE_TIMEOUT_MS = Number(process.env.CMS_SUPABASE_WRITE_TIMEOUT_MS ?? 10_000);
+const WRITE_TIMEOUT_MS = Number(process.env.CMS_SUPABASE_WRITE_TIMEOUT_MS ?? 30_000);
 const readCache = new Map<string, { response: Response; expiresAt: number }>();
 const pendingReads = new Map<string, Promise<Response>>();
 

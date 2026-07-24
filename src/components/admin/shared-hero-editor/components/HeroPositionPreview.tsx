@@ -1,30 +1,37 @@
 "use client";
 
+import { memo } from "react";
 import Image from "next/image";
-import { PublicHeroContent } from "@/components/hero/PublicHeroContent";
+import { PublicHeroContent, PublicHeroTitle } from "@/components/hero/PublicHeroContent";
 import type { CmsHeroSettings } from "@/lib/cms/types";
 import { PREVIEW_MENU_ITEMS } from "../constants";
 import type { SharedHeroEditorState } from "../types";
 import { heroScale, heroText } from "../utils";
 
-export function HeroPositionPreview({
+function HeroPositionPreviewComponent({
   details,
-  titleFallback,
-  subtitleFallback,
+  previewHero,
   editor,
 }: {
   details: CmsHeroSettings;
-  titleFallback: string;
-  subtitleFallback?: string;
+  previewHero: CmsHeroSettings;
   editor: SharedHeroEditorState;
 }) {
   const { device, keys, isHydrated, isImageHero, isPresentationHero, isTextHero, frameStyle, menuStyle, logoMask, previewVideoEmbedUrl, previewVideoUrl } = editor;
+  const frameClassName = [
+    "cms-hero-position-preview__frame",
+    "relative mx-auto overflow-hidden rounded-xl border border-outline-variant shadow-sm",
+    isHydrated && isPresentationHero ? "header-interno--presentation-hero" : "",
+    isHydrated && isImageHero ? "header-interno--image-hero" : "",
+    isHydrated && isTextHero ? "header-interno--text-hero" : "",
+  ].filter(Boolean).join(" ");
 
   return (
     <div className="cms-hero-position-preview" aria-label="Vista de referencia del hero">
       <div
-        className={`relative mx-auto overflow-hidden rounded-xl border border-outline-variant shadow-sm ${isHydrated && isPresentationHero ? "header-interno--presentation-hero" : ""}`}
+        className={frameClassName}
         style={frameStyle}
+        data-preview-device={device}
       >
         {previewVideoEmbedUrl ? (
           <iframe
@@ -91,11 +98,8 @@ export function HeroPositionPreview({
         <div className="absolute inset-0 z-10">
           {isPresentationHero ? (
             <PublicHeroContent
-              hero={{
-                ...details,
-                heroPresentationText: details.heroPresentationText || details.heroTitle || titleFallback,
-                heroPresentationSubtitle: details.heroPresentationSubtitle,
-              }}
+              key={`presentation-${previewHero.heroPresentationText}-${previewHero.heroPresentationSubtitle}-${previewHero.heroPresentationTextColor}-${previewHero.heroPresentationImage}-${previewHero.heroPresentationCtaEnabled}-${previewHero.heroPresentationCtaLabel}`}
+              hero={previewHero}
             />
           ) : null}
 
@@ -135,21 +139,16 @@ export function HeroPositionPreview({
           ) : null}
 
           {isTextHero ? (
-            <div
-              className="absolute w-full text-center"
-              style={{
-                left: heroText(details, keys.heroTitleX) || "50%",
-                top: heroText(details, keys.heroTitleY) || "50%",
-                transform: `translate(-50%, -50%) scale(${heroScale(details, keys.heroTitleScale)})`,
-                transformOrigin: "center center",
-              }}
-            >
-              <h3 className="font-serif text-[clamp(30px,4vw,54px)] uppercase leading-none text-[#5b554f]">{details.heroTitle || titleFallback}</h3>
-              <p className="mt-4 text-label-md uppercase text-[#a99b90]">{details.heroSubtitle || subtitleFallback}</p>
-            </div>
+            <PublicHeroTitle
+              hero={previewHero}
+              title={previewHero.heroTitle}
+              subtitle={previewHero.heroSubtitle}
+            />
           ) : null}
         </div>
       </div>
     </div>
   );
 }
+
+export const HeroPositionPreview = memo(HeroPositionPreviewComponent);

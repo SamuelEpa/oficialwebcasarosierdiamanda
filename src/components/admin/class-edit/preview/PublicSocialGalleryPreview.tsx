@@ -1,3 +1,6 @@
+"use client";
+
+import { memo, useMemo } from "react";
 import type { ClassEditorPreviewChrome } from "@/lib/cms/class-editor-preview";
 import { SocialGallery } from "@/components/home/SocialGallery";
 
@@ -13,9 +16,9 @@ function socialGalleryPosts(previewChrome: ClassEditorPreviewChrome) {
     }));
 }
 
-export function PublicSocialGalleryPreview({ previewChrome }: { previewChrome: ClassEditorPreviewChrome }) {
+function PublicSocialGalleryPreviewComponent({ previewChrome }: { previewChrome: ClassEditorPreviewChrome }) {
   const gallery = previewChrome.socialGallery;
-  const posts = socialGalleryPosts(previewChrome);
+  const posts = useMemo(() => socialGalleryPosts(previewChrome), [previewChrome]);
 
   return (
     <SocialGallery
@@ -26,3 +29,5 @@ export function PublicSocialGalleryPreview({ previewChrome }: { previewChrome: C
     />
   );
 }
+
+export const PublicSocialGalleryPreview = memo(PublicSocialGalleryPreviewComponent);
