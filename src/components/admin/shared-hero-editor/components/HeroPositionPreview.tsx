@@ -3,6 +3,7 @@
 import { memo } from "react";
 import Image from "next/image";
 import { PublicHeroContent, PublicHeroTitle } from "@/components/hero/PublicHeroContent";
+import { richTextTypographyRevision } from "@/lib/cms/rich-text-typography";
 import type { CmsHeroSettings } from "@/lib/cms/types";
 import { PREVIEW_MENU_ITEMS } from "../constants";
 import type { SharedHeroEditorState } from "../types";
@@ -98,7 +99,17 @@ function HeroPositionPreviewComponent({
         <div className="absolute inset-0 z-10">
           {isPresentationHero ? (
             <PublicHeroContent
-              key={`presentation-${previewHero.heroPresentationText}-${previewHero.heroPresentationSubtitle}-${previewHero.heroPresentationTextColor}-${previewHero.heroPresentationImage}-${previewHero.heroPresentationCtaEnabled}-${previewHero.heroPresentationCtaLabel}`}
+              key={[
+                "presentation",
+                previewHero.heroPresentationText,
+                previewHero.heroPresentationSubtitle,
+                previewHero.heroPresentationTextColor,
+                previewHero.heroPresentationImage,
+                previewHero.heroPresentationCtaEnabled,
+                previewHero.heroPresentationCtaLabel,
+                richTextTypographyRevision(previewHero.heroPresentationTextTypography),
+                richTextTypographyRevision(previewHero.heroPresentationSubtitleTypography),
+              ].join("\u001f")}
               hero={previewHero}
             />
           ) : null}

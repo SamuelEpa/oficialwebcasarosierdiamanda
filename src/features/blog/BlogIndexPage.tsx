@@ -7,8 +7,9 @@ import { IdeaPromptSection } from "@/features/shared/contextual-sections/IdeaPro
 import PublicFaqSection from "@/features/shared/contextual-sections/PublicFaqSection";
 import { SitePage } from "@/features/shared/layout/SitePage";
 import { getBlogPageSettings } from "@/lib/cms/blog-page";
-import { getPublicPageFaqSectionBySlug } from "@/lib/cms/page-faqs";
 import { getPublicBlogData } from "@/lib/cms/blog-public";
+import { getSelectedFaqBlock } from "@/lib/cms/faq-selection";
+import { getFaqGroups, getFaqs } from "@/lib/cms/faqs";
 import type { CmsHeroSettings } from "@/lib/cms/types";
 
 function BlogHeroContent({ hero }: { hero: CmsHeroSettings }) {
@@ -51,11 +52,15 @@ function BlogHeroContent({ hero }: { hero: CmsHeroSettings }) {
 }
 
 export async function BlogIndexPage() {
-  const [page, blogData] = await Promise.all([
+  const [page, blogData, faqs, faqGroups] = await Promise.all([
     getBlogPageSettings(),
     getPublicBlogData(),
+    getFaqs(),
+    getFaqGroups(),
   ]);
-  const faqSection = await getPublicPageFaqSectionBySlug("blog");
+  const selectedFaqBlock = page.showFaqSection
+    ? getSelectedFaqBlock(faqs, faqGroups, page.faqGroupId)
+    : null;
   const { categories, featured, published } = blogData;
   const hero = page.hero;
   const heroVariant = hero.heroVariant ?? "text";
@@ -151,7 +156,7 @@ export async function BlogIndexPage() {
           <BlogGrid posts={published} categories={categories} />
         </div>
       </section>
-      <PublicFaqSection pageSection={faqSection} eyebrow="" />
+      {selectedFaqBlock ? <PublicFaqSection block={selectedFaqBlock} eyebrow="" /> : null}
       {page.showIdeaPromptSection ? <IdeaPromptSection context="blog" /> : null}
     </SitePage>
   );

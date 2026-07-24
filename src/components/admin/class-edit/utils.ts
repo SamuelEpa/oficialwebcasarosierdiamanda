@@ -17,8 +17,13 @@ import {
   defaultClassDetails,
 } from "./constants";
 import type { LegacyOfferingDetails, TabKey } from "./types";
-import { defaultContent } from "@/components/admin/ClassContentTab";
-import { DEFAULT_RICH_TEXT_TYPOGRAPHY, DEFAULT_DESCRIPTION_TYPOGRAPHY, normalizeRichTextTypography } from "@/lib/cms/rich-text-typography";
+import { defaultContent } from "@/components/admin/class-content/defaultContent";
+import {
+  DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  DEFAULT_DESCRIPTION_TYPOGRAPHY,
+  normalizeRichTextTypography,
+  type RichTextTypography,
+} from "@/lib/cms/rich-text-typography";
 import { normalizePresentationHeroForPersist } from "@/components/admin/shared-hero-editor/heroEditorModel";
 import { resolvePresentationHeroContent } from "@/components/admin/shared-hero-editor/utils";
 
@@ -52,6 +57,16 @@ export function menuPlacementForType(type: Offering["type"]) {
 
 export function toLines(value: string) {
   return value.split(/\r?\n/);
+}
+
+/** TipTap markdown ↔ includedItems[] without collapsing blank lines used as block separators. */
+export function includedItemsToMarkdown(items: string[]) {
+  return items.join("\n");
+}
+
+export function markdownToIncludedItems(markdown: string) {
+  if (!markdown) return [];
+  return markdown.replace(/\r\n/g, "\n").split("\n");
 }
 
 export function textValue(value: unknown) {
@@ -216,15 +231,30 @@ export function toClassDetails(offering: Offering): ClassOfferingDetails {
           ? persistedContentFields.modules.length > 0
           : legacyContent.modules.length > 0,
     learningContent: hasPersistedLearningContent ? firstText(persistedContentFields.learningContent) : legacyContent.learningContent,
+    learningContentTypography: normalizeRichTextTypography(
+      persistedContentFields.learningContentTypography ?? legacyContent.learningContentTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+    ),
     participationContent: hasPersistedParticipationContent ? firstText(persistedContentFields.participationContent) : legacyContent.participationContent,
+    participationContentTypography: normalizeRichTextTypography(
+      persistedContentFields.participationContentTypography ?? legacyContent.participationContentTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+    ),
     paymentMethods: hasPersistedPaymentMethods ? firstText(persistedContentFields.paymentMethods) : legacyContent.paymentMethods,
     paymentMethodsList: Array.isArray(persistedContentFields.paymentMethodsList)
       ? persistedContentFields.paymentMethodsList.map((item) => String(item).trim()).filter(Boolean)
       : textList(hasPersistedPaymentMethods ? firstText(persistedContentFields.paymentMethods) : legacyContent.paymentMethods),
     extraInfo: hasPersistedExtraInfo ? firstText(persistedContentFields.extraInfo) : legacyContent.extraInfo,
-    modules: Array.isArray((persistedContent as Partial<ClassOfferingDetails["content"]>).modules) && (persistedContent as Partial<ClassOfferingDetails["content"]>).modules?.length
-      ? (persistedContent as ClassOfferingDetails["content"]).modules
-      : legacyContent.modules,
+    extraInfoTypography: normalizeRichTextTypography(
+      persistedContentFields.extraInfoTypography ?? legacyContent.extraInfoTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+    ),
+    modules: (
+      Array.isArray((persistedContent as Partial<ClassOfferingDetails["content"]>).modules) && (persistedContent as Partial<ClassOfferingDetails["content"]>).modules?.length
+        ? (persistedContent as ClassOfferingDetails["content"]).modules
+        : legacyContent.modules
+    ).map((mod, order) => ({
+      ...mod,
+      order: typeof mod.order === "number" ? mod.order : order,
+      descriptionTypography: normalizeRichTextTypography(mod.descriptionTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY),
+    })),
     activitiesSection: {
       ...legacyContent.activitiesSection,
       ...((persistedContent as Partial<ClassOfferingDetails["content"]>).activitiesSection ?? {}),
@@ -328,6 +358,9 @@ export function toClassDetails(offering: Offering): ClassOfferingDetails {
       ? fromDetails.showIncludedSection
       : false,
     includedItems,
+    includedItemsTypography: normalizeRichTextTypography(
+      fromDetails.includedItemsTypography ?? defaultClassDetails.includedItemsTypography,
+    ),
     galleryImages: galleryImages
       .map((item, index) => ({
         image: item.image || "",
@@ -417,6 +450,7 @@ function previewProgram(details: ClassOfferingDetails) {
     .map((item, index) => ({
       title: item.title || `Módulo ${index + 1}`,
       content: item.description,
+      contentTypography: normalizeRichTextTypography(item.descriptionTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY),
     }))
     .filter((item) => item.title || item.content);
 }
@@ -607,7 +641,11 @@ export function buildPreviewItem({
     calendarLabelsTitle: details.calendarLabelsTitle.trim() || DEFAULT_CALENDAR_LABELS_TITLE,
     calendarLabelsDescription: details.calendarLabelsDescription.trim() || DEFAULT_CALENDAR_LABELS_DESCRIPTION,
     calendarLabels,
-    included: details.includedItems.filter((item) => item.trim()),
+    // Preserve blank lines — TipTap markdown uses them as block separators.
+    included: [...details.includedItems],
+    includedTypography: normalizeRichTextTypography(
+      details.includedItemsTypography ?? defaultClassDetails.includedItemsTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY,
+    ),
     showIncludedSection: details.showIncludedSection,
     program: previewProgram(details),
     showLearningSection: details.content.showLearningSection,
@@ -617,10 +655,19 @@ export function buildPreviewItem({
     programSectionTitle: details.content.modulesSectionTitle.trim() || "Contenido del curso",
     learningSectionTitle: details.content.learningSectionTitle.trim() || "¿Qué aprenderás?",
     whatYouWillLearn: toLines(details.content.learningContent),
+    whatYouWillLearnTypography: normalizeRichTextTypography(
+      details.content.learningContentTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+    ),
     participationSectionTitle: details.content.participationSectionTitle.trim() || "¿Quién puede participar?",
     whoCanJoin: toLines(details.content.participationContent),
+    whoCanJoinTypography: normalizeRichTextTypography(
+      details.content.participationContentTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+    ),
     paymentMethods: paymentMethods.map((method) => method.trim()).filter(Boolean),
     additionalInfo: details.content.extraInfo.trim(),
+    additionalInfoTypography: normalizeRichTextTypography(
+      details.content.extraInfoTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+    ),
     showIdeaPromptSection: details.showIdeaPromptSection === true,
     ctaHref: consultHref,
     ctaConsultHref: consultHref,
@@ -818,13 +865,21 @@ function normalizeAdditionsFieldsForPersist(
 
 function normalizeMediaFieldsForPersist(
   details: ClassOfferingDetails,
-): Pick<ClassOfferingDetails, "videoUrl" | "videoPoster" | "showIncludedSection" | "includedItems"> {
+): Pick<ClassOfferingDetails, "videoUrl" | "videoPoster" | "showIncludedSection" | "includedItems" | "includedItemsTypography"> {
   return {
     videoUrl: details.videoUrl.trim(),
     videoPoster: details.videoPoster.trim(),
     showIncludedSection: Boolean(details.showIncludedSection),
-    includedItems: details.includedItems.map((item) => item.trim()).filter(Boolean),
+    // Keep blank lines — TipTap uses them as block separators for lists/paragraphs.
+    includedItems: markdownToIncludedItems(includedItemsToMarkdown(details.includedItems).replace(/\s+$/g, "")),
+    includedItemsTypography: normalizeRichTextTypography(
+      details.includedItemsTypography ?? defaultClassDetails.includedItemsTypography,
+    ),
   };
+}
+
+function normalizeContentTypography(value: RichTextTypography | undefined) {
+  return normalizeRichTextTypography(value ?? DEFAULT_DESCRIPTION_TYPOGRAPHY);
 }
 
 function normalizeContentForPersist(content: ClassOfferingDetails["content"]): ClassOfferingDetails["content"] {
@@ -838,19 +893,23 @@ function normalizeContentForPersist(content: ClassOfferingDetails["content"]): C
     ...content,
     learningSectionTitle: content.learningSectionTitle.trim(),
     learningContent: content.learningContent.trim(),
+    learningContentTypography: normalizeContentTypography(content.learningContentTypography),
     participationSectionTitle: content.participationSectionTitle.trim(),
     participationContent: content.participationContent.trim(),
+    participationContentTypography: normalizeContentTypography(content.participationContentTypography),
     paymentMethods: paymentList.join("\n"),
     paymentMethodsList: paymentList,
     contactWhatsapp: content.contactWhatsapp.trim(),
     contactEmail: content.contactEmail.trim(),
     extraInfo: content.extraInfo.trim(),
+    extraInfoTypography: normalizeContentTypography(content.extraInfoTypography),
     modulesSectionTitle: content.modulesSectionTitle.trim(),
     modulesAccordionTitle: content.modulesAccordionTitle.trim(),
     modules: content.modules.map((mod, order) => ({
       ...mod,
       title: mod.title.trim(),
       description: mod.description.trim(),
+      descriptionTypography: normalizeContentTypography(mod.descriptionTypography),
       order,
     })),
     activitiesSection: {
@@ -971,6 +1030,7 @@ export function buildOfferingPayload({
         calendarLabelsDescription: calendarFields.calendarLabelsDescription,
         calendarLabels: calendarFields.calendarLabels,
         includedItems: mediaFields.includedItems,
+        includedItemsTypography: mediaFields.includedItemsTypography,
         showIncludedSection: mediaFields.showIncludedSection,
         heroTitle: details.heroTitle.trim(),
         heroSubtitle: details.heroSubtitle.trim(),

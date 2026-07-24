@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
+import { includedItemsToMarkdown } from "../utils";
 import type { ClassEditFormState } from "./useClassEditForm";
 
 export function useDetailMediaHandlers(form: ClassEditFormState) {
@@ -14,7 +15,7 @@ export function useDetailMediaHandlers(form: ClassEditFormState) {
   } = form;
 
   const includedItemsText = useMemo(
-    () => details.includedItems.join("\n"),
+    () => includedItemsToMarkdown(details.includedItems),
     [details.includedItems],
   );
 

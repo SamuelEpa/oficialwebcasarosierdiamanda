@@ -1,0 +1,35 @@
+import { DEFAULT_DESCRIPTION_TYPOGRAPHY } from "@/lib/cms/rich-text-typography";
+import type { ClassOfferingContent } from "@/lib/cms/types";
+
+export function defaultContent(): ClassOfferingContent {
+  return {
+    showCourseContent: undefined,
+    showLearningSection: false,
+    showParticipationSection: false,
+    showPaymentMethodsSection: false,
+    showModulesSection: false,
+    learningSectionTitle: "",
+    learningContent: "",
+    learningContentTypography: { ...DEFAULT_DESCRIPTION_TYPOGRAPHY },
+    participationSectionTitle: "",
+    participationContent: "",
+    participationContentTypography: { ...DEFAULT_DESCRIPTION_TYPOGRAPHY },
+    paymentMethods: "",
+    paymentMethodsList: [],
+    contactWhatsapp: "",
+    contactEmail: "",
+    extraInfo: "",
+    extraInfoTypography: { ...DEFAULT_DESCRIPTION_TYPOGRAPHY },
+    showEnrollButtonAtEnd: true,
+    activitiesSection: { enabled: false, title: "", content: "", items: [] },
+    modulesSectionTitle: "",
+    modulesAccordionTitle: "",
+    modules: [],
+  };
+}
+
+export function createModuleId() {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `mod-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}

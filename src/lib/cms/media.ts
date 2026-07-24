@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { createAdminClient } from "../supabase/admin";
 import { addTrashItem, getCurrentUserEmail, getTrashItemByEntity, removeTrashItem } from "./trash";
-import { readJsonFile, writeJsonFile } from "./local-storage";
+import { prependJsonCacheItem, readJsonFile, writeJsonFile } from "./local-storage";
 import { isMediaFolder, isMediaStatus } from "./types";
 import type { MediaAsset } from "./types";
 import { logAction } from "./history-logs";
@@ -288,11 +288,30 @@ export async function getMediaAssetById(id: string) {
 }
 
 export async function createMediaAsset(data: MediaInput) {
-  const assets = await readJsonFile<MediaAsset[]>(FILE_NAME, []);
   const next = normalizeAsset(data);
-  await writeJsonFile(FILE_NAME, [next, ...assets]);
-  await upsertMediaAsset(next);
-  await logAction({ action: "create", entity_type: "media", entity_id: next.id, entity_title: next.original_name || next.file_name, new_data: next });
+
+  // Single-row upsert only — never rewrite the whole media_assets table (was the main upload bottleneck).
+  try {
+    const supabase = createAdminClient();
+    const { error } = await supabase.from(TABLE).upsert(mediaAssetToRow(next), { onConflict: "id" });
+    if (error) throw error;
+    prependJsonCacheItem(FILE_NAME, next);
+  } catch {
+    const assets = await readJsonFile<MediaAsset[]>(FILE_NAME, []);
+    await writeJsonFile(FILE_NAME, [next, ...assets.filter((asset) => asset.id !== next.id)]);
+  }
+
+  // Audit log must not block the upload response (history rewrite was another duplicate round-trip).
+  void logAction({
+    action: "create",
+    entity_type: "media",
+    entity_id: next.id,
+    entity_title: next.original_name || next.file_name,
+    new_data: next,
+  }).catch(() => {
+    /* best-effort */
+  });
+
   return next;
 }
 

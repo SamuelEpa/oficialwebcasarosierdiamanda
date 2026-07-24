@@ -30,6 +30,21 @@ export async function PATCH(request: NextRequest, ctx: { params: Promise<{ id: s
   if (body.action === "archive") { const updated = await updateBlogPost(id, { status: "archived" }); refreshBlogViews(); return NextResponse.json({ post: updated }); }
   if (body.action === "feature") { const updated = await updateBlogPost(id, { is_featured: true, featured_order: Number(body.featured_order ?? (item.featured_order || 99)) }); refreshBlogViews(); return NextResponse.json({ post: updated }); }
   if (body.action === "unfeature") { const updated = await updateBlogPost(id, { is_featured: false }); refreshBlogViews(); return NextResponse.json({ post: updated }); }
+  if (body.action === "set_enabled") {
+    const enabled = body.enabled !== false;
+    const updated = enabled
+      ? await updateBlogPost(id, {
+          status: "published",
+          published_at: item.published_at || new Date().toISOString(),
+          visible_in_listing: true,
+        })
+      : await updateBlogPost(id, {
+          status: "draft",
+          visible_in_listing: false,
+        });
+    refreshBlogViews();
+    return NextResponse.json({ post: updated });
+  }
   return NextResponse.json({ error: "Acción no válida" }, { status: 400 });
 }
 export async function DELETE(request: NextRequest, ctx: { params: Promise<{ id: string }> }) {

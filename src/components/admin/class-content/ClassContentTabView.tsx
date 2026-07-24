@@ -1,0 +1,35 @@
+"use client";
+
+import { memo } from "react";
+import { ClassContentMainCard } from "./components/ClassContentMainCard";
+import { ClassContentModulesCard } from "./components/ClassContentModulesCard";
+import { useClassContentEditor, type ClassContentEditorProps } from "./hooks/useClassContentEditor";
+
+function ClassContentTabViewComponent(props: ClassContentEditorProps) {
+  const editor = useClassContentEditor(props);
+
+  return (
+    <div className="space-y-6">
+      <ClassContentMainCard
+        content={editor.content}
+        typography={editor.typography}
+        paymentMethods={editor.paymentMethods}
+        setField={editor.setField}
+        addPaymentMethod={editor.addPaymentMethod}
+        updatePaymentMethod={editor.updatePaymentMethod}
+        removePaymentMethod={editor.removePaymentMethod}
+      />
+      <ClassContentModulesCard
+        content={editor.content}
+        setField={editor.setField}
+        addModule={editor.addModule}
+        updateModule={editor.updateModule}
+        duplicateModule={editor.duplicateModule}
+        removeModule={editor.removeModule}
+        resolveModuleTypography={editor.resolveModuleTypography}
+      />
+    </div>
+  );
+}
+
+export const ClassContentTabView = memo(ClassContentTabViewComponent);

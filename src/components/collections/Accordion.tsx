@@ -3,6 +3,11 @@
 import { useState } from "react";
 import { MarkdownContent, renderInlineMarkdown } from "@/components/ui/MarkdownContent";
 import type { ProgramItem } from "@/data/types";
+import {
+  DEFAULT_DESCRIPTION_TYPOGRAPHY,
+  normalizeRichTextTypography,
+  richTextTypographyStyle,
+} from "@/lib/cms/rich-text-typography";
 
 export function Accordion({ items }: { items: ProgramItem[] }) {
   const [openItems, setOpenItems] = useState<Set<number>>(() => new Set([0]));
@@ -21,6 +26,9 @@ export function Accordion({ items }: { items: ProgramItem[] }) {
       {items.map((item, index) => {
         const open = openItems.has(index);
         const panelId = `course-panel-${index}`;
+        const contentTypography = normalizeRichTextTypography(
+          item.contentTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+        );
         return (
           <div
             className={open ? "course-accordion__item is-open" : "course-accordion__item"}
@@ -44,7 +52,11 @@ export function Accordion({ items }: { items: ProgramItem[] }) {
               hidden={!open}
             >
               <div className="course-accordion__content">
-                <MarkdownContent source={item.content} />
+                <MarkdownContent
+                  source={item.content}
+                  className="course-accordion__copy"
+                  style={richTextTypographyStyle(contentTypography)}
+                />
                 {item.points?.length ? (
                   <ul>
                     {item.points.map((point) => (

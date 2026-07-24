@@ -2,6 +2,7 @@
 
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import MediaLibraryModal from "@/components/admin/MediaLibraryModal";
+import { uploadAdminMediaFile } from "@/lib/admin/media-upload-client";
 import { normalizeEditorUrl } from "./markdown-codec";
 import type { MediaSourceMode } from "./editor-types";
 
@@ -60,19 +61,16 @@ export default function EditorMediaDialog({
     }
     setUploading(true);
     setError("");
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("folder", "editor");
-    formData.append("title", file.name);
-    formData.append("alt_text", alt || file.name);
 
     try {
-      const response = await fetch("/api/admin/media/upload", { method: "POST", body: formData });
-      const data = await response.json().catch(() => ({})) as { asset?: { file_url?: string }; error?: string };
-      if (!response.ok) throw new Error(data.error || "No se pudo subir la imagen.");
-      const src = data.asset?.file_url;
-      if (!src) throw new Error("La subida no devolvio una URL.");
-      onInsertImage(src, alt.trim() || file.name);
+      const result = await uploadAdminMediaFile({
+        file,
+        folder: "general",
+        title: file.name,
+        altText: alt || file.name,
+      });
+      if (!result.ok) throw new Error(result.error);
+      onInsertImage(result.fileUrl, alt.trim() || file.name);
       close();
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "No se pudo subir la imagen.");

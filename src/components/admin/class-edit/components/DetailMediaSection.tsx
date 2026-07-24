@@ -4,8 +4,14 @@ import { memo } from "react";
 import Switch from "@/components/ui/Switch";
 import { AdminInput } from "@/components/ui/AdminField";
 import { AdminRichTextField } from "@/components/ui/AdminRichTextField";
+import {
+  DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  normalizeRichTextTypography,
+} from "@/lib/cms/rich-text-typography";
 import type { ClassEditFormState } from "../hooks/useClassEditForm";
 import { useDetailMediaHandlers } from "../hooks/useDetailMediaHandlers";
+import { DETAIL_PAGE_RICH_TEXT_CONTROLS } from "../constants/rich-text-controls";
+import { defaultClassDetails } from "../constants";
 import { MediaPickerField } from "./MediaPickerField";
 import { SectionCard } from "./SectionCard";
 
@@ -15,17 +21,28 @@ type DetailMediaSectionProps = {
 
 function DetailMediaSectionComponent({ form }: DetailMediaSectionProps) {
   const media = useDetailMediaHandlers(form);
+  const includedTypography = normalizeRichTextTypography(
+    form.details.includedItemsTypography
+      ?? defaultClassDetails.includedItemsTypography
+      ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 16 },
+  );
 
   return (
     <SectionCard compact>
       <div className="class-edit-media-layout">
-        <div className="class-edit-media-layout__copy">
+        <div className="class-edit-media-layout__copy class-edit-rich-text-stack">
           <AdminRichTextField
             label="Qué incluye"
+            labelPlacement="editor"
+            layout="compact"
             value={media.includedItemsText}
+            typography={includedTypography}
+            controls={DETAIL_PAGE_RICH_TEXT_CONTROLS}
+            minHeight="160px"
+            placeholder="Un elemento por línea. Usa negrita, cursiva, listas y enlaces."
+            help="La tipografía del bloque se aplica a toda la lista. Negrita/cursiva del toolbar sirven para énfasis parcial."
             onChange={media.updateIncludedItems}
-            minHeight="140px"
-            placeholder="Un elemento por línea. Puedes usar negritas, itálica, listas y enlaces."
+            onTypographyChange={(includedItemsTypography) => form.updateDetails({ includedItemsTypography })}
           />
           <Switch
             checked={media.showIncludedSection}

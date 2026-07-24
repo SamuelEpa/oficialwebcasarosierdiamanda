@@ -1,4 +1,4 @@
-import { defaultContent } from "@/components/admin/ClassContentTab";
+import { defaultContent } from "@/components/admin/class-content/defaultContent";
 import { DEFAULT_RICH_TEXT_TYPOGRAPHY, DEFAULT_DESCRIPTION_TYPOGRAPHY } from "@/lib/cms/rich-text-typography";
 import type { ClassOfferingDetails } from "@/lib/cms/types";
 import type { NavigationItem } from "@/data/types";
@@ -265,6 +265,7 @@ export const defaultClassDetails: ClassOfferingDetails = {
   videoPoster: "",
   showIncludedSection: false,
   includedItems: [],
+  includedItemsTypography: { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 16 },
   pricing: [],
   seoImage: "",
   showIdeaPromptSection: true,

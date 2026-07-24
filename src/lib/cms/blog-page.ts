@@ -99,8 +99,11 @@ export async function getBlogPageSettings() {
 }
 
 export async function updateBlogPageSettings(input: Partial<BlogPageSettings>) {
+  const existing = await getBlogPageSettings();
   const next = normalizeBlogPageSettings({
+    ...existing,
     ...input,
+    hero: input.hero ? normalizeHeroSettings(input.hero, existing.hero) : existing.hero,
     updated_at: new Date().toISOString(),
   });
 

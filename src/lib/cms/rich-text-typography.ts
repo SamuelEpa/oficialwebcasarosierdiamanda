@@ -14,6 +14,9 @@ export const DEFAULT_RICH_TEXT_TYPOGRAPHY: RichTextTypography = {
   fontSize: 28,
 };
 
+export const RICH_TEXT_FONT_SIZE_MIN = 12;
+export const RICH_TEXT_FONT_SIZE_MAX = 72;
+
 export function normalizeRichTextTypography(value: unknown): RichTextTypography {
   const source = value && typeof value === "object" && !Array.isArray(value)
     ? value as Partial<RichTextTypography>
@@ -27,28 +30,48 @@ export function normalizeRichTextTypography(value: unknown): RichTextTypography 
     italic: Boolean(source.italic),
     weight: Number.isFinite(weight) ? Math.min(900, Math.max(100, weight)) : DEFAULT_RICH_TEXT_TYPOGRAPHY.weight,
     width: Number.isFinite(width) ? Math.min(125, Math.max(75, width)) : DEFAULT_RICH_TEXT_TYPOGRAPHY.width,
-    fontSize: Number.isFinite(fontSize) ? Math.min(72, Math.max(12, fontSize)) : DEFAULT_RICH_TEXT_TYPOGRAPHY.fontSize,
+    fontSize: Number.isFinite(fontSize)
+      ? Math.min(RICH_TEXT_FONT_SIZE_MAX, Math.max(RICH_TEXT_FONT_SIZE_MIN, fontSize))
+      : DEFAULT_RICH_TEXT_TYPOGRAPHY.fontSize,
   };
 }
 
-export function richTextTypographyStyle(typography: RichTextTypography): CSSProperties {
+/** CSS custom properties only. Numeric values must be strings — React appends `px` to bare numbers. */
+export function richTextTypographyCssVars(typography: RichTextTypography): CSSProperties {
   return {
     "--tiptap-preview-font-size": `${typography.fontSize}px`,
-    "--tiptap-preview-font-weight": typography.weight,
+    "--tiptap-preview-font-weight": String(typography.weight),
     "--tiptap-preview-font-stretch": `${typography.width}%`,
-    "--tiptap-preview-font-width": typography.width,
+    "--tiptap-preview-font-width": String(typography.width),
     "--tiptap-preview-font-style": typography.italic ? "italic" : "normal",
     "--content-card-excerpt-font-size": `${typography.fontSize}px`,
-    "--content-card-excerpt-font-weight": typography.weight,
+    "--content-card-excerpt-font-weight": String(typography.weight),
     "--content-card-excerpt-font-stretch": `${typography.width}%`,
-    "--content-card-excerpt-font-width": typography.width,
+    "--content-card-excerpt-font-width": String(typography.width),
     "--content-card-excerpt-font-style": typography.italic ? "italic" : "normal",
+  } as CSSProperties;
+}
+
+export function richTextTypographyFontStyle(typography: RichTextTypography): CSSProperties {
+  return {
     fontSize: `${typography.fontSize}px`,
     fontWeight: typography.weight,
     fontStretch: `${typography.width}%`,
     fontStyle: typography.italic ? "italic" : "normal",
     fontVariationSettings: `"wdth" ${typography.width}, "wght" ${typography.weight}`,
+  };
+}
+
+export function richTextTypographyStyle(typography: RichTextTypography): CSSProperties {
+  return {
+    ...richTextTypographyCssVars(typography),
+    ...richTextTypographyFontStyle(typography),
   } as CSSProperties;
+}
+
+export function richTextTypographyRevision(typography: RichTextTypography | undefined | null): string {
+  if (!typography) return "";
+  return [typography.fontSize, typography.weight, typography.width, typography.italic ? 1 : 0].join(":");
 }
 
 export type DetailTextTypographyScope =
@@ -71,9 +94,9 @@ export function detailTextTypographyStyle(
   const prefix = DETAIL_TEXT_CSS_PREFIX[scope];
   return {
     [`--${prefix}-font-size`]: `${typography.fontSize}px`,
-    [`--${prefix}-font-weight`]: typography.weight,
+    [`--${prefix}-font-weight`]: String(typography.weight),
     [`--${prefix}-font-stretch`]: `${typography.width}%`,
-    [`--${prefix}-font-width`]: typography.width,
+    [`--${prefix}-font-width`]: String(typography.width),
     [`--${prefix}-font-style`]: typography.italic ? "italic" : "normal",
     ...richTextTypographyStyle(typography),
   } as CSSProperties;

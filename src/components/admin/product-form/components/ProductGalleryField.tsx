@@ -1,10 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import MediaLibraryModal from "@/components/admin/MediaLibraryModal";
-import { MEDIA_UPLOAD_ENDPOINT, PRODUCT_MEDIA_FOLDER } from "../constants";
+import { mapPool } from "@/lib/admin/map-pool";
+import { uploadAdminMediaFile } from "@/lib/admin/media-upload-client";
+import { PRODUCT_MEDIA_FOLDER } from "../constants";
 import { isAbsoluteUrl, localImageSrc } from "../utils";
+
+/** Keep gallery uploads from flooding the API with parallel Sharp + Storage jobs. */
+const GALLERY_UPLOAD_CONCURRENCY = 2;
 
 type Props = {
   images: string[];
@@ -24,39 +29,34 @@ export function ProductGalleryField({
   onMove,
 }: Props) {
   const inputId = useId();
+  const uploadInFlight = useRef(false);
   const [showPicker, setShowPicker] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function uploadFiles(fileList: FileList | null) {
-    if (!fileList?.length || disabled) return;
+    if (!fileList?.length || disabled || uploadInFlight.current) return;
 
+    const files = Array.from(fileList);
+    uploadInFlight.current = true;
     setIsUploading(true);
     setError(null);
+    setProgress(`0/${files.length}`);
+
+    let completed = 0;
 
     try {
-      const uploads = Array.from(fileList).map(async (file) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("folder", folder);
-
-        const response = await fetch(MEDIA_UPLOAD_ENDPOINT, {
-          method: "POST",
-          body: formData,
-        });
-        const data = (await response.json().catch(() => ({}))) as {
-          asset?: { file_url?: string };
-          error?: string;
-        };
-
-        if (!response.ok || !data.asset?.file_url) {
-          throw new Error(data.error || "No se pudo subir una imagen.");
+      const results = await mapPool(files, GALLERY_UPLOAD_CONCURRENCY, async (file) => {
+        const result = await uploadAdminMediaFile({ file, folder });
+        completed += 1;
+        setProgress(`${completed}/${files.length}`);
+        if (!result.ok) {
+          throw new Error(result.error);
         }
-
-        return data.asset.file_url;
+        return result.fileUrl;
       });
 
-      const results = await Promise.allSettled(uploads);
       const urls = results
         .filter((result): result is PromiseFulfilledResult<string> => result.status === "fulfilled")
         .map((result) => result.value);
@@ -73,7 +73,9 @@ export function ProductGalleryField({
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "No se pudieron subir las imágenes.");
     } finally {
+      uploadInFlight.current = false;
       setIsUploading(false);
+      setProgress(null);
     }
   }
 
@@ -107,7 +109,7 @@ export function ProductGalleryField({
             <span className="material-symbols-outlined" aria-hidden="true">
               upload
             </span>
-            {isUploading ? "Subiendo…" : "Subir varias"}
+            {isUploading ? `Subiendo${progress ? ` ${progress}` : "…"}` : "Subir varias"}
             <input
               id={inputId}
               type="file"

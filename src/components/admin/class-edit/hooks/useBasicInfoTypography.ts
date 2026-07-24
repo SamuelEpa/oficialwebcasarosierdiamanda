@@ -5,6 +5,7 @@ import {
   DEFAULT_DESCRIPTION_TYPOGRAPHY,
   DEFAULT_RICH_TEXT_TYPOGRAPHY,
   normalizeRichTextTypography,
+  richTextTypographyRevision,
   type RichTextTypography,
 } from "@/lib/cms/rich-text-typography";
 import type { ClassOfferingDetails } from "@/lib/cms/types";
@@ -27,44 +28,28 @@ export function resolveBasicInfoTypography(details: ClassOfferingDetails): Basic
 
 export function basicInfoTypographyRevision(details: ClassOfferingDetails): string {
   return [
-    details.subtitleTypography?.fontSize,
-    details.subtitleTypography?.weight,
-    details.subtitleTypography?.width,
-    details.subtitleTypography?.italic,
-    details.detailQuestionTypography?.fontSize,
-    details.detailQuestionTypography?.weight,
-    details.detailQuestionTypography?.width,
-    details.detailQuestionTypography?.italic,
-    details.highlightDescriptionTypography?.fontSize,
-    details.highlightDescriptionTypography?.weight,
-    details.highlightDescriptionTypography?.width,
-    details.highlightDescriptionTypography?.italic,
-    details.descriptionTypography?.fontSize,
-    details.descriptionTypography?.weight,
-    details.descriptionTypography?.width,
-    details.descriptionTypography?.italic,
+    richTextTypographyRevision(details.subtitleTypography),
+    richTextTypographyRevision(details.detailQuestionTypography),
+    richTextTypographyRevision(details.highlightDescriptionTypography),
+    richTextTypographyRevision(details.descriptionTypography),
   ].join("\u001f");
 }
 
-/** Revision key for preview rebuild when any rich-text typography changes (basic, home, hero). */
+/** Revision key for preview rebuild when any rich-text typography changes (basic, home, hero, media, content). */
 export function classEditPreviewTypographyRevision(details: ClassOfferingDetails): string {
-  const home = details.homeCard?.excerptTypography;
-  const heroText = details.heroPresentationTextTypography;
-  const heroSubtitle = details.heroPresentationSubtitleTypography;
+  const modulesRevision = (details.content?.modules ?? [])
+    .map((mod) => richTextTypographyRevision(mod.descriptionTypography))
+    .join("|");
   return [
     basicInfoTypographyRevision(details),
-    home?.fontSize,
-    home?.weight,
-    home?.width,
-    home?.italic,
-    heroText?.fontSize,
-    heroText?.weight,
-    heroText?.width,
-    heroText?.italic,
-    heroSubtitle?.fontSize,
-    heroSubtitle?.weight,
-    heroSubtitle?.width,
-    heroSubtitle?.italic,
+    richTextTypographyRevision(details.homeCard?.excerptTypography),
+    richTextTypographyRevision(details.heroPresentationTextTypography),
+    richTextTypographyRevision(details.heroPresentationSubtitleTypography),
+    richTextTypographyRevision(details.includedItemsTypography),
+    richTextTypographyRevision(details.content?.learningContentTypography),
+    richTextTypographyRevision(details.content?.participationContentTypography),
+    richTextTypographyRevision(details.content?.extraInfoTypography),
+    modulesRevision,
   ].join("\u001f");
 }
 

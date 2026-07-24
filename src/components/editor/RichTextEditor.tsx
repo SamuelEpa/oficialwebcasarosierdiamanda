@@ -7,7 +7,11 @@ import EditorToolbar, { defaultRichTextEditorControls } from "./EditorToolbar";
 import TypographyPanel from "./TypographyPanel";
 import { editorExtensions } from "./editor-extensions";
 import { htmlRootToMarkdown, markdownToHtml } from "./markdown-codec";
-import { DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography, richTextTypographyStyle } from "@/lib/cms/rich-text-typography";
+import {
+  DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  normalizeRichTextTypography,
+  richTextTypographyCssVars,
+} from "@/lib/cms/rich-text-typography";
 import type { RichTextEditorProps, TypographyState } from "./editor-types";
 
 export default function RichTextEditor({
@@ -42,10 +46,15 @@ export default function RichTextEditor({
   const descriptionId = `${label.replace(/\s+/g, "-").toLowerCase()}-editor-description`;
 
   const extensions = useMemo(() => editorExtensions(placeholder), [placeholder]);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
   const editor = useEditor({
     extensions,
     content: markdownToHtml(value),
     immediatelyRender: false,
+    // TipTap v3 defaults this to false; toolbar active state + controlled sync need it.
+    shouldRerenderOnTransaction: true,
     editorProps: {
       attributes: {
         class: "tiptap-editor__content",
@@ -58,28 +67,35 @@ export default function RichTextEditor({
       const root = currentEditor.view.dom as HTMLElement;
       const nextMarkdown = htmlRootToMarkdown(root);
       lastMarkdownRef.current = nextMarkdown;
-      onChange(nextMarkdown);
+      onChangeRef.current(nextMarkdown);
     },
   });
 
   useEffect(() => {
     if (!editor) return;
     if (value === lastMarkdownRef.current) return;
+    const currentMarkdown = htmlRootToMarkdown(editor.view.dom as HTMLElement);
+    if (currentMarkdown === value) {
+      lastMarkdownRef.current = value;
+      return;
+    }
     lastMarkdownRef.current = value;
     editor.commands.setContent(markdownToHtml(value), { emitUpdate: false });
   }, [editor, value]);
 
   const plainTextLength = editor?.state.doc.textContent.length ?? 0;
   const overLimit = typeof maxLength === "number" && plainTextLength > maxLength;
-  const previewStyle = {
-    ...richTextTypographyStyle(typography),
+  // CSS vars on the shell feed `.tiptap-editor__content`. Do not put fontSize here —
+  // it would scale toolbar chrome (width/height of controls).
+  const shellStyle = {
+    ...richTextTypographyCssVars(typography),
     ...style,
   } as CSSProperties;
 
   return (
     <div
       {...props}
-      style={previewStyle}
+      style={shellStyle}
       className={`tiptap-editor${layout === "compact" ? " tiptap-editor--compact" : ""} ${className ?? ""}`}
       ref={editorShellRef}
     >

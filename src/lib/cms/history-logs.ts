@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { createAdminClient } from "../supabase/admin";
 import { createClient } from "../supabase/server";
-import { readJsonFile, writeJsonFile } from "./local-storage";
+import { prependJsonCacheItem, readJsonFile, writeJsonFile } from "./local-storage";
 import { isHistoryLogAction } from "./types";
 import type { HistoryLog } from "./types";
 
@@ -171,11 +171,20 @@ export async function getHistoryLogById(id: string) {
 }
 
 export async function createHistoryLog(data: LogInput) {
-  const items = await readJsonFile<HistoryLog[]>(FILE_NAME, []);
   if (data.action && !isHistoryLogAction(data.action)) throw new Error("Acción no válida.");
   const log: HistoryLog = { ...data, id: data.id ?? randomUUID(), created_at: new Date().toISOString() };
-  await writeJsonFile(FILE_NAME, [log, ...items]);
-  await upsertHistoryLog(log);
+
+  // Insert one row — do not re-upsert the entire history_logs table.
+  try {
+    const supabase = createAdminClient();
+    const { error } = await supabase.from(TABLE).upsert(historyLogToRow(log), { onConflict: "id" });
+    if (error) throw error;
+    prependJsonCacheItem(FILE_NAME, log);
+  } catch {
+    const items = await readJsonFile<HistoryLog[]>(FILE_NAME, []);
+    await writeJsonFile(FILE_NAME, [log, ...items.filter((item) => item.id !== log.id)]);
+  }
+
   return log;
 }
 

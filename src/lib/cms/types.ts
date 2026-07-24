@@ -40,18 +40,19 @@ export interface CalendarLabel {
   availabilityText?: string;
 }
 
-export interface ClassOfferingModule {
-  id: string;
-  title: string;
-  description: string;
-  order: number;
-}
-
 export interface RichTextTypography {
   italic: boolean;
   weight: number;
   width: number;
   fontSize: number;
+}
+
+export interface ClassOfferingModule {
+  id: string;
+  title: string;
+  description: string;
+  descriptionTypography?: RichTextTypography;
+  order: number;
 }
 
 export interface ClassHomeCard {
@@ -80,13 +81,16 @@ export interface ClassOfferingContent {
   showModulesSection: boolean;
   learningSectionTitle: string;
   learningContent: string;
+  learningContentTypography?: RichTextTypography;
   participationSectionTitle: string;
   participationContent: string;
+  participationContentTypography?: RichTextTypography;
   paymentMethods: string;
   paymentMethodsList: string[];
   contactWhatsapp: string;
   contactEmail: string;
   extraInfo: string;
+  extraInfoTypography?: RichTextTypography;
   showEnrollButtonAtEnd: boolean;
   activitiesSection: {
     enabled: boolean;
@@ -305,6 +309,7 @@ export interface ClassOfferingDetails {
   videoPoster: string;
   showIncludedSection: boolean;
   includedItems: string[];
+  includedItemsTypography?: RichTextTypography;
   pricing: OfferingPriceOption[];
   seoImage: string;
   showIdeaPromptSection: boolean;

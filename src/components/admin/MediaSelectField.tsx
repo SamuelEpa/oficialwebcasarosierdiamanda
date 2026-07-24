@@ -1,8 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import MediaLibraryModal from "./MediaLibraryModal";
+import {
+  formatUploadMegabytes,
+  uploadAdminMediaFile,
+  validateImageFileForUpload,
+} from "@/lib/admin/media-upload-client";
 
 function isAbsoluteUrl(url: string) {
   return /^https?:\/\//i.test(url);
@@ -28,30 +33,54 @@ export default function MediaSelectField({
   previewClassName?: string;
   folder?: string;
 }) {
+  const uploadInFlight = useRef(false);
   const [showPicker, setShowPicker] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadHint, setUploadHint] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function uploadFile(file: File) {
-    setIsUploading(true);
-    setError(null);
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("folder", folder);
+    if (uploadInFlight.current) return;
 
-    const response = await fetch("/api/admin/media/upload", {
-      method: "POST",
-      body: formData,
-    });
-    const data = await response.json().catch(() => ({})) as { asset?: { file_url?: string }; error?: string };
-    setIsUploading(false);
-
-    if (!response.ok || !data.asset?.file_url) {
-      setError(data.error || "No se pudo subir la imagen.");
+    const validationError = validateImageFileForUpload(file);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
-    onChange(data.asset.file_url);
+    uploadInFlight.current = true;
+    setIsUploading(true);
+    setError(null);
+    setUploadHint(`Subiendo ${formatUploadMegabytes(file.size)}…`);
+
+    try {
+      const result = await uploadAdminMediaFile({
+        file,
+        folder,
+        title: file.name,
+        altText: label,
+      });
+
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+
+      if (result.optimization?.optimized) {
+        setUploadHint(
+          `Optimizada: ${formatUploadMegabytes(result.optimization.originalSize)} → ${formatUploadMegabytes(result.optimization.finalSize)}`,
+        );
+      } else if (result.clientCompressed) {
+        setUploadHint("Imagen reducida en el navegador antes de subir.");
+      } else {
+        setUploadHint(null);
+      }
+
+      onChange(result.fileUrl);
+    } finally {
+      uploadInFlight.current = false;
+      setIsUploading(false);
+    }
   }
 
   return (
@@ -78,7 +107,7 @@ export default function MediaSelectField({
           Biblioteca
         </button>
         <label className="secondary-btn" style={{ cursor: isUploading ? "wait" : "pointer" }}>
-          {isUploading ? "Subiendo..." : "Subir"}
+          {isUploading ? uploadHint || "Subiendo…" : "Subir"}
           <input
             type="file"
             accept="image/*"
@@ -98,6 +127,9 @@ export default function MediaSelectField({
         ) : null}
       </div>
       {error ? <p className="form-error">{error}</p> : null}
+      {!error && uploadHint && !isUploading ? (
+        <p className="text-label-md text-on-surface-variant">{uploadHint}</p>
+      ) : null}
 
       <MediaLibraryModal
         open={showPicker}

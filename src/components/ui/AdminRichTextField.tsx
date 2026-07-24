@@ -5,7 +5,6 @@ import type { RichTextEditorControl } from "@/components/editor/editor-types";
 import {
   DEFAULT_RICH_TEXT_TYPOGRAPHY,
   normalizeRichTextTypography,
-  richTextTypographyStyle,
   type RichTextTypography,
 } from "@/lib/cms/rich-text-typography";
 import { FormField } from "./FormField";
@@ -67,7 +66,6 @@ export function AdminRichTextField({
         controls={controls}
         typography={resolvedTypography}
         onTypographyChange={onTypographyChange}
-        style={richTextTypographyStyle(resolvedTypography)}
       />
     </FormField>
   );

@@ -7,11 +7,29 @@ import { Gallery } from "@/components/collections/Gallery";
 import { MarkdownContent, renderInlineMarkdown } from "@/components/ui/MarkdownContent";
 import type { ExperienceItem } from "@/data/types";
 import { assetPath } from "@/lib/assets";
-import { detailTextTypographyStyle, DEFAULT_DESCRIPTION_TYPOGRAPHY, DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography } from "@/lib/cms/rich-text-typography";
+import {
+  detailTextTypographyStyle,
+  DEFAULT_DESCRIPTION_TYPOGRAPHY,
+  DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  normalizeRichTextTypography,
+  richTextTypographyStyle,
+} from "@/lib/cms/rich-text-typography";
 import { addCartItem } from "@/lib/cart";
 
-function includedText(value: string) {
-  return value.replace(/^\s*(?:[-*]\s+|\d+\.\s+)/, "");
+function includedMarkdownSource(items: string[]) {
+  const lines = items.map((item) => item.replace(/\r\n/g, "\n"));
+  const joined = lines.join("\n").trim();
+  if (!joined) return "";
+  // Already structured markdown from the rich-text editor.
+  if (/^\s*(?:[-*]|\d+\.|#{1,3})\s+/m.test(joined) || /<\/?(?:p|ul|ol|h[1-3])\b/i.test(joined)) {
+    return joined;
+  }
+  // Plain lines → bullet list so public page keeps the "Incluye" list shape.
+  return lines
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => `- ${line}`)
+    .join("\n");
 }
 
 function hasMeaningfulContent(value: string | string[] | undefined) {
@@ -230,7 +248,15 @@ export function DetailPage({
               {item.additionalInfo.trim() ? (
                 <div className="class-sidecard class-sidecard--soft">
                   <h3>Informacion adicional</h3>
-                  <MarkdownContent source={item.additionalInfo} />
+                  <MarkdownContent
+                    source={item.additionalInfo}
+                    className="class-detail__content-copy"
+                    style={richTextTypographyStyle(
+                      normalizeRichTextTypography(
+                        item.additionalInfoTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+                      ),
+                    )}
+                  />
                 </div>
               ) : null}
               <CalendarLabelsSection item={item} />
@@ -307,11 +333,15 @@ export function DetailPage({
                   {showIncluded ? (
                     <>
                       <h2>Incluye</h2>
-                      <ul>
-                        {item.included.map((included, includedIndex) => (
-                          <li key={`${included}-${includedIndex}`}>{renderInlineMarkdown(includedText(included))}</li>
-                        ))}
-                      </ul>
+                      <MarkdownContent
+                        source={includedMarkdownSource(item.included)}
+                        className="class-detail__includes-copy"
+                        style={richTextTypographyStyle(
+                          normalizeRichTextTypography(
+                            item.includedTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 16 },
+                          ),
+                        )}
+                      />
                     </>
                   ) : null}
                   {consultHref ? (
@@ -330,14 +360,30 @@ export function DetailPage({
               {hasLearningContent ? (
                 <section className="class-detail__text-block">
                   <h2>{item.learningSectionTitle || "¿Qué aprenderás?"}</h2>
-                  <MarkdownContent source={item.whatYouWillLearn} />
+                  <MarkdownContent
+                    source={item.whatYouWillLearn}
+                    className="class-detail__content-copy"
+                    style={richTextTypographyStyle(
+                      normalizeRichTextTypography(
+                        item.whatYouWillLearnTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+                      ),
+                    )}
+                  />
                 </section>
               ) : null}
 
               {hasParticipationContent ? (
                 <section className="class-detail__text-block">
                   <h2>{item.participationSectionTitle || "¿Quién puede participar?"}</h2>
-                  <MarkdownContent source={item.whoCanJoin} />
+                  <MarkdownContent
+                    source={item.whoCanJoin}
+                    className="class-detail__content-copy"
+                    style={richTextTypographyStyle(
+                      normalizeRichTextTypography(
+                        item.whoCanJoinTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+                      ),
+                    )}
+                  />
                 </section>
               ) : null}
 

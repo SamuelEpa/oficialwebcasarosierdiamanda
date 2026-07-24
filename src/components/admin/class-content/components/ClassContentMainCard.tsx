@@ -1,0 +1,106 @@
+"use client";
+
+import { memo } from "react";
+import Card from "@/components/ui/Card";
+import Switch from "@/components/ui/Switch";
+import type { ClassContentEditor } from "../hooks/useClassContentEditor";
+import { ClassContentPaymentMethodsEditor } from "./ClassContentPaymentMethodsEditor";
+import { ClassContentRichTextField } from "./ClassContentRichTextField";
+import { ClassContentTextField } from "./ClassContentTextField";
+
+type ClassContentMainCardProps = Pick<
+  ClassContentEditor,
+  | "content"
+  | "typography"
+  | "paymentMethods"
+  | "setField"
+  | "addPaymentMethod"
+  | "updatePaymentMethod"
+  | "removePaymentMethod"
+>;
+
+function ClassContentMainCardComponent({
+  content,
+  typography,
+  paymentMethods,
+  setField,
+  addPaymentMethod,
+  updatePaymentMethod,
+  removePaymentMethod,
+}: ClassContentMainCardProps) {
+  return (
+    <Card padding="lg" className="space-y-5 rounded-2xl">
+      <h2 className="text-headline-sm text-on-surface">Contenido del Curso</h2>
+
+      <Switch
+        checked={content.showLearningSection}
+        label="Mostrar ¿Qué aprenderás? en la página pública"
+        description="El texto permanece guardado aunque esta sección esté oculta."
+        onCheckedChange={(checked) => setField("showLearningSection", checked)}
+      />
+
+      <ClassContentTextField
+        label="Título de la sección '¿Qué aprenderás?'"
+        value={content.learningSectionTitle}
+        placeholder="Estructura por módulos"
+        onChange={(event) => setField("learningSectionTitle", event.target.value)}
+      />
+
+      <ClassContentRichTextField
+        label="¿Qué aprenderás?"
+        value={content.learningContent}
+        typography={typography.learning}
+        minHeight="200px"
+        placeholder="Módulo 1. Arcillas y propiedades de la materia cerámica.&#10;Módulo 2. Modelado manual y técnicas constructivas básicas."
+        help="Tipografía del bloque en el panel. Negrita/cursiva del toolbar para énfasis parcial."
+        onChange={(value) => setField("learningContent", value)}
+        onTypographyChange={(learningContentTypography) => setField("learningContentTypography", learningContentTypography)}
+      />
+
+      <Switch
+        checked={content.showParticipationSection}
+        label="Mostrar ¿Quién puede participar? en la página pública"
+        description="El texto permanece guardado aunque esta sección esté oculta."
+        onCheckedChange={(checked) => setField("showParticipationSection", checked)}
+      />
+
+      <ClassContentTextField
+        label="Título de la sección '¿Quién puede participar?'"
+        value={content.participationSectionTitle}
+        placeholder="QUE INCLUYE"
+        onChange={(event) => setField("participationSectionTitle", event.target.value)}
+      />
+
+      <ClassContentRichTextField
+        label="¿Quién puede participar?"
+        value={content.participationContent}
+        typography={typography.participation}
+        minHeight="200px"
+        placeholder="Materiales básicos para cada clase (arcillas, engobes, esmaltes comerciales).&#10;Uso de herramientas y horno durante las sesiones presenciales."
+        onChange={(value) => setField("participationContent", value)}
+        onTypographyChange={(participationContentTypography) => setField("participationContentTypography", participationContentTypography)}
+      />
+
+      <ClassContentPaymentMethodsEditor
+        content={content}
+        paymentMethods={paymentMethods}
+        setField={setField}
+        addPaymentMethod={addPaymentMethod}
+        updatePaymentMethod={updatePaymentMethod}
+        removePaymentMethod={removePaymentMethod}
+      />
+
+      <ClassContentRichTextField
+        label="Información extra (opcional)"
+        value={content.extraInfo}
+        typography={typography.extraInfo}
+        placeholder="Añade información adicional si es necesaria..."
+        minHeight="150px"
+        onChange={(value) => setField("extraInfo", value)}
+        onTypographyChange={(extraInfoTypography) => setField("extraInfoTypography", extraInfoTypography)}
+      />
+    </Card>
+  );
+}
+
+export const ClassContentMainCard = memo(ClassContentMainCardComponent);

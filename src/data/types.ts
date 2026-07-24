@@ -19,6 +19,7 @@ export interface ScheduleItem {
 export interface ProgramItem {
   title: string;
   content: string;
+  contentTypography?: RichTextTypography;
   points?: string[];
 }
 
@@ -144,6 +145,7 @@ export interface ExperienceItem {
   calendarLabelsDescription?: string;
   calendarLabels?: CalendarLabel[];
   included: string[];
+  includedTypography?: RichTextTypography;
   showIncludedSection: boolean;
   program: ProgramItem[];
   showLearningSection: boolean;
@@ -153,10 +155,13 @@ export interface ExperienceItem {
   programSectionTitle?: string;
   learningSectionTitle?: string;
   whatYouWillLearn: string[];
+  whatYouWillLearnTypography?: RichTextTypography;
   participationSectionTitle?: string;
   whoCanJoin: string[];
+  whoCanJoinTypography?: RichTextTypography;
   paymentMethods: string[];
   additionalInfo: string;
+  additionalInfoTypography?: RichTextTypography;
   showIdeaPromptSection?: boolean;
   ctaHref: string;
   ctaConsultHref: string;

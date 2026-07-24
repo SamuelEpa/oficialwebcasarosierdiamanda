@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type HTMLAttributes, type ReactNode } from "react";
 import MediaLibraryModal from "./MediaLibraryModal";
+import { uploadAdminMediaFile } from "@/lib/admin/media-upload-client";
 
 type RichTextControl =
   | "normal"
@@ -689,27 +690,19 @@ export default function RichTextField({
     setImageError("");
     setIsUploading(true);
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("folder", "general");
-    formData.append("alt_text", imageAlt);
-    formData.append("title", file.name);
-
     try {
-      const response = await fetch("/api/admin/media/upload", {
-        method: "POST",
-        body: formData,
+      const result = await uploadAdminMediaFile({
+        file,
+        folder: "general",
+        title: file.name,
+        altText: imageAlt || file.name,
       });
-      const data = await response.json().catch(() => ({}));
 
-      if (!response.ok) {
-        throw new Error(data.error || "No se pudo subir la imagen.");
+      if (!result.ok) {
+        throw new Error(result.error);
       }
 
-      const fileUrl = data.asset?.file_url;
-      if (!fileUrl) throw new Error("La subida no devolvió una URL de imagen.");
-
-      insertImageFromSource(fileUrl, imageAlt || data.asset?.alt_text || file.name);
+      insertImageFromSource(result.fileUrl, imageAlt || file.name);
     } catch (error) {
       setImageError(error instanceof Error ? error.message : "No se pudo subir la imagen.");
     } finally {

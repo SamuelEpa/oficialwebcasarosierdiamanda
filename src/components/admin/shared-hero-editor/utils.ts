@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { richTextTypographyRevision } from "@/lib/cms/rich-text-typography";
 import type { CmsHeroSettings } from "@/lib/cms/types";
 import type { DeviceFieldKeys, DeviceKey } from "./types";
 
@@ -129,7 +130,7 @@ export function patchDeviceField(
   return { [key]: value } as Partial<CmsHeroSettings>;
 }
 
-/** Stable revision when preview copy / variant inputs change (not position-only edits). */
+/** Stable revision when preview copy / variant / typography inputs change (not position-only edits). */
 export function heroPreviewContentRevision(
   details: CmsHeroSettings,
   titleFallback: string,
@@ -144,9 +145,15 @@ export function heroPreviewContentRevision(
     details.heroPresentationTextColor,
     details.heroPresentationImage,
     details.titleImage,
+    details.titleImageSecondary,
     details.heroPresentationCtaEnabled,
     details.heroPresentationCtaLabel,
     details.heroPresentationCtaHref,
+    details.heroPresentationCtaNewTab,
+    details.heroPresentationCtaBackgroundColor,
+    details.heroPresentationCtaTextColor,
+    richTextTypographyRevision(details.heroPresentationTextTypography),
+    richTextTypographyRevision(details.heroPresentationSubtitleTypography),
     titleFallback,
     subtitleFallback ?? "",
   ].join("\u001f");

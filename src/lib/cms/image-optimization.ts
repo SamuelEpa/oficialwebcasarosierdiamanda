@@ -1,8 +1,12 @@
 import sharp from "sharp";
 
-const WEBP_QUALITY = 85;
+const WEBP_QUALITY = 82;
+/** Lower effort speeds up server-side encoding on admin uploads (effort 4–6 was slow on large photos). */
+const WEBP_EFFORT = 2;
 const MAX_IMAGE_DIMENSION = 2560;
 const OPTIMIZABLE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "avif"]);
+/** Skip re-encode when the client already prepared a reasonably sized photo. */
+const SKIP_REENCODE_MAX_BYTES = 1.5 * 1024 * 1024;
 
 export interface ImageUploadOptimization {
   buffer: Buffer;
@@ -21,6 +25,8 @@ interface OptimizeImageUploadInput {
   buffer: Buffer;
   extension: string;
   mimeType: string;
+  /** Client already resized/compressed — avoid a second Sharp pass. */
+  skipOptimize?: boolean;
 }
 
 function normalizeExtension(extension: string) {
@@ -64,6 +70,20 @@ export async function optimizeImageForUpload(input: OptimizeImageUploadInput): P
     return original;
   }
 
+  // Client-prepared JPEG/WebP under the skip threshold: upload as-is (no second encode).
+  if (
+    input.skipOptimize &&
+    (extension === "jpg" || extension === "jpeg" || extension === "webp") &&
+    input.buffer.length <= SKIP_REENCODE_MAX_BYTES
+  ) {
+    return original;
+  }
+
+  // Already-webP and small enough: skip another expensive encode.
+  if (extension === "webp" && input.buffer.length <= SKIP_REENCODE_MAX_BYTES) {
+    return original;
+  }
+
   try {
     const source = sharp(input.buffer, { failOn: "none" }).rotate();
     const metadata = await source.metadata();
@@ -78,7 +98,7 @@ export async function optimizeImageForUpload(input: OptimizeImageUploadInput): P
       })
       .webp({
         quality: WEBP_QUALITY,
-        effort: 6,
+        effort: WEBP_EFFORT,
         smartSubsample: true,
       })
       .toBuffer();

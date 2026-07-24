@@ -240,6 +240,28 @@ export async function readJsonFile<T>(filename: string, fallback: T): Promise<T>
   }
 }
 
+/** Drop cached CMS JSON reads so the next `readJsonFile` hits Supabase again. */
+export function invalidateJsonCache(filename?: string) {
+  if (filename) {
+    readCache.delete(filename);
+    return;
+  }
+  readCache.clear();
+}
+
+/** Keep list caches warm after a single-row insert without rewriting the whole table. */
+export function prependJsonCacheItem<T extends { id: string }>(filename: string, item: T) {
+  const cached = getCachedRead<T[]>(filename);
+  if (!Array.isArray(cached)) {
+    invalidateJsonCache(filename);
+    return;
+  }
+  setCachedRead(
+    filename,
+    [item, ...cached.filter((row) => row.id !== item.id)],
+  );
+}
+
 export async function writeJsonFile<T>(filename: string, value: T) {
   setCachedRead(filename, value);
 

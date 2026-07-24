@@ -25,6 +25,8 @@ export async function POST(request: NextRequest) {
   const folder = String(formData.get("folder") || "general").trim();
   const altText = String(formData.get("alt_text") || "").trim();
   const title = String(formData.get("title") || "").trim();
+  const skipOptimize =
+    formData.get("client_compressed") === "1" || formData.get("skip_optimize") === "1";
 
   if (!file || !file.name) {
     return NextResponse.json({ error: "No se recibió ningún archivo." }, { status: 400 });
@@ -54,6 +56,7 @@ export async function POST(request: NextRequest) {
       buffer,
       extension: ext,
       mimeType: file.type,
+      skipOptimize,
     });
     const safeName = `${Date.now()}-${randomUUID().slice(0, 8)}.${optimizedFile.extension}`;
     const storagePath = `${folder}/${safeName}`;

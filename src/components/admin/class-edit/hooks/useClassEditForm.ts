@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import type { ClassHomeCard, ClassOfferingContent, ClassOfferingDetails, Offering } from "@/lib/cms/types";
+import { uploadAdminMediaFile } from "@/lib/admin/media-upload-client";
 import { MAX_CALENDAR_LABELS } from "../constants";
 import type {
   FormNotice,
@@ -20,7 +21,7 @@ import {
   focusValidationTarget,
   slugify,
   toClassDetails,
-  toLines,
+  markdownToIncludedItems,
   validateClassEditForm,
   validationDetails,
 } from "../utils";
@@ -132,7 +133,7 @@ export function useClassEditForm({
   }, []);
 
   const updateIncludedItems = useCallback((value: string) => {
-    updateDetails({ includedItems: toLines(value) });
+    updateDetails({ includedItems: markdownToIncludedItems(value) });
   }, [updateDetails]);
 
   const handleContentChange = useCallback(
@@ -248,51 +249,35 @@ export function useClassEditForm({
   }, [applyImageToTarget, pickerTarget]);
 
   const uploadImage = useCallback(async (target: UploadTarget, file: File) => {
-    if (!file.type.startsWith("image/")) {
-      setToast({ type: "error", message: "Selecciona un archivo de imagen valido." });
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      setToast({ type: "error", message: "La imagen supera el limite de 10 MB." });
-      return;
-    }
-
     setUploadingTarget(target);
     setToast(null);
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("folder", "offerings");
-    formData.append("title", file.name);
-    formData.append("alt_text", title || file.name);
+    const result = await uploadAdminMediaFile({
+      file,
+      folder: "offerings",
+      title: file.name,
+      altText: title || file.name,
+    });
 
-    try {
-      const response = await fetch("/api/admin/media/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json().catch(() => ({})) as {
-        asset?: { file_url?: string };
-        error?: string;
-        optimization?: UploadOptimization;
-      };
-      if (!response.ok) throw new Error(data.error || "No se pudo subir la imagen.");
-      const url = data.asset?.file_url;
-      if (!url) throw new Error("La subida no devolvió una URL.");
-
-      applyImageToTarget(target, url);
-      if ((target === "gallery:new" || target.startsWith("gallery:")) && data.optimization) {
-        setGalleryUploadInfo((previous) => ({ ...previous, [url]: data.optimization! }));
-      }
-    } catch (error) {
-      setToast({
-        type: "error",
-        message: error instanceof Error ? error.message : "No se pudo subir la imagen.",
-      });
-    } finally {
+    if (!result.ok) {
+      setToast({ type: "error", message: result.error });
       setUploadingTarget(null);
+      return;
     }
+
+    applyImageToTarget(target, result.fileUrl);
+    if ((target === "gallery:new" || target.startsWith("gallery:")) && result.optimization) {
+      setGalleryUploadInfo((previous) => ({
+        ...previous,
+        [result.fileUrl]: {
+          originalSize: result.optimization!.originalSize,
+          finalSize: result.optimization!.finalSize,
+          reductionPercent: result.optimization!.reductionPercent,
+        },
+      }));
+    }
+
+    setUploadingTarget(null);
   }, [applyImageToTarget, title]);
 
   const handleSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) => {

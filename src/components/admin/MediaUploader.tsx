@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { uploadAdminMediaFile } from "@/lib/admin/media-upload-client";
 import type { MediaFolder } from "@/lib/cms/types";
 import { MEDIA_FOLDERS } from "@/lib/cms/types";
 
@@ -33,18 +34,10 @@ export default function MediaUploader() {
     setIsLoading(true);
     setError(null);
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("folder", folder);
+    const result = await uploadAdminMediaFile({ file, folder, title: file.name });
 
-    const response = await fetch("/api/admin/media/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({ error: "Error al subir archivo." }));
-      setError(data.error || "Error al subir archivo.");
+    if (!result.ok) {
+      setError(result.error);
       setIsLoading(false);
       return;
     }

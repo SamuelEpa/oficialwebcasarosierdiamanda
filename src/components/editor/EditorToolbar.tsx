@@ -2,6 +2,7 @@
 
 import type { Editor } from "@tiptap/react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
+import { RICH_TEXT_FONT_SIZE_MAX, RICH_TEXT_FONT_SIZE_MIN } from "@/lib/cms/rich-text-typography";
 import type { RichTextEditorControl, TypographyState } from "./editor-types";
 
 function TextIcon({ children, italic, strike }: { children: string; italic?: boolean; strike?: boolean }) {
@@ -78,9 +79,9 @@ export default function EditorToolbar({
         <option value="h3">Heading 3</option>
       </select>
       <span className="tiptap-editor__divider" aria-hidden="true" />
-      <button type="button" className="tiptap-editor__size-button" aria-label="Reducir tamano" onClick={() => onTypographyChange((current) => ({ ...current, fontSize: Math.max(10, current.fontSize - 1) }))}>-</button>
+      <button type="button" className="tiptap-editor__size-button" aria-label="Reducir tamano" onClick={() => onTypographyChange((current) => ({ ...current, fontSize: Math.max(RICH_TEXT_FONT_SIZE_MIN, current.fontSize - 1) }))}>-</button>
       <span className="tiptap-editor__font-size">{typography.fontSize}px</span>
-      <button type="button" className="tiptap-editor__size-button" aria-label="Aumentar tamano" onClick={() => onTypographyChange((current) => ({ ...current, fontSize: Math.min(96, current.fontSize + 1) }))}>+</button>
+      <button type="button" className="tiptap-editor__size-button" aria-label="Aumentar tamano" onClick={() => onTypographyChange((current) => ({ ...current, fontSize: Math.min(RICH_TEXT_FONT_SIZE_MAX, current.fontSize + 1) }))}>+</button>
       <span className="tiptap-editor__divider" aria-hidden="true" />
       {has("undo") ? <ToolButton label="Deshacer" disabled={!editor.can().undo()} onClick={() => editor.chain().focus().undo().run()}><SvgIcon name="undo" /></ToolButton> : null}
       {has("redo") ? <ToolButton label="Rehacer" disabled={!editor.can().redo()} onClick={() => editor.chain().focus().redo().run()}><SvgIcon name="redo" /></ToolButton> : null}

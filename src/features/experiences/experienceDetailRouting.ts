@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import type { ExperienceItem, ExperienceKind } from "@/data/types";
 import { getOfferingBySlug, getOfferings } from "@/lib/cms/offerings";
 import { normalizeHeroSettings } from "@/lib/cms/hero-settings";
-import { DEFAULT_DESCRIPTION_TYPOGRAPHY, DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography } from "@/lib/cms/rich-text-typography";
+import {
+  DEFAULT_DESCRIPTION_TYPOGRAPHY,
+  DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  normalizeRichTextTypography,
+} from "@/lib/cms/rich-text-typography";
 import type { CalendarLabel, ClassOfferingDetails, Offering } from "@/lib/cms/types";
 
 type LegacyProgramItem = {
@@ -43,6 +47,12 @@ function splitParagraphs(value: unknown) {
     .split(/\n{2,}|\r?\n/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+/** Keep TipTap markdown structure (blank lines as block separators). */
+function markdownLines(value: unknown): string[] {
+  if (Array.isArray(value)) return value.map((item) => String(item ?? ""));
+  return String(value ?? "").replace(/\r\n/g, "\n").split("\n");
 }
 
 function splitList(value: unknown) {
@@ -178,7 +188,11 @@ function programForDetails(content: Partial<ClassOfferingDetails["content"]>, de
   if (content.modules?.length) {
     return content.modules
       .sort((a, b) => a.order - b.order)
-      .map((item) => ({ title: item.title, content: item.description }));
+      .map((item) => ({
+        title: item.title,
+        content: item.description,
+        contentTypography: normalizeRichTextTypography(item.descriptionTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY),
+      }));
   }
 
   if (!Array.isArray(details.program)) return [];
@@ -191,6 +205,7 @@ function programForDetails(content: Partial<ClassOfferingDetails["content"]>, de
       return {
         title: title || `Modulo ${index + 1}`,
         content: contentValue,
+        contentTypography: normalizeRichTextTypography(DEFAULT_DESCRIPTION_TYPOGRAPHY),
         points: splitList(programItem.points),
       };
     })
@@ -369,6 +384,9 @@ function cmsOfferingToExperienceItem(offering: Offering): ExperienceItem {
     calendarLabelsDescription: stringValue(details.calendarLabelsDescription),
     calendarLabels,
     included,
+    includedTypography: normalizeRichTextTypography(
+      details.includedItemsTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 16 },
+    ),
     showIncludedSection,
     program,
     showLearningSection,
@@ -377,11 +395,20 @@ function cmsOfferingToExperienceItem(offering: Offering): ExperienceItem {
     showModulesSection,
     programSectionTitle: stringValue(content.modulesSectionTitle) || "Contenido del curso",
     learningSectionTitle: stringValue(content.learningSectionTitle) || "¿Qué aprenderás?",
-    whatYouWillLearn: splitParagraphs(hasClassLearningContent ? content.learningContent : content.learningContent || details.whatYouWillLearn),
+    whatYouWillLearn: markdownLines(hasClassLearningContent ? content.learningContent : content.learningContent || details.whatYouWillLearn),
+    whatYouWillLearnTypography: normalizeRichTextTypography(
+      content.learningContentTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+    ),
     participationSectionTitle: stringValue(content.participationSectionTitle) || "¿Quién puede participar?",
-    whoCanJoin: splitParagraphs(hasClassParticipationContent ? content.participationContent : content.participationContent || details.whoCanJoin),
+    whoCanJoin: markdownLines(hasClassParticipationContent ? content.participationContent : content.participationContent || details.whoCanJoin),
+    whoCanJoinTypography: normalizeRichTextTypography(
+      content.participationContentTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+    ),
     paymentMethods,
     additionalInfo: hasClassExtraInfo ? stringValue(content.extraInfo) : stringValue(content.extraInfo) || stringValue(details.additionalInfo),
+    additionalInfoTypography: normalizeRichTextTypography(
+      content.extraInfoTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+    ),
     showIdeaPromptSection: typeof classDetails?.showIdeaPromptSection === "boolean"
       ? classDetails.showIdeaPromptSection
       : true,
