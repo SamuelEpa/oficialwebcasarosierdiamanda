@@ -1,0 +1,48 @@
+import type { ExperienceItem } from "@/data/types";
+
+type Props = {
+  item: ExperienceItem;
+};
+
+export function ClassDetailPriceDuration({ item }: Props) {
+  const hasPrices = item.priceOptions.length > 0;
+  const hasDuration = Boolean(item.duration?.trim()) || item.schedule.length > 0;
+  if (!hasPrices && !hasDuration) return null;
+
+  return (
+    <section className="class-detail__facts class-detail__facts--fit" aria-label="Precio y duracion">
+      {hasPrices ? (
+        <div className="class-detail__fact-block">
+          <h2>Precio</h2>
+          <div className="class-detail__price-list">
+            {item.priceOptions.map((option, optionIndex) => (
+              <div className="class-detail__price-row" key={`${option.label}-${optionIndex}`}>
+                <span>{option.label}</span>
+                <strong>{option.price}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {hasDuration ? (
+        <div className="class-detail__fact-block">
+          <h2>Duracion</h2>
+          {item.duration?.trim() ? <p className="class-detail__duration">{item.duration}</p> : null}
+          {item.schedule.length ? (
+            <div className="class-detail__schedule">
+              {item.schedule.map((schedule, scheduleIndex) => (
+                <div className="class-detail__schedule-item" key={`${schedule.day}-${scheduleIndex}`}>
+                  <h4>{schedule.day}</h4>
+                  {schedule.slots.map((slot, slotIndex) => (
+                    <p key={`${slot}-${slotIndex}`}>{slot}</p>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
+  );
+}

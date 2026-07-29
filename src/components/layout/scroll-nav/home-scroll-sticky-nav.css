@@ -1,0 +1,86 @@
+/**
+ * Editorial scrolled sticky nav — cream bar, soft shadow, centered logo + split links.
+ * Used by HeaderHome and HeaderInterno.
+ */
+
+@media (min-width: 1025px) {
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial {
+    min-height: 88px;
+    padding: 14px clamp(28px, 4vw, 64px);
+    background: var(--site-scroll-menu-bg, #f9f8f3);
+    box-shadow:
+      0 1px 0 rgba(63, 57, 51, 0.06),
+      0 10px 28px rgba(63, 57, 51, 0.1);
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    justify-content: stretch;
+    gap: clamp(16px, 2.5vw, 32px);
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial-split .mobile-scroll-nav__logo {
+    justify-self: center;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .scroll-desktop-nav--left {
+    justify-content: flex-end;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .scroll-desktop-nav--right {
+    justify-content: flex-start;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .scroll-desktop-nav--left .scroll-desktop-nav__list {
+    justify-content: flex-end;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .scroll-desktop-nav--right .scroll-desktop-nav__list {
+    justify-content: flex-start;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__list {
+    gap: clamp(18px, 2.2vw, 28px);
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__item {
+    gap: 0;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__separator {
+    display: none;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__link {
+    min-height: 40px;
+    color: var(--site-scroll-menu-text, #3f3933);
+    font: 400 14px / 1.2 var(--font-menu);
+    letter-spacing: 0.01em;
+    text-transform: lowercase;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__link:hover,
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__link:focus-visible,
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__link[aria-current="page"] {
+    color: var(--site-scroll-menu-text, #3f3933);
+    opacity: 0.78;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__plus {
+    color: var(--site-scroll-menu-icon, var(--site-scroll-menu-text, #3f3933));
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .mobile-scroll-nav__logo-image {
+    height: clamp(52px, 5.5vw, 64px);
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .mobile-scroll-nav__logo-tint {
+    width: clamp(110px, 12vw, 140px);
+    height: clamp(52px, 5.5vw, 64px);
+    background: var(--site-scroll-logo-tint, var(--site-scroll-menu-icon, #3f3933));
+  }
+}

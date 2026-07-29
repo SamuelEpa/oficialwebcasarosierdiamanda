@@ -3,6 +3,7 @@
 import { memo, useCallback, useMemo, useState } from "react";
 import { DetailPage } from "@/components/collections/DetailPage";
 import { PublicFooterContent } from "@/components/layout/PublicFooterContent";
+import { ClassDetailSection } from "@/features/classes/components/class-detail/ClassDetailSection";
 import type { ClassEditorPreviewChrome } from "@/lib/cms/class-editor-preview";
 import type { ClassOfferingDetails } from "@/lib/cms/types";
 import type { ExperienceItem } from "@/data/types";
@@ -11,6 +12,23 @@ import type { PreviewDevice } from "../types";
 import { PreviewHeader } from "./PreviewHeader";
 import { PreviewSerpSnippet } from "./PreviewSerpSnippet";
 import { PublicSocialGalleryPreview } from "./PublicSocialGalleryPreview";
+
+function editorialPromoPage(kind: ExperienceItem["kind"]) {
+  if (kind === "class") return "class";
+  if (kind === "workshop") return "workshop";
+  if (kind === "private-booking") return "experience";
+  if (kind === "gift-card") return "gift-card";
+  return "class";
+}
+
+function usesEditorialDetail(kind: ExperienceItem["kind"]) {
+  return (
+    kind === "class" ||
+    kind === "workshop" ||
+    kind === "private-booking" ||
+    kind === "gift-card"
+  );
+}
 
 function PreviewPaneComponent({
   previewItem,
@@ -40,10 +58,8 @@ function PreviewPaneComponent({
     [previewDevice],
   );
 
-  const promoPage = useMemo(
-    () => (previewItem.kind === "private-booking" ? undefined : previewItem.kind.replace("-card", "")),
-    [previewItem.kind],
-  );
+  const promoPage = useMemo(() => editorialPromoPage(previewItem.kind), [previewItem.kind]);
+  const editorial = usesEditorialDetail(previewItem.kind);
 
   const handleDeviceChange = useCallback((device: PreviewDevice) => {
     setPreviewDevice(device);
@@ -98,7 +114,17 @@ function PreviewPaneComponent({
               previewDevice={previewDevice}
             />
             <div className="cms-public-preview__body">
-              <DetailPage item={previewItem} titleLevel={previewItem.heroVariant === "text" ? "h2" : "h1"} />
+              {editorial ? (
+                <ClassDetailSection
+                  item={previewItem}
+                  titleLevel={previewItem.heroVariant === "text" ? "h2" : "h1"}
+                />
+              ) : (
+                <DetailPage
+                  item={previewItem}
+                  titleLevel={previewItem.heroVariant === "text" ? "h2" : "h1"}
+                />
+              )}
               {showSocialGallery ? <PublicSocialGalleryPreview previewChrome={previewChrome} /> : null}
             </div>
             <PublicFooterContent

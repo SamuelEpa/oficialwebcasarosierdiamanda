@@ -7,8 +7,14 @@ import { StudioTeamEditorialSection } from "@/features/studio/components/studio-
 import { loadStudioPage } from "@/features/studio/loadStudioPage";
 
 export async function StudioPage() {
-  const { pageSettings, intro, team, faqSection, testimonials, showIdeaPrompt } =
-    await loadStudioPage();
+  const {
+    pageSettings,
+    intro,
+    team,
+    faqSection,
+    testimonials,
+    showIdeaPrompt,
+  } = await loadStudioPage();
   const hero = pageSettings.hero;
 
   return (
@@ -25,7 +31,7 @@ export async function StudioPage() {
     >
       <StudioTeamEditorialSection intro={intro} team={team} />
       <PublicFaqSection pageSection={faqSection} eyebrow="" />
-      {showIdeaPrompt ? <IdeaPromptSection context="studio" /> : null}
+      {showIdeaPrompt ? <IdeaPromptSection context="home" /> : null}
       <TestimonialSlider testimonials={testimonials} />
     </SitePage>
   );

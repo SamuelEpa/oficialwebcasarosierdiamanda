@@ -11,6 +11,7 @@ import "./legacy/classes.css";
 import "./legacy/shop.css";
 import "../features/shop/components/catalog/shop-catalog.css";
 import "../features/shop/components/item-detail/shop-item-detail.css";
+import "../features/classes/components/class-detail/class-detail.css";
 import "./legacy/blog.css";
 import "../features/blog/components/index/blog-index.css";
 import "../features/blog/components/post/blog-post-editorial.css";
@@ -26,6 +27,7 @@ import "../components/home/gift-carousel.css";
 import "../components/home/social-gallery-home.css";
 import "../components/home/testimonial-slider-home.css";
 import "../components/layout/footer/public-footer-editorial.css";
+import "../components/layout/scroll-nav/home-scroll-sticky-nav.css";
 
 const baskervville = Baskervville({
   subsets: ["latin"],

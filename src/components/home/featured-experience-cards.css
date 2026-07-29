@@ -1,5 +1,5 @@
 /**
- * Home featured experience cards: square image flip on hover/focus, title below.
+ * Home featured experience cards: crossfade image ↔ description on hover/focus.
  * Scoped to `.content-card--home-flip` under featured classes/workshops sections.
  */
 
@@ -20,35 +20,27 @@
 }
 
 .content-card__flip-scene {
+  position: relative;
   aspect-ratio: 1 / 1;
-  perspective: 1200px;
+  overflow: hidden;
   background: #e8e4dc;
-  /* Do not set overflow:hidden here — it flattens preserve-3d and hides the back face. */
 }
 
 .content-card__flip-panel {
   position: relative;
   width: 100%;
   height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 620ms cubic-bezier(0.4, 0.2, 0.2, 1);
-}
-
-.content-card--home-flip:hover .content-card__flip-panel,
-.content-card--home-flip:focus-within .content-card__flip-panel {
-  transform: rotateY(180deg);
 }
 
 .content-card__flip-face {
   position: absolute;
   inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform-style: preserve-3d;
 }
 
 .content-card__flip-face--front {
-  z-index: 2;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 280ms ease;
 }
 
 .content-card__flip-face--front img {
@@ -61,8 +53,7 @@
 }
 
 .content-card__flip-face--back {
-  z-index: 1;
-  transform: rotateY(180deg);
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,6 +61,9 @@
   background: #f7f5f0;
   text-align: center;
   overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms ease;
 }
 
 .content-card__flip-copy {
@@ -85,6 +79,26 @@
   -webkit-line-clamp: 10;
   text-overflow: ellipsis;
   text-wrap: pretty;
+}
+
+/* Pointer devices: fade description in on hover */
+@media (hover: hover) and (pointer: fine) {
+  .content-card--home-flip:hover .content-card__flip-face--front {
+    opacity: 0;
+  }
+
+  .content-card--home-flip:hover .content-card__flip-face--back {
+    opacity: 1;
+  }
+}
+
+/* Keyboard / tap focus: same crossfade */
+.content-card--home-flip:focus-within .content-card__flip-face--front {
+  opacity: 0;
+}
+
+.content-card--home-flip:focus-within .content-card__flip-face--back {
+  opacity: 1;
 }
 
 .featured--classes .content-card--home-flip .content-card__caption,
@@ -115,30 +129,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .content-card__flip-panel {
-    transition: none;
-  }
-
-  .content-card--home-flip:hover .content-card__flip-panel,
-  .content-card--home-flip:focus-within .content-card__flip-panel {
-    transform: none;
-  }
-
+  .content-card__flip-face--front,
   .content-card__flip-face--back {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 200ms ease;
-  }
-
-  .content-card--home-flip:hover .content-card__flip-face--back,
-  .content-card--home-flip:focus-within .content-card__flip-face--back {
-    opacity: 1;
-    transform: rotateY(0deg);
-  }
-
-  .content-card--home-flip:hover .content-card__flip-face--front,
-  .content-card--home-flip:focus-within .content-card__flip-face--front {
-    opacity: 0;
+    transition: none;
   }
 }
 

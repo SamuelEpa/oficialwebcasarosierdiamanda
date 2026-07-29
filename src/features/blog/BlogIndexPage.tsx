@@ -11,9 +11,15 @@ export async function BlogIndexPage() {
 
   return (
     <SitePage bodyClass="blog-page" header={<BlogIndexHeader />}>
-      <BlogIndexSection intro={intro} featured={featured} published={published} />
-      {selectedFaqBlock ? <PublicFaqSection block={selectedFaqBlock} eyebrow="" /> : null}
-      {showIdeaPrompt ? <IdeaPromptSection context="blog" /> : null}
+      <BlogIndexSection
+        intro={intro}
+        featured={featured}
+        published={published}
+      />
+      {selectedFaqBlock ? (
+        <PublicFaqSection block={selectedFaqBlock} eyebrow="" />
+      ) : null}
+      {showIdeaPrompt ? <IdeaPromptSection context="home" /> : null}
     </SitePage>
   );
 }

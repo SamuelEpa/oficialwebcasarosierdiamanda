@@ -7,7 +7,7 @@ import { SitePage } from "@/features/shared/layout/SitePage";
 import type { ExperienceCollectionConfig } from "@/features/experiences/experienceRoutes";
 
 export async function ExperienceCollectionPage({
-  config
+  config,
 }: {
   config: ExperienceCollectionConfig;
 }) {
@@ -19,7 +19,7 @@ export async function ExperienceCollectionPage({
     >
       <CollectionGrid items={config.items} lede={config.lede} />
       <PublicFaqSection pageSection={faqSection} eyebrow="" />
-      <IdeaPromptSection context="experience-list" />
+      <IdeaPromptSection context="home" />
     </SitePage>
   );
 }

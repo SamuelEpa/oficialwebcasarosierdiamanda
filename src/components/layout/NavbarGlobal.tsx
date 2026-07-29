@@ -6,6 +6,7 @@ import type { CSSProperties } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { NavigationItem } from "@/data/types";
 import { classNames } from "@/lib/utils";
+import { ScrollStickyNavBar } from "@/components/layout/scroll-nav/ScrollStickyNavBar";
 
 const DESKTOP_SUBMENU_CLOSE_DELAY = 320;
 const DESKTOP_NAV_BREAKPOINT = 1025;
@@ -13,6 +14,7 @@ const DESKTOP_SCROLL_HYSTERESIS = 40;
 
 export function NavbarGlobal({
   home = false,
+  editorialScrollNav = false,
   navigationItems,
   logoUrl = "/img/logo-header.png",
   scrollMenuBackgroundColor = "#8c7457",
@@ -39,6 +41,8 @@ export function NavbarGlobal({
   heroMenuMobilePositionY,
 }: {
   home?: boolean;
+  /** Cream sticky bar with centered logo + split links (home + internal pages). */
+  editorialScrollNav?: boolean;
   navigationItems: NavigationItem[];
   logoUrl?: string;
   scrollMenuBackgroundColor?: string;
@@ -378,126 +382,29 @@ export function NavbarGlobal({
           mobileOpen && "is-open"
         )}
       >
-        <div className="mobile-scroll-nav__bar">
-          <Link
-            className="mobile-scroll-nav__logo"
-            href="/#hero"
-            aria-label="Casa Rosier"
-            onClick={() => setMobileOpen(false)}
-          >
-            {(mobileScrolled || mobileOpen
+        <ScrollStickyNavBar
+          variant={home || editorialScrollNav ? "editorial" : "default"}
+          items={scrollDesktopItems}
+          logoUrl={logoUrl}
+          useLogoTint={
+            mobileScrolled || mobileOpen
               ? scrollMenuLogoTintEnabled
-              : Boolean(heroMenuColor)) ? (
-              <span
-                className="mobile-scroll-nav__logo-tint"
-                style={scrollLogoTintStyle}
-                aria-hidden="true"
-              />
-            ) : (
-              <img
-                className="mobile-scroll-nav__logo-image"
-                src={logoUrl}
-                alt="Casa Rosier"
-              />
-            )}
-          </Link>
-          {showDesktopScrollNav && (
-            <nav className="scroll-desktop-nav" aria-label="Principal">
-              <ul className="scroll-desktop-nav__list">
-                {scrollDesktopItems.map((item, index) => {
-                  const open = scrollDesktopOpen === item.href;
-                  const children = item.children ?? [];
-                  return (
-                    <li
-                      className={classNames(
-                        "scroll-desktop-nav__item",
-                        children.length > 0 &&
-                          "scroll-desktop-nav__item--has-children",
-                        open && "is-open"
-                      )}
-                      key={item.href}
-                      onMouseEnter={() =>
-                        children.length > 0 &&
-                        openScrollDesktopMenu(item.href)
-                      }
-                      onMouseLeave={() =>
-                        children.length > 0 &&
-                        scheduleScrollDesktopMenuClose()
-                      }
-                      onFocus={() =>
-                        children.length > 0 &&
-                        openScrollDesktopMenu(item.href)
-                      }
-                    >
-                      <Link
-                        className="scroll-desktop-nav__link"
-                        href={item.href}
-                        target={item.target}
-                        rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
-                        aria-current={current(item.href) ? "page" : undefined}
-                        onClick={closeScrollDesktopMenu}
-                      >
-                        {item.label}
-                        {children.length > 0 && (
-                          <span
-                            className="scroll-desktop-nav__plus"
-                            aria-hidden="true"
-                          >
-                            +
-                          </span>
-                        )}
-                      </Link>
-                      {children.length > 0 && (
-                        <ul className="scroll-desktop-submenu" role="menu">
-                          {children.map((child) => (
-                            <li
-                              className="scroll-desktop-submenu__item"
-                              role="none"
-                              key={child.href}
-                            >
-                              <Link
-                                className="scroll-desktop-submenu__link"
-                                href={child.href}
-                                target={child.target}
-                                rel={child.target === "_blank" ? "noopener noreferrer" : undefined}
-                                role="menuitem"
-                                aria-current={
-                                  current(child.href) ? "page" : undefined
-                                }
-                                onClick={closeScrollDesktopMenu}
-                              >
-                                {child.label}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      {index < scrollDesktopItems.length - 1 && (
-                        <span
-                          className="scroll-desktop-nav__separator"
-                          aria-hidden="true"
-                        >
-                          |
-                        </span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
-          )}
-          <button
-            ref={scrollMobileToggleRef}
-            className="mobile-scroll-nav__toggle"
-            type="button"
-            aria-expanded={mobileOpen}
-            aria-controls="mobile-scroll-menu"
-            aria-label={mobileOpen ? "Cerrar menu" : "Abrir menu"}
-            onClick={() => setMobileOpen((open) => !open)}
-          >
-            <span className="mobile-scroll-nav__icon" aria-hidden="true" />
-          </button>
-        </div>
+              : Boolean(heroMenuColor)
+          }
+          logoTintStyle={scrollLogoTintStyle}
+          openHref={scrollDesktopOpen}
+          current={current}
+          onOpen={openScrollDesktopMenu}
+          onScheduleClose={scheduleScrollDesktopMenuClose}
+          onClose={() => {
+            closeScrollDesktopMenu();
+            setMobileOpen(false);
+          }}
+          showDesktopNav={showDesktopScrollNav}
+          mobileToggleRef={scrollMobileToggleRef}
+          mobileOpen={mobileOpen}
+          onToggleMobile={() => setMobileOpen((open) => !open)}
+        />
 
         <nav
           id="mobile-scroll-menu"

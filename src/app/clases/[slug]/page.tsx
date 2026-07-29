@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ExperienceDetailPage } from "@/features/experiences/ExperienceDetailPage";
+import { ClassDetailPage } from "@/features/classes/ClassDetailPage";
 import {
   generateExperienceMetadata,
   generateExperienceStaticParams,
@@ -21,12 +21,12 @@ export async function generateMetadata({
   return generateExperienceMetadata(params);
 }
 
-export default async function ClassDetailPage({
+export default async function ClassSlugPage({
   params
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const item = await getExperienceRouteItem(params, "class");
   if (!item) notFound();
-  return <ExperienceDetailPage item={item} />;
+  return <ClassDetailPage item={item} />;
 }

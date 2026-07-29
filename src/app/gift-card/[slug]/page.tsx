@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 export default async function GiftCardDetailPage({
-  params
+  params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
