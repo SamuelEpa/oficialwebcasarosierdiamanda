@@ -1533,6 +1533,41 @@ main {
   display: none !important;
 }
 
+/* Presentation content positioning from CMS (mirrors header-interno) */
+.header-home--presentation-hero .page-hero__presentation-stage > .page-hero__presentation-text {
+  position: absolute !important;
+  left: var(--presentation-text-position-x, 8%) !important;
+  top: var(--presentation-text-position-y, 50%) !important;
+  width: min(48%, 460px);
+  transform: translateY(-50%) scale(var(--presentation-text-scale, 1)) !important;
+  transform-origin: left center !important;
+  pointer-events: auto;
+}
+
+.header-home--presentation-hero .page-hero__presentation-stage > .page-hero__presentation-image {
+  position: absolute !important;
+  left: var(--presentation-image-position-x, 70%) !important;
+  top: var(--presentation-image-position-y, 50%) !important;
+  width: min(35%, 340px);
+  height: min(50%, 340px);
+  transform: translate(-50%, -50%) scale(var(--presentation-image-scale, 1)) !important;
+  transform-origin: center center !important;
+  pointer-events: auto;
+}
+
+/* Image-hero overlay positioning from CMS */
+.header-home--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="primary"] {
+  left: var(--title-image-position-x, 50%) !important;
+  top: var(--title-image-position-y, 50%) !important;
+  transform: translate(-50%, -50%) scale(var(--title-image-scale, 1)) !important;
+}
+
+.header-home--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="secondary"] {
+  left: var(--title-image-secondary-position-x, 50%) !important;
+  top: var(--title-image-secondary-position-y, 50%) !important;
+  transform: translate(-50%, -50%) scale(var(--title-image-secondary-scale, 1)) !important;
+}
+
 .header-home .hero__logo {
   position: absolute;
   left: var(--hero-logo-position-x, 50%) !important;
@@ -1582,6 +1617,30 @@ main {
   .header-home .hero__nav {
     top: var(--hero-menu-tablet-position-y, var(--hero-menu-position-y, 118px)) !important;
   }
+
+  .header-home--presentation-hero .page-hero__presentation-stage > .page-hero__presentation-text {
+    left: var(--presentation-text-position-x-tablet, var(--presentation-text-position-x, 8%)) !important;
+    top: var(--presentation-text-position-y-tablet, var(--presentation-text-position-y, 50%)) !important;
+    transform: translateY(-50%) scale(var(--presentation-text-scale-tablet, var(--presentation-text-scale, 1))) !important;
+  }
+
+  .header-home--presentation-hero .page-hero__presentation-stage > .page-hero__presentation-image {
+    left: var(--presentation-image-position-x-tablet, var(--presentation-image-position-x, 70%)) !important;
+    top: var(--presentation-image-position-y-tablet, var(--presentation-image-position-y, 50%)) !important;
+    transform: translate(-50%, -50%) scale(var(--presentation-image-scale-tablet, var(--presentation-image-scale, 1))) !important;
+  }
+
+  .header-home--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="primary"] {
+    left: var(--title-image-position-x-tablet, var(--title-image-position-x, 50%)) !important;
+    top: var(--title-image-position-y-tablet, var(--title-image-position-y, 50%)) !important;
+    transform: translate(-50%, -50%) scale(var(--title-image-scale-tablet, var(--title-image-scale, 1))) !important;
+  }
+
+  .header-home--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="secondary"] {
+    left: var(--title-image-secondary-position-x-tablet, var(--title-image-secondary-position-x, 50%)) !important;
+    top: var(--title-image-secondary-position-y-tablet, var(--title-image-secondary-position-y, 50%)) !important;
+    transform: translate(-50%, -50%) scale(var(--title-image-secondary-scale-tablet, var(--title-image-secondary-scale, 1))) !important;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1597,6 +1656,35 @@ main {
 
   .header-home .hero__nav {
     top: var(--hero-menu-mobile-position-y, var(--hero-menu-tablet-position-y, var(--hero-menu-position-y, 96px))) !important;
+  }
+
+  .header-home--presentation-hero .page-hero__presentation-stage > .page-hero__presentation-text {
+    left: var(--presentation-text-position-x-mobile, var(--presentation-text-position-x-tablet, var(--presentation-text-position-x, 8%))) !important;
+    top: var(--presentation-text-position-y-mobile, var(--presentation-text-position-y-tablet, var(--presentation-text-position-y, 50%))) !important;
+    width: min(100%, 312px);
+    transform: translateY(-50%) scale(var(--presentation-text-scale-mobile, var(--presentation-text-scale-tablet, var(--presentation-text-scale, 1)))) !important;
+  }
+
+  .header-home--presentation-hero .page-hero__presentation-stage > .page-hero__presentation-image {
+    left: var(--presentation-image-position-x-mobile, var(--presentation-image-position-x-tablet, var(--presentation-image-position-x, 70%))) !important;
+    top: var(--presentation-image-position-y-mobile, var(--presentation-image-position-y-tablet, var(--presentation-image-position-y, 50%))) !important;
+    width: min(82vw, 280px);
+    height: min(50%, 280px);
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(var(--presentation-image-scale-mobile, var(--presentation-image-scale-tablet, var(--presentation-image-scale, 1)))) !important;
+    pointer-events: none;
+  }
+
+  .header-home--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="primary"] {
+    left: var(--title-image-position-x-mobile, var(--title-image-position-x-tablet, var(--title-image-position-x, 50%))) !important;
+    top: var(--title-image-position-y-mobile, var(--title-image-position-y-tablet, var(--title-image-position-y, 50%))) !important;
+    transform: translate(-50%, -50%) scale(var(--title-image-scale-mobile, var(--title-image-scale-tablet, var(--title-image-scale, 1)))) !important;
+  }
+
+  .header-home--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="secondary"] {
+    left: var(--title-image-secondary-position-x-mobile, var(--title-image-secondary-position-x-tablet, var(--title-image-secondary-position-x, 50%))) !important;
+    top: var(--title-image-secondary-position-y-mobile, var(--title-image-secondary-position-y-tablet, var(--title-image-secondary-position-y, 50%))) !important;
+    transform: translate(-50%, -50%) scale(var(--title-image-secondary-scale-mobile, var(--title-image-secondary-scale-tablet, var(--title-image-secondary-scale, 1)))) !important;
   }
 }
 

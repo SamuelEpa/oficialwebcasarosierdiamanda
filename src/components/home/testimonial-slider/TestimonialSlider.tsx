@@ -8,8 +8,10 @@ import type { TestimonialSlide } from "./types";
 
 export function TestimonialSlider({
   testimonials,
+  variant = "default",
 }: {
   testimonials?: TestimonialSlide[];
+  variant?: "default" | "home";
 }) {
   const slides = testimonials ?? DEFAULT_TESTIMONIAL_SLIDES;
   const modal = useTestimonialSliderModal(slides);
@@ -18,7 +20,11 @@ export function TestimonialSlider({
 
   return (
     <>
-      <TestimonialCarouselSection testimonials={slides} onOpenSlide={modal.openAt} />
+      <TestimonialCarouselSection
+        testimonials={slides}
+        onOpenSlide={modal.openAt}
+        variant={variant}
+      />
       {modal.current ? (
         <TestimonialDetailModal
           slide={modal.current}

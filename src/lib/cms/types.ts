@@ -784,6 +784,7 @@ export interface Teacher {
   id: string;
   name: string;
   bio: string;
+  bio_typography?: RichTextTypography;
   image_id: string;
   instagram: string;
   specialty: string;
@@ -1059,7 +1060,9 @@ export interface StudioPageSettings {
   id: string;
   status: "draft" | "published";
   hero: CmsHeroSettings;
+  introHeading: string;
   introContent: string;
+  introContentTypography?: RichTextTypography;
   showIdeaPromptSection: boolean;
   showFaqSection: boolean;
   faqGroupId: string;
@@ -1073,6 +1076,12 @@ export interface BlogPageSettings {
   id: string;
   status: "draft" | "published";
   hero: CmsHeroSettings;
+  /** Public index masthead title (e.g. Bitácora cerámica). */
+  introHeading: string;
+  /** Brand line under the masthead title. */
+  introKicker: string;
+  /** Centered intro paragraph on the blog index. */
+  introText: string;
   showIdeaPromptSection: boolean;
   showFaqSection: boolean;
   faqGroupId: string;

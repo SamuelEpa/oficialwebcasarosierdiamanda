@@ -1,23 +1,38 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { MarkdownContent } from "@/components/ui/MarkdownContent";
 import type { ExperienceItem } from "@/data/types";
 import { assetPath } from "@/lib/assets";
-import { DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography, richTextTypographyStyle } from "@/lib/cms/rich-text-typography";
+import { DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography } from "@/lib/cms/rich-text-typography";
 import { experienceHref } from "@/lib/routes";
 import { Carousel } from "@/components/ui/Carousel";
+
+function giftExcerptStyle(item: ExperienceItem): CSSProperties {
+  const typography = normalizeRichTextTypography(
+    item.homeExcerptTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  );
+  return {
+    fontWeight: typography.weight,
+    fontStyle: typography.italic ? "italic" : "normal",
+    fontVariationSettings: `"wdth" ${typography.width}, "wght" ${typography.weight}`,
+  };
+}
 
 interface GiftCarouselProps {
   items: readonly ExperienceItem[];
 }
 
 function giftHomeContent(item: ExperienceItem) {
+  const eyebrow = (item.homeEyebrow || item.category || "").trim();
+  const tagline = (item.subtitle || "").trim();
   return {
     image: item.homeImage || item.coverImage,
     imageAlt: item.homeImageAlt || item.homeTitle || item.title,
-    eyebrow: item.homeEyebrow || item.subtitle || item.category,
+    eyebrow,
     title: item.homeTitle || item.title,
+    tagline,
     excerpt: item.homeExcerpt || item.excerpt,
   };
 }
@@ -38,14 +53,17 @@ function GiftCard({ item }: { item: ExperienceItem }) {
       </span>
       <span className="gift-carousel__body">
         {content.eyebrow ? <span className="gift-carousel__eyebrow">{content.eyebrow}</span> : null}
-        <span className="gift-carousel__title">{content.title}</span>
+        <span className="gift-carousel__headline">
+          <span className="gift-carousel__title">{content.title}</span>
+          {content.tagline ? <span className="gift-carousel__tagline">{content.tagline}</span> : null}
+        </span>
         <MarkdownContent
-          className="gift-carousel__text content-card__excerpt--styled"
-          style={richTextTypographyStyle(normalizeRichTextTypography(item.homeExcerptTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY))}
+          className="gift-carousel__text"
+          style={giftExcerptStyle(item)}
           source={content.excerpt}
         />
         <span className="gift-carousel__cta" aria-hidden="true">
-          ver mas
+          ver más
         </span>
       </span>
     </Link>

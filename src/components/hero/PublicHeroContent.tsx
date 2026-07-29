@@ -15,30 +15,38 @@ export function PublicHeroContent({ hero }: { hero: CmsHeroSettings }) {
     return (
       <div className="public-hero-content" style={{ position: "absolute", inset: 0, zIndex: 10, pointerEvents: "none" }}>
         {hero.titleImage ? (
-          <div className="public-hero-title" style={{
-            position: "absolute",
-            left: "var(--title-image-position-x, 50%)",
-            top: "var(--title-image-position-y, 50%)",
-            transform: "translate(-50%, -50%) scale(var(--title-image-scale, 1))",
-            transformOrigin: "center center",
-            width: "min(82%, 700px)",
-            aspectRatio: "3.35 / 1",
-            zIndex: 1,
-          } as CSSProperties}>
+          <div
+            className="public-hero-title"
+            data-hero-overlay="primary"
+            style={{
+              position: "absolute",
+              left: "var(--title-image-position-x, 50%)",
+              top: "var(--title-image-position-y, 50%)",
+              transform: "translate(-50%, -50%) scale(var(--title-image-scale, 1))",
+              transformOrigin: "center center",
+              width: "min(82%, 700px)",
+              aspectRatio: "3.35 / 1",
+              zIndex: 1,
+            } as CSSProperties}
+          >
             <Image src={hero.titleImage} alt="" fill sizes="700px" className="object-contain" style={{ opacity: 0.8 }} unoptimized />
           </div>
         ) : null}
         {hero.titleImageSecondary ? (
-          <div className="public-hero-title" style={{
-            position: "absolute",
-            left: "var(--title-image-secondary-position-x, 50%)",
-            top: "var(--title-image-secondary-position-y, 50%)",
-            transform: "translate(-50%, -50%) scale(var(--title-image-secondary-scale, 1))",
-            transformOrigin: "center center",
-            width: "min(82%, 700px)",
-            aspectRatio: "3.35 / 1",
-            zIndex: 2,
-          } as CSSProperties}>
+          <div
+            className="public-hero-title"
+            data-hero-overlay="secondary"
+            style={{
+              position: "absolute",
+              left: "var(--title-image-secondary-position-x, 50%)",
+              top: "var(--title-image-secondary-position-y, 50%)",
+              transform: "translate(-50%, -50%) scale(var(--title-image-secondary-scale, 1))",
+              transformOrigin: "center center",
+              width: "min(82%, 700px)",
+              aspectRatio: "3.35 / 1",
+              zIndex: 2,
+            } as CSSProperties}
+          >
             <Image src={hero.titleImageSecondary} alt="" fill sizes="700px" className="object-contain" unoptimized />
           </div>
         ) : null}

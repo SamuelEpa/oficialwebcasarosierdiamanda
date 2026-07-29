@@ -1,28 +1,33 @@
-import { MarkdownContent } from "@/components/ui/MarkdownContent";
+import type { StudioTeamMemberLayout } from "./types";
+import { StudioTeamMemberView } from "./components/studio-team-member/StudioTeamMemberView";
+import type { RichTextTypography } from "@/lib/cms/rich-text-typography";
 
 export function StudioProfileBlock({
   name,
   role,
   image,
-  intro
+  intro,
+  introTypography,
+  layout = "copy-left",
 }: {
   name: string;
   role: string;
   image: string;
   intro: string;
+  introTypography?: RichTextTypography;
+  layout?: StudioTeamMemberLayout;
 }) {
   return (
-    <article className="studio-profile">
-      <div className="studio-profile__media">
-        <img src={image} alt={`${name} en el estudio de ceramica`} />
-      </div>
-      <div className="studio-profile__copy">
-        <h2>{name}</h2>
-        <p className="studio-profile__role">
-          {role}
-        </p>
-        <MarkdownContent source={intro} />
-      </div>
-    </article>
+    <StudioTeamMemberView
+      member={{
+        id: "preview",
+        name,
+        role,
+        imageSrc: image,
+        bio: intro,
+        bioTypography: introTypography,
+        layout,
+      }}
+    />
   );
 }

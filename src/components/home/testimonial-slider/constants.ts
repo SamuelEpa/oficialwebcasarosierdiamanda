@@ -31,3 +31,10 @@ export const TESTIMONIAL_SECTION_COPY = {
   carouselAriaLabel: "Testimonios de quienes han pasado por el taller",
   dotLabel: (index: number) => `Ver testimonio ${index + 1}`,
 } as const;
+
+export const HOME_TESTIMONIAL_SECTION_COPY = {
+  title: "Lo que dicen\nde Nosotros",
+  subtitle: "Quienes han pasado por el taller",
+  carouselAriaLabel: "Testimonios de quienes han pasado por el taller",
+  dotLabel: (index: number) => `Ver testimonio ${index + 1}`,
+} as const;

@@ -23,7 +23,6 @@ export default async function NotFoundPage() {
           variant="text"
           height="large"
           className="not-found-header"
-          heroMenuTone="dark"
         >
           <div className="not-found-hero__copy">
             <p className="not-found-hero__kicker">Pagina no encontrada</p>

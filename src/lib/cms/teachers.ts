@@ -2,31 +2,82 @@ import { randomUUID } from "crypto";
 import { createAdminClient } from "../supabase/admin";
 import { addTrashItem, getCurrentUserEmail, getTrashItemByEntity, removeTrashItem } from "./trash";
 import { readJsonFile, writeJsonFile } from "./local-storage";
+import { DEFAULT_DESCRIPTION_TYPOGRAPHY, normalizeRichTextTypography } from "./rich-text-typography";
 import { isTeacherStatus } from "./types";
-import type { Teacher, TeacherStatus } from "./types";
+import type { Teacher } from "./types";
 import { logAction } from "./history-logs";
 
 const TABLE = "teachers";
 const FILE_NAME = "teachers.json";
 type Input = Partial<Omit<Teacher, "id" | "created_at" | "updated_at" | "deleted_at">> & { id?: string; deleted_at?: string | null; };
 
-function normalize(input: Input, existing?: Teacher) {
+function normalize(input: Input, existing?: Teacher): Teacher {
   const name = String(input.name ?? existing?.name ?? "").trim();
   const status = input.status ?? existing?.status ?? "draft";
   const now = new Date().toISOString();
   if (!name) throw new Error("El nombre es obligatorio.");
   if (!isTeacherStatus(status)) throw new Error("Estado no válido.");
-  return { id: existing?.id ?? input.id ?? randomUUID(), name, bio: String(input.bio ?? existing?.bio ?? "").trim(), image_id: String(input.image_id ?? existing?.image_id ?? "").trim(), instagram: String(input.instagram ?? existing?.instagram ?? "").trim(), specialty: String(input.specialty ?? existing?.specialty ?? "").trim(), status, sort_order: input.sort_order ?? existing?.sort_order ?? 0, created_at: existing?.created_at ?? now, updated_at: now, deleted_at: input.status === "deleted" ? existing?.deleted_at ?? now : null } satisfies Teacher;
+  return {
+    id: existing?.id ?? input.id ?? randomUUID(),
+    name,
+    bio: String(input.bio ?? existing?.bio ?? "").trim(),
+    bio_typography: normalizeRichTextTypography(
+      input.bio_typography ?? existing?.bio_typography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+    ),
+    image_id: String(input.image_id ?? existing?.image_id ?? "").trim(),
+    instagram: String(input.instagram ?? existing?.instagram ?? "").trim(),
+    specialty: String(input.specialty ?? existing?.specialty ?? "").trim(),
+    status,
+    sort_order: input.sort_order ?? existing?.sort_order ?? 0,
+    created_at: existing?.created_at ?? now,
+    updated_at: now,
+    deleted_at: input.status === "deleted" ? existing?.deleted_at ?? now : null,
+  };
 }
 
-// ── Mapping helpers ──
-
 function rowToTeacher(row: Record<string, unknown>): Teacher {
-  return row as unknown as Teacher;
+  return normalize({
+    id: String(row.id ?? ""),
+    name: String(row.name ?? ""),
+    bio: String(row.bio ?? ""),
+    bio_typography: row.bio_typography as Teacher["bio_typography"],
+    image_id: String(row.image_id ?? ""),
+    instagram: String(row.instagram ?? ""),
+    specialty: String(row.specialty ?? ""),
+    status: row.status as Teacher["status"],
+    sort_order: Number(row.sort_order ?? 0),
+    deleted_at: (row.deleted_at as string | null) ?? null,
+  }, {
+    id: String(row.id ?? ""),
+    name: String(row.name ?? ""),
+    bio: String(row.bio ?? ""),
+    bio_typography: normalizeRichTextTypography(row.bio_typography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY),
+    image_id: String(row.image_id ?? ""),
+    instagram: String(row.instagram ?? ""),
+    specialty: String(row.specialty ?? ""),
+    status: (row.status as Teacher["status"]) || "draft",
+    sort_order: Number(row.sort_order ?? 0),
+    created_at: String(row.created_at ?? new Date().toISOString()),
+    updated_at: String(row.updated_at ?? new Date().toISOString()),
+    deleted_at: (row.deleted_at as string | null) ?? null,
+  });
 }
 
 function teacherToRow(t: Teacher): Record<string, unknown> {
-  return { ...t };
+  return {
+    id: t.id,
+    name: t.name,
+    bio: t.bio,
+    bio_typography: normalizeRichTextTypography(t.bio_typography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY),
+    image_id: t.image_id,
+    instagram: t.instagram,
+    specialty: t.specialty,
+    status: t.status,
+    sort_order: t.sort_order,
+    created_at: t.created_at,
+    updated_at: t.updated_at,
+    deleted_at: t.deleted_at,
+  };
 }
 
 // ── Supabase helpers ──
@@ -56,7 +107,13 @@ async function readFromSupabase(query: (s: ReturnType<typeof createAdminClient>)
 async function upsertTeacher(t: Teacher): Promise<void> {
   try {
     const supabase = createAdminClient();
-    await supabase.from(TABLE).upsert(teacherToRow(t), { onConflict: "id" });
+    const row = teacherToRow(t);
+    let { error } = await supabase.from(TABLE).upsert(row, { onConflict: "id" });
+    if (error?.message?.includes("bio_typography")) {
+      const { bio_typography: _omit, ...legacyRow } = row;
+      ({ error } = await supabase.from(TABLE).upsert(legacyRow, { onConflict: "id" }));
+    }
+    if (error) throw error;
   } catch { /* best-effort */ }
 }
 
@@ -73,6 +130,13 @@ export async function getTeachers() {
   const fromSupabase = await readAllFromSupabase();
   if (fromSupabase) return fromSupabase;
   return readJsonFile<Teacher[]>(FILE_NAME, []);
+}
+
+export async function getPublishedTeachers() {
+  const teachers = await getTeachers();
+  return teachers
+    .filter((teacher) => teacher.status === "published" && teacher.deleted_at === null)
+    .sort((a, b) => a.sort_order - b.sort_order);
 }
 
 export async function getTeacherById(id: string) {

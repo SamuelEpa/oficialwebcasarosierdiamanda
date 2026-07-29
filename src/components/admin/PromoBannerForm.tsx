@@ -6,7 +6,7 @@ import type { PromoBanner, PromoStatus } from "@/lib/cms/types";
 import { MarkdownContent } from "@/components/ui/MarkdownContent";
 import AdminActionModal from "./AdminActionModal";
 import MediaSelectField from "./MediaSelectField";
-import RichTextField from "@/components/editor/RichTextEditor";
+import { CmsRichTextField } from "@/components/admin/CmsRichTextField";
 
 const limits = {
   key_text: 40,
@@ -15,7 +15,6 @@ const limits = {
   detail_text: 600,
   button_text: 28,
 };
-const promoRichTextControls = ["bold", "italic", "ul", "ol", "link"] as const;
 type Notice = { type: "success" | "error" | "info"; title: string; message: string };
 
 function getInitialForm(item?: PromoBanner) {
@@ -207,11 +206,11 @@ export default function PromoBannerForm({ mode, item }: { mode: "create" | "edit
             </label>
             <label className="field"><span>Título</span><input maxLength={limits.title} value={form.title} onChange={(e) => upd("title", e.target.value)} /><small>{form.title.length}/{limits.title}</small></label>
             <div className="promo-banner-form-grid__rich-field">
-              <RichTextField label="Descripción general" value={form.text} onChange={(value) => upd("text", value)} minHeight="168px" maxLength={limits.text} controls={[...promoRichTextControls]} />
+              <CmsRichTextField label="Descripción general" value={form.text} onChange={(value) => upd("text", value)} minHeight="168px" maxLength={limits.text} />
             </div>
           </div>
           <div className="promo-banner-form-grid__detail promo-banner-form-grid__rich-field">
-            <RichTextField label="Descripción específica" value={form.detail_text} onChange={(value) => upd("detail_text", value)} minHeight="150px" maxLength={limits.detail_text} controls={[...promoRichTextControls]} />
+            <CmsRichTextField label="Descripción específica" value={form.detail_text} onChange={(value) => upd("detail_text", value)} minHeight="150px" maxLength={limits.detail_text} />
           </div>
           <div className="promo-banner-form-grid__meta">
             <label className="field"><span>Texto del botón</span><input maxLength={limits.button_text} value={form.button_text} onChange={(e) => upd("button_text", e.target.value)} /><small>{form.button_text.length}/{limits.button_text}</small></label>

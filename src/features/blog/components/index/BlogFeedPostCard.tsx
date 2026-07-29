@@ -1,0 +1,32 @@
+import Link from "next/link";
+import { MarkdownContent } from "@/components/ui/MarkdownContent";
+import type { BlogPost } from "@/data/types";
+import { assetPath } from "@/lib/assets";
+import { resolveBlogCardExcerpt } from "../../lib/resolveBlogCardExcerpt";
+import { BlogFeedDateBadge } from "./BlogFeedDateBadge";
+
+export function BlogFeedPostCard({ post }: { post: BlogPost }) {
+  const excerpt = resolveBlogCardExcerpt(post);
+
+  return (
+    <article className="blog-feed-card">
+      <Link className="blog-feed-card__media" href={`/blog/${post.slug}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={assetPath(post.coverImage)} alt={post.title} loading="lazy" decoding="async" />
+        <BlogFeedDateBadge publishedAt={post.publishedAt} />
+      </Link>
+      <div className="blog-feed-card__body">
+        <p className="blog-feed-card__category">{post.category}</p>
+        <h2 className="blog-feed-card__title">
+          <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+        </h2>
+        {excerpt ? (
+          <MarkdownContent className="blog-feed-card__excerpt" source={excerpt} />
+        ) : null}
+        <Link className="blog-feed-card__cta" href={`/blog/${post.slug}`}>
+          leer Más
+        </Link>
+      </div>
+    </article>
+  );
+}

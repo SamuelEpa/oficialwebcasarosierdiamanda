@@ -1,29 +1,16 @@
 "use client";
 
 import { memo } from "react";
-import { SocialGallery } from "@/components/home/SocialGallery";
-import PublicFaqSection from "@/features/shared/contextual-sections/PublicFaqSection";
-import type { BlogPageEditorState } from "../../hooks/useBlogPageEditor";
+import { PagePreviewAdditions } from "@/components/admin/page-editor/components/PagePreviewAdditions";
+import type { PageAdditionsSectionProps } from "@/components/admin/page-editor/components/PageAdditionsSection";
 
-type Props = {
-  showFaqSection: boolean;
-  showIdeaPromptSection: boolean;
-  selectedFaqBlock: BlogPageEditorState["selectedFaqBlock"];
-  socialGalleryProps: BlogPageEditorState["socialGalleryProps"];
-};
+type Props = Pick<
+  PageAdditionsSectionProps,
+  "showFaqSection" | "showIdeaPromptSection" | "selectedFaqBlock" | "socialGalleryProps"
+>;
 
-function BlogPagePreviewAdditionsComponent({
-  showFaqSection,
-  showIdeaPromptSection,
-  selectedFaqBlock,
-  socialGalleryProps,
-}: Props) {
-  return (
-    <>
-      {showFaqSection && selectedFaqBlock ? <PublicFaqSection block={selectedFaqBlock} /> : null}
-      {showIdeaPromptSection ? <SocialGallery {...socialGalleryProps} /> : null}
-    </>
-  );
+function BlogPagePreviewAdditionsComponent(props: Props) {
+  return <PagePreviewAdditions {...props} />;
 }
 
 export const BlogPagePreviewAdditions = memo(BlogPagePreviewAdditionsComponent);

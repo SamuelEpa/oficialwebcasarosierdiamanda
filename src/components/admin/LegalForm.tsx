@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import RichTextField from "@/components/editor/RichTextEditor";
+import { CmsRichTextField } from "@/components/admin/CmsRichTextField";
 import { DEFAULT_PRIVACY_POLICY_MARKDOWN } from "@/lib/cms/types";
 
 interface PrivacyPolicySettings {
@@ -89,7 +89,7 @@ export default function LegalForm() {
             />
           </label>
           <div className="span-2">
-            <RichTextField
+            <CmsRichTextField
               label="Contenido Markdown"
               value={content}
               onChange={setContent}

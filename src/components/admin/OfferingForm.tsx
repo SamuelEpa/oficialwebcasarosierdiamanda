@@ -11,7 +11,7 @@ import Textarea from "@/components/ui/Textarea";
 import Checkbox from "@/components/ui/Checkbox";
 import Button from "@/components/ui/Button";
 import MediaLibraryModal from "./MediaLibraryModal";
-import RichTextField from "@/components/editor/RichTextEditor";
+import { CmsRichTextField } from "@/components/admin/CmsRichTextField";
 
 function defaultOffering(type?: string): Partial<Offering> {
   return {
@@ -186,10 +186,10 @@ export default function OfferingForm({
               <Input label="Subtítulo" name="subtitle" defaultValue={current.subtitle} />
             </div>
             <div className="md:col-span-2">
-              <RichTextField label="Descripción corta" name="excerpt" value={excerpt} onChange={setExcerpt} minHeight="130px" />
+              <CmsRichTextField label="Descripción corta" value={excerpt} onChange={setExcerpt} minHeight="130px" />
             </div>
             <div className="md:col-span-2">
-              <RichTextField label="Descripción completa" name="description" value={description} onChange={setDescription} minHeight="240px" />
+              <CmsRichTextField label="Descripción completa" value={description} onChange={setDescription} minHeight="240px" />
             </div>
           </div>
         </section>

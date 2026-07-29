@@ -5,9 +5,15 @@ import { SiteChrome } from "@/components/layout/SiteChrome";
 import "./tailwind.css";
 import "./legacy/base.css";
 import "./legacy/home.css";
+import "../components/home/home-section.css";
+import "../components/home/featured-experience-cards.css";
 import "./legacy/classes.css";
 import "./legacy/shop.css";
+import "../features/shop/components/catalog/shop-catalog.css";
+import "../features/shop/components/item-detail/shop-item-detail.css";
 import "./legacy/blog.css";
+import "../features/blog/components/index/blog-index.css";
+import "../features/blog/components/post/blog-post-editorial.css";
 import "./legacy/cart.css";
 import "./legacy/studio.css";
 import "./legacy/promo-entry.css";
@@ -16,6 +22,10 @@ import "./legacy/cookiebar.css";
 import "./legacy/site.css";
 import "./globals.css";
 import "./responsive-tuning.css";
+import "../components/home/gift-carousel.css";
+import "../components/home/social-gallery-home.css";
+import "../components/home/testimonial-slider-home.css";
+import "../components/layout/footer/public-footer-editorial.css";
 
 const baskervville = Baskervville({
   subsets: ["latin"],
@@ -40,6 +50,8 @@ const manrope = Manrope({
 
 const robotoFlex = Roboto_Flex({
   subsets: ["latin"],
+  // Required for CmsRichTextField / TypographyPanel "Width" (font-variation-settings: "wdth").
+  axes: ["wdth"],
   variable: "--font-roboto-flex",
   display: "swap"
 });

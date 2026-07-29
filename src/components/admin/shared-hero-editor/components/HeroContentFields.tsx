@@ -111,6 +111,15 @@ function HeroPresentationVariantFields({
     details.heroPresentationSubtitleTypography ?? defaultClassDetails.heroPresentationSubtitleTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 22 },
   );
 
+  // Prefer persisted field values so markdown marks (`**bold**`) stay the controlled source of truth.
+  // Fall back to derived display copy only when the stored field is still empty.
+  const presentationTextValue = details.heroPresentationText.trim()
+    ? details.heroPresentationText
+    : display.heroPresentationText;
+  const presentationSubtitleValue = details.heroPresentationSubtitle.trim()
+    ? details.heroPresentationSubtitle
+    : display.heroPresentationSubtitle;
+
   return (
     <div className="class-edit-hero-presentation-grid">
       <div className="class-edit-hero-presentation-grid__copy class-edit-rich-text-stack">
@@ -118,7 +127,7 @@ function HeroPresentationVariantFields({
           label="Texto de presentación"
           labelPlacement="editor"
           layout="compact"
-          value={display.heroPresentationText}
+          value={presentationTextValue}
           typography={presentationTextTypography}
           controls={DETAIL_PAGE_RICH_TEXT_CONTROLS}
           minHeight="160px"
@@ -129,7 +138,7 @@ function HeroPresentationVariantFields({
           label="Texto sub-título"
           labelPlacement="editor"
           layout="compact"
-          value={display.heroPresentationSubtitle}
+          value={presentationSubtitleValue}
           typography={presentationSubtitleTypography}
           controls={DETAIL_PAGE_RICH_TEXT_CONTROLS}
           minHeight="120px"

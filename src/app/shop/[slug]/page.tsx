@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ShopItemPage as ShopItemScreen } from "@/features/shop/ShopItemPage";
+import { loadShopItemPage } from "@/features/shop/loadShopItemPage";
 import {
   generateShopItemMetadata,
   generateShopStaticParams,
-  getShopRouteItem
 } from "@/features/shop/shopRouting";
 
 export function generateStaticParams() {
@@ -12,7 +12,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({
-  params
+  params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
@@ -20,11 +20,11 @@ export async function generateMetadata({
 }
 
 export default async function ShopDetailPage({
-  params
+  params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const item = await getShopRouteItem(params);
-  if (!item) notFound();
-  return <ShopItemScreen item={item} />;
+  const data = await loadShopItemPage((await params).slug);
+  if (!data) notFound();
+  return <ShopItemScreen item={data.item} related={data.related} />;
 }

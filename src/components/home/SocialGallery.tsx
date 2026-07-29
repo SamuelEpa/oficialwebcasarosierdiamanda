@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Carousel } from "@/components/ui/Carousel";
+import { classNames } from "@/lib/utils";
 
 export interface SocialGalleryPost {
   image: string;
@@ -18,6 +19,8 @@ export interface SocialGalleryProps {
   posts?: readonly SocialGalleryPost[];
   ariaLabel?: string;
   sourceHref?: string;
+  /** Home page: autoplay marquee strip in featured container width (pause on hover). */
+  variant?: "default" | "home-strip";
 }
 
 const DEFAULT_INSTAGRAM_URL = "https://www.instagram.com/casarosier";
@@ -55,7 +58,8 @@ export function SocialGallery({
   subtitle = "siguenos en instagram - @casarosier",
   posts = defaultSocialGalleryPosts,
   ariaLabel = "Galeria continua de Instagram",
-  sourceHref = DEFAULT_INSTAGRAM_URL
+  sourceHref = DEFAULT_INSTAGRAM_URL,
+  variant = "default",
 }: SocialGalleryProps = {}) {
   const [active, setActive] = useState<number | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -88,10 +92,44 @@ export function SocialGallery({
     };
   }, [active, postCount]);
 
+  const isHomeStrip = variant === "home-strip";
+
+  function renderSocialPost(
+    post: SocialGalleryPost,
+    realIndex: number,
+    isDuplicate?: boolean,
+  ) {
+    return (
+      <button
+        className="social__item"
+        type="button"
+        onClick={() => setActive(realIndex)}
+        aria-label={`Abrir post social ${realIndex + 1}`}
+        tabIndex={isDuplicate ? -1 : undefined}
+      >
+        <img
+          src={post.image}
+          alt={isDuplicate ? "" : `Post social ${realIndex + 1}`}
+          loading="lazy"
+          decoding="async"
+        />
+      </button>
+    );
+  }
+
   return (
     <>
-      <section id={id} className="social section">
-        <div className="container social__container">
+      <section
+        id={id}
+        className={isHomeStrip ? "social social--home-strip section" : "social section"}
+      >
+        <div
+          className={classNames(
+            "container",
+            "social__container",
+            isHomeStrip && "featured__container",
+          )}
+        >
           <header className="social__head">
             <h2 className="social__title section-title">
               {title.split("\n").map((line, index, lines) => (
@@ -101,34 +139,22 @@ export function SocialGallery({
                 </span>
               ))}
             </h2>
-            <p className="social__subtitle">
-              {subtitle}
-            </p>
+            <p className="social__subtitle">{subtitle}</p>
           </header>
           <Carousel
             items={posts}
             ariaLabel={ariaLabel}
-            className="social__carousel"
+            className={classNames(
+              "social__carousel",
+              isHomeStrip && "social__carousel--home-strip",
+            )}
             viewportClassName="social__viewport"
             trackClassName="social__track is-animated"
             slideClassName="social__slide"
             marquee
-            renderItem={(post, { realIndex, isDuplicate }) => (
-                <button
-                  className="social__item"
-                  type="button"
-                  onClick={() => setActive(realIndex)}
-                  aria-label={`Abrir post social ${realIndex + 1}`}
-                  tabIndex={isDuplicate ? -1 : undefined}
-                >
-                  <img
-                    src={post.image}
-                    alt={isDuplicate ? "" : `Post social ${realIndex + 1}`}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </button>
-            )}
+            renderItem={(post, { realIndex, isDuplicate }) =>
+              renderSocialPost(post, realIndex, isDuplicate)
+            }
           />
         </div>
       </section>

@@ -1,5 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { cache } from "react";
 import { createAdminClient } from "../supabase/admin";
 import { normalizeHeroSettings, defaultHeroSettings } from "./hero-settings";
 import type { HomeIntroSlide, HomePageSettings } from "./types";
@@ -154,7 +155,7 @@ async function writeToFile(settings: HomePageSettings) {
   await fs.writeFile(FILE_PATH, JSON.stringify(settings, null, 2), "utf8");
 }
 
-export async function getHomePageSettings() {
+export const getHomePageSettings = cache(async function getHomePageSettings() {
   if (USE_LOCAL_DATA) return (await readFromFile()) ?? defaultHomePageSettings;
 
   try {
@@ -171,7 +172,7 @@ export async function getHomePageSettings() {
 
     return { ...defaultHomePageSettings, introSlides: [] };
   }
-}
+});
 
 export async function updateHomePageSettings(input: Partial<HomePageSettings>) {
   const next = normalizeHomePageSettings({

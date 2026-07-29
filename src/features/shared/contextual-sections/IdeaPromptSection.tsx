@@ -31,6 +31,7 @@ export async function IdeaPromptSection({
       posts={posts?.length ? posts : content.posts}
       ariaLabel={content.ariaLabel}
       sourceHref={gallery ? gallery.cta_url : content.sourceHref}
+      variant={context === "home" ? "home-strip" : "default"}
     />
   );
 }

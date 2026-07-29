@@ -30,7 +30,12 @@ const defaultIdeaPromptContent: IdeaPromptContent = {
 };
 
 const ideaPromptByContext: Partial<Record<IdeaPromptContext, IdeaPromptContent>> = {
-  home: defaultIdeaPromptContent,
+  home: {
+    ...defaultIdeaPromptContent,
+    title: "Lo que sucede en el taller",
+    subtitle: "Se parte de nuestra comunidad en instagram - @casarosier",
+    sourceHref: "https://www.instagram.com/casarosier",
+  },
   "experience-list": defaultIdeaPromptContent,
   "experience-detail": defaultIdeaPromptContent,
   blog: defaultIdeaPromptContent,

@@ -2,7 +2,10 @@
 
 import { useMemo } from "react";
 import type { SiteSettings } from "@/lib/cms/settings";
-import { buildPublicFooterViewModel, type PublicFooterViewModel } from "@/lib/cms/public-footer-model";
+import {
+  buildPublicFooterViewModel,
+  type PublicFooterViewModel,
+} from "@/lib/cms/public-footer-model";
 import type { FooterComponent, Form } from "@/lib/cms/types";
 import { FooterContactForm } from "./FooterContactForm";
 import { FooterContactInfo } from "./FooterContactInfo";
@@ -53,17 +56,43 @@ export function PublicFooterContent({
   const marqueeHref = model.socialLinks[0]?.url?.trim() || null;
 
   return (
-    <footer id="footer" className="site-footer" style={model.themeStyle}>
+    <footer
+      id="footer"
+      className="site-footer site-footer--editorial"
+      style={model.themeStyle}
+    >
       {socialTrack ? <FooterSocialMarquee href={marqueeHref} /> : null}
-      <section id="contacto-footer" className="contact-footer">
-        <div className="container contact-footer__container">
+      <section
+        id="contacto-footer"
+        className="contact-footer contact-footer--editorial"
+      >
+        <div className="container contact-footer__container contact-footer__container--editorial">
+          <FooterContactInfo model={model} variant="editorial" />
           <FooterContactForm config={model.contactForm} preview={preview} />
-          <FooterContactInfo model={model} />
+          <nav
+            className="contact-footer__legal-bar"
+            aria-label="Enlaces legales del sitio"
+          >
+            <a
+              className="contact-footer__legal-link contact-footer__legal-link--admin"
+              href="/auth"
+            >
+              Administración
+            </a>
+            <a
+              className="contact-footer__legal-link contact-footer__legal-link--privacy"
+              href="/politica-privacidad"
+            >
+              Política y privacidad
+            </a>
+          </nav>
         </div>
       </section>
-      <div className="site-legal">
-        <p className="site-legal__copy">{model.legalCopy}</p>
-      </div>
+      {model.legalCopy ? (
+        <div className="site-legal site-legal--editorial">
+          <p className="site-legal__copy">{model.legalCopy}</p>
+        </div>
+      ) : null}
     </footer>
   );
 }

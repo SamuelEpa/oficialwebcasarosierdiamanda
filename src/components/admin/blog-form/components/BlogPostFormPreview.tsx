@@ -60,6 +60,7 @@ function BlogPostFormPreviewComponent({
       title: title || "Título de la bitácora",
       slug: slug || "vista-previa",
       excerpt: excerpt || "Texto introductorio de la bitácora.",
+      listingExcerpt: "",
       coverImage: featuredImageId || previewHero.heroImage || "/img/social-2.jpg",
       category: currentCategory,
       tags: [],

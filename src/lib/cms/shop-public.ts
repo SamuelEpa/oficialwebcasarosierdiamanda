@@ -2,10 +2,10 @@ import type { ShopCategory, ShopItem } from "@/data/types";
 import { getCategories } from "./product-categories";
 import { getProducts } from "./products";
 import type { Product, ProductCategory } from "./types";
-
-function formatPrice(value: number | null) {
-  return value === null ? "Consultar" : `${value} EUR`;
-}
+import {
+  deriveShopProductBadge,
+  formatShopPrice,
+} from "@/lib/cms/shop-product-presentation";
 
 function findCategory(product: Product, categories: ProductCategory[]) {
   return categories.find((item) => item.id === product.category_id || item.slug === product.category_id);
@@ -34,7 +34,11 @@ function orderFromProduct(product: Product) {
   return match ? Number(match[1]) : 0;
 }
 
-function productToShopItem(product: Product, categories: ProductCategory[]): ShopItem {
+function productToShopItem(
+  product: Product,
+  categories: ProductCategory[],
+  index: number,
+): ShopItem {
   const gallery = [product.main_image_id, ...(product.gallery ?? [])].filter(Boolean);
 
   return {
@@ -43,7 +47,12 @@ function productToShopItem(product: Product, categories: ProductCategory[]): Sho
     name: product.name,
     category: categoryKey(product, categories),
     categoryLabel: categoryLabel(product, categories),
-    price: formatPrice(product.price),
+    price: formatShopPrice(product.price),
+    compareAtPrice:
+      product.compare_at_price !== null ? formatShopPrice(product.compare_at_price) : null,
+    priceAmount: product.price,
+    compareAtPriceAmount: product.compare_at_price,
+    badge: deriveShopProductBadge(product, { markPopular: index % 5 === 4 }),
     availability: product.stock === null || product.stock > 0 ? "Disponible" : "Agotado",
     image: product.main_image_id || product.seo_image || gallery[0] || "/img/social-2.jpg",
     gallery,
@@ -56,6 +65,7 @@ function productToShopItem(product: Product, categories: ProductCategory[]): Sho
     seoDescription: product.seo_description || product.excerpt || product.description,
     order: orderFromProduct(product),
     isPublished: product.status === "published",
+    createdAt: product.created_at,
   };
 }
 
@@ -63,8 +73,8 @@ export async function getPublicShopData() {
   const [products, categories] = await Promise.all([getProducts(), getCategories()]);
   const published = products
     .filter((product) => product.status === "published" && product.deleted_at === null)
-    .map((product) => productToShopItem(product, categories))
-    .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name, "es"));
+    .sort((a, b) => orderFromProduct(a) - orderFromProduct(b) || a.name.localeCompare(b.name, "es"))
+    .map((product, index) => productToShopItem(product, categories, index));
 
   const usedCategoryIds = new Set(published.map((item) => item.category).filter(Boolean));
 

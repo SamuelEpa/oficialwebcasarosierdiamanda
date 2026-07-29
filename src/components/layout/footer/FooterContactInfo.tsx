@@ -4,11 +4,18 @@ import type { CSSProperties } from "react";
 import { socialIconFallback } from "@/lib/cms/public-footer-model";
 import type { PublicFooterViewModel } from "@/lib/cms/public-footer-model";
 
-export function FooterContactInfo({ model }: { model: PublicFooterViewModel }) {
+export function FooterContactInfo({
+  model,
+  variant = "default",
+}: {
+  model: PublicFooterViewModel;
+  variant?: "default" | "editorial";
+}) {
   const { socialButtonColor, socialIconColor } = model.theme;
+  const isEditorial = variant === "editorial";
 
   return (
-    <div className="contact-info">
+    <div className={isEditorial ? "contact-info contact-info--editorial" : "contact-info"}>
       <h2 className="contact-info__title">{model.contactTitle}</h2>
       {model.contactLines.map((line, index) => (
         <p className={index === 0 ? "contact-info__text" : "contact-info__line"} key={`${line}-${index}`}>
@@ -16,13 +23,6 @@ export function FooterContactInfo({ model }: { model: PublicFooterViewModel }) {
         </p>
       ))}
       {model.extraAddress ? <p className="contact-info__line">{model.extraAddress}</p> : null}
-      {model.mapUrl ? (
-        <p className="contact-info__line">
-          <a className="contact-info__map-link" href={model.mapUrl} target="_blank" rel="noopener noreferrer">
-            Ver en Google Maps
-          </a>
-        </p>
-      ) : null}
       {model.socialLinks.length > 0 ? (
         <>
           <p className="contact-info__social-title">{model.socialTitle}</p>
@@ -57,14 +57,35 @@ export function FooterContactInfo({ model }: { model: PublicFooterViewModel }) {
           </div>
         </>
       ) : null}
-      <div className="contact-info__legal-links" aria-label="Enlaces legales">
-        <a className="contact-info__legal-link" href="/politica-privacidad">
-          Política y privacidad
-        </a>
-        <a className="contact-info__legal-link" href="/auth">
-          Administración
-        </a>
-      </div>
+      {model.mapUrl ? (
+        <div className="contact-info__line contact-info__line--map">
+          {isEditorial ? (
+            <a
+              className="contact-info__map-link contact-info__map-link--stacked"
+              href={model.mapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="contact-info__map-link-line">{model.mapLinkLines[0]}</span>
+              <span className="contact-info__map-link-line">{model.mapLinkLines[1]}</span>
+            </a>
+          ) : (
+            <a className="contact-info__map-link" href={model.mapUrl} target="_blank" rel="noopener noreferrer">
+              Ver en Google Maps
+            </a>
+          )}
+        </div>
+      ) : null}
+      {!isEditorial ? (
+        <div className="contact-info__legal-links" aria-label="Enlaces legales">
+          <a className="contact-info__legal-link" href="/politica-privacidad">
+            Política y privacidad
+          </a>
+          <a className="contact-info__legal-link" href="/auth">
+            Administración
+          </a>
+        </div>
+      ) : null}
     </div>
   );
 }

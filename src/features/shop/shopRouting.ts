@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getPublicShopData, getPublicShopItemBySlug } from "@/lib/cms/shop-public";
+import { loadShopItemPage } from "./loadShopItemPage";
 
 export async function generateShopStaticParams() {
   const { published } = await getPublicShopData();
@@ -19,5 +20,6 @@ export async function generateShopItemMetadata(
 }
 
 export async function getShopRouteItem(params: Promise<{ slug: string }>) {
-  return getPublicShopItemBySlug((await params).slug);
+  const data = await loadShopItemPage((await params).slug);
+  return data?.item ?? null;
 }

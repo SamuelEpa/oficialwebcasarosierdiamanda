@@ -1,8 +1,7 @@
 "use client";
 
 import { memo } from "react";
-import { AdminRichTextField } from "@/components/ui/AdminRichTextField";
-import { DETAIL_PAGE_RICH_TEXT_CONTROLS } from "@/components/admin/class-edit/constants/rich-text-controls";
+import { CmsRichTextField } from "@/components/admin/CmsRichTextField";
 import type { RichTextTypography } from "@/lib/cms/rich-text-typography";
 
 type Props = {
@@ -16,33 +15,8 @@ type Props = {
   onTypographyChange: (typography: RichTextTypography) => void;
 };
 
-function BlogPostIntroRichTextFieldComponent({
-  label,
-  value,
-  typography,
-  required,
-  minHeight = "170px",
-  placeholder,
-  onChange,
-  onTypographyChange,
-}: Props) {
-  return (
-    <div className="class-edit-rich-text-stack">
-      <AdminRichTextField
-        label={label}
-        labelPlacement="editor"
-        layout="compact"
-        required={required}
-        value={value}
-        typography={typography}
-        controls={DETAIL_PAGE_RICH_TEXT_CONTROLS}
-        minHeight={minHeight}
-        placeholder={placeholder}
-        onChange={onChange}
-        onTypographyChange={onTypographyChange}
-      />
-    </div>
-  );
+function BlogPostIntroRichTextFieldComponent(props: Props) {
+  return <CmsRichTextField {...props} minHeight={props.minHeight ?? "170px"} />;
 }
 
 export const BlogPostIntroRichTextField = memo(BlogPostIntroRichTextFieldComponent);

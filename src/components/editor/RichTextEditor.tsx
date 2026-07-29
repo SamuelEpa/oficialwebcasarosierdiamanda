@@ -6,7 +6,7 @@ import EditorMediaDialog from "./EditorMediaDialog";
 import EditorToolbar, { defaultRichTextEditorControls } from "./EditorToolbar";
 import TypographyPanel from "./TypographyPanel";
 import { editorExtensions } from "./editor-extensions";
-import { htmlRootToMarkdown, markdownToHtml } from "./markdown-codec";
+import { htmlStringToMarkdown, markdownToHtml } from "./markdown-codec";
 import {
   DEFAULT_RICH_TEXT_TYPOGRAPHY,
   normalizeRichTextTypography,
@@ -64,8 +64,8 @@ export default function RichTextEditor({
       },
     },
     onUpdate: ({ editor: currentEditor }) => {
-      const root = currentEditor.view.dom as HTMLElement;
-      const nextMarkdown = htmlRootToMarkdown(root);
+      // Prefer getHTML() so marks (bold/italic/…) serialize from the document, not ProseMirror chrome.
+      const nextMarkdown = htmlStringToMarkdown(currentEditor.getHTML());
       lastMarkdownRef.current = nextMarkdown;
       onChangeRef.current(nextMarkdown);
     },
@@ -74,7 +74,7 @@ export default function RichTextEditor({
   useEffect(() => {
     if (!editor) return;
     if (value === lastMarkdownRef.current) return;
-    const currentMarkdown = htmlRootToMarkdown(editor.view.dom as HTMLElement);
+    const currentMarkdown = htmlStringToMarkdown(editor.getHTML());
     if (currentMarkdown === value) {
       lastMarkdownRef.current = value;
       return;

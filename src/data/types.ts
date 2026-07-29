@@ -185,7 +185,10 @@ export type PrivateExperienceItem = ExperienceItem & {
 export interface ShopCategory {
   key: string;
   label: string;
+  count?: number;
 }
+
+export type ShopProductBadge = "sale" | "sold" | "new" | "popular";
 
 export interface ShopItem {
   id: string;
@@ -194,6 +197,10 @@ export interface ShopItem {
   category: string;
   categoryLabel: string;
   price: string;
+  compareAtPrice: string | null;
+  priceAmount: number | null;
+  compareAtPriceAmount: number | null;
+  badge: ShopProductBadge | null;
   availability: string;
   image: string;
   gallery: string[];
@@ -206,6 +213,7 @@ export interface ShopItem {
   seoDescription: string;
   order: number;
   isPublished: boolean;
+  createdAt: string;
 }
 
 export type BlogContentBlock =
@@ -230,6 +238,8 @@ export interface BlogPost {
   title: string;
   slug: string;
   excerpt: string;
+  /** Short plain excerpt for index feed cards (listing_excerpt from CMS). */
+  listingExcerpt: string;
   coverImage: string;
   category: string;
   tags: string[];

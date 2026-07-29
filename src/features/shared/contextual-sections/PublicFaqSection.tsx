@@ -8,6 +8,7 @@ type Props = {
   title?: string;
   pageSection?: PageFaqSection | null;
   eyebrow?: string;
+  className?: string;
 };
 
 export default function PublicFaqSection({
@@ -16,6 +17,7 @@ export default function PublicFaqSection({
   faqs,
   title,
   eyebrow = "FAQ",
+  className,
 }: Props) {
   const selectedGroup = block?.group ?? group ?? null;
   const items = block?.faqs ?? faqs ?? [];
@@ -28,22 +30,25 @@ export default function PublicFaqSection({
     return acc;
   }, {});
   const topicEntries = Object.entries(groups);
+  const sectionClassName = ["public-faq", "section", className].filter(Boolean).join(" ");
 
   return (
-    <section className="public-faq section" aria-labelledby="public-faq-title">
+    <section className={sectionClassName} aria-labelledby="public-faq-title">
       <div className="container public-faq__container">
         <div className="public-faq__head">
           <p>{eyebrow}</p>
           <h2 id="public-faq-title">{title || selectedGroup?.title || "Preguntas frecuentes"}</h2>
-          {selectedGroup?.description ? <div className="public-faq__description">{selectedGroup.description}</div> : null}
+          {selectedGroup?.description ? (
+            <div className="public-faq__description">{selectedGroup.description}</div>
+          ) : null}
         </div>
         <div className="public-faq__topics">
           {topicEntries.map(([topic, topicFaqs]) => (
             <div className="public-faq__topic" key={topic}>
               <h3>{topic}</h3>
               <div className="public-faq__list">
-                {topicFaqs.map((faq, index) => (
-                  <details className="public-faq__item" key={faq.id} >
+                {topicFaqs.map((faq) => (
+                  <details className="public-faq__item" key={faq.id}>
                     <summary>{faq.question}</summary>
                     <MarkdownContent className="public-faq__answer" source={faq.answer || ""} />
                   </details>

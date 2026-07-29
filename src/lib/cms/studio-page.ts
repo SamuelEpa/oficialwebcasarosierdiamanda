@@ -2,6 +2,10 @@ import { promises as fs } from "fs";
 import path from "path";
 import { createAdminClient } from "../supabase/admin";
 import { defaultHeroSettings, normalizeHeroSettings } from "./hero-settings";
+import {
+  DEFAULT_DESCRIPTION_TYPOGRAPHY,
+  normalizeRichTextTypography,
+} from "./rich-text-typography";
 import type { StudioPageSettings } from "./types";
 
 const TABLE = "studio_page_settings";
@@ -19,7 +23,10 @@ export const defaultStudioPageSettings: StudioPageSettings = {
     heroImage: "/img/hero-bg.jpg",
     heroPresentationText: "# El Estudio\n\nUn espacio para aprender ceramica con calma, explorar tecnicas y tocar la materia.",
   }),
-  introContent: "Somos lo que somos y aqui estamos.\n\nEn Barcelona, un espacio para aprender ceramica con calma, explorar tecnicas, tocar la materia y encontrar una practica guiada que acompana cada primer gesto.",
+  introHeading: "Quienes hacen posible el taller",
+  introContent:
+    "Compartimos lo que sabemos y te acompañamos en cada parte del proceso.",
+  introContentTypography: { ...DEFAULT_DESCRIPTION_TYPOGRAPHY },
   showIdeaPromptSection: true,
   showFaqSection: false,
   faqGroupId: "",
@@ -31,7 +38,9 @@ export const defaultStudioPageSettings: StudioPageSettings = {
 
 function normalizeStudioPageSettings(input: Partial<StudioPageSettings> | null | undefined): StudioPageSettings {
   const rowInput = input as Partial<StudioPageSettings> & {
+    intro_heading?: string;
     intro_content?: string;
+    intro_content_typography?: unknown;
     show_idea_prompt_section?: boolean;
     show_faq_section?: boolean;
     faq_group_id?: string | null;
@@ -48,7 +57,13 @@ function normalizeStudioPageSettings(input: Partial<StudioPageSettings> | null |
       heroSubtitle: "Casa Rosier",
       heroImage: "/img/hero-bg.jpg",
     }),
+    introHeading: String(
+      input?.introHeading ?? rowInput?.intro_heading ?? defaultStudioPageSettings.introHeading,
+    ),
     introContent: String(input?.introContent ?? rowInput?.intro_content ?? defaultStudioPageSettings.introContent),
+    introContentTypography: normalizeRichTextTypography(
+      input?.introContentTypography ?? rowInput?.intro_content_typography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+    ),
     showIdeaPromptSection: (input?.showIdeaPromptSection ?? rowInput?.show_idea_prompt_section) !== false,
     showFaqSection: (input?.showFaqSection ?? rowInput?.show_faq_section) === true,
     faqGroupId: String(input?.faqGroupId ?? rowInput?.faq_group_id ?? ""),
@@ -64,7 +79,11 @@ function toRow(settings: StudioPageSettings) {
     id: settings.id,
     status: settings.status,
     hero: settings.hero,
+    intro_heading: settings.introHeading,
     intro_content: settings.introContent,
+    intro_content_typography: normalizeRichTextTypography(
+      settings.introContentTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+    ),
     show_idea_prompt_section: settings.showIdeaPromptSection,
     show_faq_section: settings.showFaqSection,
     faq_group_id: settings.faqGroupId || null,
@@ -110,7 +129,15 @@ export async function updateStudioPageSettings(input: Partial<StudioPageSettings
 
   try {
     const supabase = createAdminClient();
-    const { error } = await supabase.from(TABLE).upsert(toRow(next), { onConflict: "id" });
+    let { error } = await supabase.from(TABLE).upsert(toRow(next), { onConflict: "id" });
+    if (error?.message?.includes("intro_content_typography") || error?.message?.includes("intro_heading")) {
+      const {
+        intro_content_typography: _typography,
+        intro_heading: _heading,
+        ...legacyRow
+      } = toRow(next) as Record<string, unknown>;
+      ({ error } = await supabase.from(TABLE).upsert(legacyRow, { onConflict: "id" }));
+    }
     if (error) throw error;
   } catch {
     await writeToFile(next);

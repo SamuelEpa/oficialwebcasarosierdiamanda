@@ -8,6 +8,7 @@ export function cmsPostToPublic(post: BlogPost): PublicBlogPost {
     title: post.title,
     slug: post.slug,
     excerpt: post.excerpt,
+    listingExcerpt: post.listing_excerpt || "",
     coverImage: post.featured_image_id || post.seo_image || "/img/social-2.jpg",
     category: post.category || "Procesos",
     tags: post.tags ?? [],

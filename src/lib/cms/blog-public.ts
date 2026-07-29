@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { BlogContentBlock, BlogPost as PublicBlogPost } from "@/data/types";
 import { getBlogPosts } from "./blog";
 import type { BlogPost as CmsBlogPost, BlogPostBlock } from "./types";
@@ -101,6 +102,7 @@ function cmsToPublicPost(post: CmsBlogPost): PublicBlogPost {
     title: post.title,
     slug: post.slug,
     excerpt: post.excerpt,
+    listingExcerpt: post.listing_excerpt || "",
     coverImage: post.featured_image_id || post.seo_image || "img/social-2.jpg",
     category: post.category || "Procesos",
     tags: post.tags ?? [],
@@ -122,15 +124,15 @@ function cmsToPublicPost(post: CmsBlogPost): PublicBlogPost {
   };
 }
 
-export async function getPublicBlogPosts() {
+export const getPublicBlogPosts = cache(async () => {
   const cmsPosts = await getBlogPosts();
   return cmsPosts
     .map(cmsToPublicPost)
     .filter((post) => post.status === "published")
     .sort((a, b) => normalizeDate(b.publishedAt) - normalizeDate(a.publishedAt) || a.manualOrder - b.manualOrder);
-}
+});
 
-export async function getPublicBlogData() {
+export const getPublicBlogData = cache(async () => {
   const posts = await getPublicBlogPosts();
   const published = posts.filter((post) => post.visibleInListing !== false);
   const featured = posts
@@ -142,7 +144,7 @@ export async function getPublicBlogData() {
     featured,
     categories: Array.from(new Set(published.map((post) => post.category))),
   };
-}
+});
 
 export async function getPublicBlogPostBySlug(slug: string) {
   const posts = await getPublicBlogPosts();

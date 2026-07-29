@@ -1,9 +1,6 @@
-import Link from "next/link";
-import { MarkdownContent } from "@/components/ui/MarkdownContent";
 import type { ExperienceItem } from "@/data/types";
-import { assetPath } from "@/lib/assets";
-import { DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography, richTextTypographyStyle } from "@/lib/cms/rich-text-typography";
-import { experienceHref } from "@/lib/routes";
+import { FeaturedExperienceCards } from "@/components/home/FeaturedExperienceCards";
+import { HomeSection } from "@/components/home/HomeSection";
 
 interface FeaturedSectionProps {
   id: string;
@@ -18,55 +15,11 @@ export function FeaturedSection({
   title,
   subtitle,
   items,
-  variant
+  variant,
 }: FeaturedSectionProps) {
   return (
-    <section
-      id={id}
-      className={`featured section ${variant ? `featured--${variant}` : ""}`}
-    >
-      <div className="container featured__container">
-        <header className="featured__head">
-          <h2 className="featured__title section-title">{title}</h2>
-          <p className="featured__subtitle section-subtitle">{subtitle}</p>
-        </header>
-        <div className="featured__grid cards-grid">
-          {items.map((item) => {
-            const href = experienceHref(item.kind, item.slug);
-            const image = item.homeImage || item.coverImage;
-
-            return (
-              <article className="content-card" key={item.id}>
-                <Link className="content-card__link" href={href} aria-label={`Ver ${item.homeTitle || item.title}`}>
-                  <span className="content-card__media">
-                    <img
-                      src={assetPath(image)}
-                      alt={item.homeImageAlt || item.homeTitle || item.title}
-                      loading="lazy"
-                      decoding="async"
-                      className={assetPath(image) !== `/${image}` ? "asset-fallback" : undefined}
-                    />
-                  </span>
-                  <span className="content-card__body">
-                    <span className="content-card__meta">{item.homeEyebrow || item.category}</span>
-                    <span className="content-card__title card__title">
-                      {item.homeTitle || item.title}
-                    </span>
-                    <MarkdownContent
-                      className="content-card__excerpt body-text content-card__excerpt--styled"
-                      style={richTextTypographyStyle(normalizeRichTextTypography(item.homeExcerptTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY))}
-                      source={item.homeExcerpt || item.excerpt}
-                    />
-                    <span className="content-card__cta" aria-hidden="true">
-                      leer mas
-                    </span>
-                  </span>
-                </Link>
-              </article>
-            );
-          })}
-        </div>
-      </div>
-    </section>
+    <HomeSection id={id} title={title} subtitle={subtitle} variant={variant} editorialSpacing>
+      <FeaturedExperienceCards items={items} />
+    </HomeSection>
   );
 }

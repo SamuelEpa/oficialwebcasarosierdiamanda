@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogPostPage as BlogPostScreen } from "@/features/blog/BlogPostPage";
+import { loadBlogPostPage } from "@/features/blog/loadBlogPostPage";
 import {
   generateBlogPostMetadata,
   generateBlogStaticParams,
-  getBlogPostRouteItem
 } from "@/features/blog/blogRouting";
 
 export const revalidate = 900;
@@ -14,20 +14,27 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({
-  params
+  params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   return generateBlogPostMetadata(params);
 }
 
-export default async function BlogPostPage({
-  params
+export default async function BlogPostRoute({
+  params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const post = await getBlogPostRouteItem(params);
-  if (!post) notFound();
+  const data = await loadBlogPostPage((await params).slug);
+  if (!data) notFound();
 
-  return <BlogPostScreen post={post} />;
+  return (
+    <BlogPostScreen
+      post={data.post}
+      adjacent={data.adjacent}
+      position={data.position}
+      total={data.total}
+    />
+  );
 }

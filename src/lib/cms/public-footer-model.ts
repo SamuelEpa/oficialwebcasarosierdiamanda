@@ -3,6 +3,7 @@ import { resolvePublicFooterContact, type SiteContactSlice } from "./footer-cont
 import {
   DEFAULT_FOOTER_CONTACT_TEXT,
   DEFAULT_FOOTER_CONTACT_TITLE,
+  DEFAULT_FOOTER_SOCIAL_LINKS,
   DEFAULT_FOOTER_SOCIAL_TITLE,
   DEFAULT_FOOTER_THEME,
 } from "./footer-defaults";
@@ -26,6 +27,7 @@ export type PublicFooterViewModel = {
   socialTitle: string;
   extraAddress: string | null;
   mapUrl: string | null;
+  mapLinkLines: readonly [string, string];
   socialLinks: SocialLink[];
   legalCopy: string;
   contactForm: PublicFooterContactFormProps;
@@ -39,6 +41,43 @@ function parseContactBlock(contactText: string) {
   const socialTitle = lines.length ? lines.pop()! : DEFAULT_FOOTER_SOCIAL_TITLE;
   return { contactLines: lines, socialTitle };
 }
+
+function pickFirstNonEmpty(...values: Array<string | null | undefined>) {
+  for (const value of values) {
+    const trimmed = value?.trim();
+    if (trimmed) return trimmed;
+  }
+  return "";
+}
+
+function formatCityCountry(city: string | undefined, country: string | undefined) {
+  return [city?.trim(), country?.trim()].filter(Boolean).join(", ");
+}
+
+/** Combines footer `contact_text` with `site_settings.contact` (Supabase). */
+export function mergePublicFooterContactLines(
+  parsedLines: string[],
+  siteContact: SiteContactSlice,
+  resolved: ReturnType<typeof resolvePublicFooterContact>,
+): string[] {
+  const phone = pickFirstNonEmpty(resolved.phone, siteContact.phone, parsedLines[0]);
+  const cityCountry = formatCityCountry(siteContact.city, siteContact.country);
+  const addressLine = pickFirstNonEmpty(resolved.address, parsedLines[1]);
+  const location = pickFirstNonEmpty(
+    addressLine && cityCountry && !addressLine.toLowerCase().includes(cityCountry.toLowerCase())
+      ? `${addressLine}, ${cityCountry}`
+      : addressLine || cityCountry,
+    parsedLines[1],
+  );
+  const hours = pickFirstNonEmpty(
+    parsedLines.find((line) => /lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo|horario|\d{1,2}:\d{2}/i.test(line)),
+    parsedLines[2],
+  );
+
+  return [phone, location, hours].filter(Boolean);
+}
+
+export const DEFAULT_FOOTER_MAP_LINK_LINES = ["ver ubicación en", "google maps"] as const;
 
 export function normalizePublicSocialLinks(links: SocialLink[] | undefined | null): SocialLink[] {
   if (!links?.length) return [];
@@ -62,7 +101,8 @@ export function buildPublicFooterViewModel(input: {
   const footer = input.footer;
   const resolved = resolvePublicFooterContact(footer, input.siteContact);
   const contactText = footer?.contact_text?.trim() || DEFAULT_FOOTER_CONTACT_TEXT;
-  const { contactLines, socialTitle } = parseContactBlock(contactText);
+  const { contactLines: parsedLines, socialTitle } = parseContactBlock(contactText);
+  const contactLines = mergePublicFooterContactLines(parsedLines, input.siteContact, resolved);
 
   const theme = {
     formButton: footer?.form_button_color || DEFAULT_FOOTER_THEME.formButtonColor,
@@ -72,9 +112,13 @@ export function buildPublicFooterViewModel(input: {
   };
 
   const extraAddress =
-    footer?.address?.trim() ||
-    (resolved.address && !contactLines.includes(resolved.address) ? resolved.address : "") ||
-    null;
+    resolved.address &&
+    contactLines.some((line) => line.includes(resolved.address)) === false
+      ? resolved.address
+      : null;
+
+  const socialFromFooter = normalizePublicSocialLinks(footer?.social_links);
+  const socialLinks = socialFromFooter.length ? socialFromFooter : DEFAULT_FOOTER_SOCIAL_LINKS;
 
   const form = input.contactForm ?? null;
   const legalFromFooter = footer?.legal_text?.trim();
@@ -100,7 +144,8 @@ export function buildPublicFooterViewModel(input: {
     socialTitle,
     extraAddress: extraAddress || null,
     mapUrl: resolved.mapUrl || null,
-    socialLinks: normalizePublicSocialLinks(footer?.social_links),
+    mapLinkLines: DEFAULT_FOOTER_MAP_LINK_LINES,
+    socialLinks,
     legalCopy,
     contactForm: {
       form,

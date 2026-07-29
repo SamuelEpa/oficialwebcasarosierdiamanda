@@ -1,4 +1,4 @@
-﻿import { ShopGrid } from "@/components/shop/ShopGrid";
+﻿import { ShopCatalogSection } from "@/features/shop/components/catalog/ShopCatalogSection";
 import { SitePage } from "@/features/shared/layout/SitePage";
 import PublicFaqSection from "@/features/shared/contextual-sections/PublicFaqSection";
 import { ShopIndexHeader } from "./components/ShopIndexHeader";
@@ -9,7 +9,7 @@ export async function ShopIndexPage() {
 
   return (
     <SitePage bodyClass="shop-page" header={<ShopIndexHeader hero={hero} />}>
-      <ShopGrid published={published} shopCategories={shopCategories} />
+      <ShopCatalogSection published={published} shopCategories={shopCategories} />
       <PublicFaqSection pageSection={faqSection} eyebrow="" />
     </SitePage>
   );

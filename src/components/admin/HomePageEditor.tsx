@@ -8,6 +8,7 @@ import { HomeGiftCardSection } from "@/features/home/HomeGiftCardSection";
 import type { ExperienceItem, GiftCardItem, NavigationItem } from "@/data/types";
 import type { CmsHeroSettings, HomeIntroSlide, HomePageSettings } from "@/lib/cms/types";
 import { normalizeHeroSettings } from "@/lib/cms/hero-settings";
+import { saveHomePageSettingsAction } from "@/lib/admin/home-page-actions";
 import { assetPath } from "@/lib/assets";
 import AdminActionModal from "./AdminActionModal";
 import MediaSelectField from "./MediaSelectField";
@@ -145,37 +146,10 @@ export default function HomePageEditor({
   async function save(nextStatus = status) {
     setIsLoading(true);
     setModal(null);
-    const response = await fetch("/api/admin/home-page", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        status: nextStatus,
-        hero,
-        introSlides: introSlides.map((slide, sortOrder) => ({ ...slide, sortOrder })),
-        classesTitle,
-        classesSubtitle,
-        classesFeaturedIds,
-        workshopsTitle,
-        workshopsSubtitle,
-        workshopsFeaturedIds,
-        giftTitle,
-        giftSubtitle,
-        giftFeaturedIds,
-      }),
-    });
-
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({})) as { error?: string };
-      setModal({ type: "error", title: "No se pudo guardar", message: data.error || "Intenta de nuevo." });
-      setIsLoading(false);
-      return;
-    }
-
-    setStatus(nextStatus);
-    setSavedSnapshot(serializeEditorState({
+    const result = await saveHomePageSettingsAction({
       status: nextStatus,
       hero,
-      introSlides,
+      introSlides: introSlides.map((slide, sortOrder) => ({ ...slide, sortOrder })),
       classesTitle,
       classesSubtitle,
       classesFeaturedIds,
@@ -185,6 +159,39 @@ export default function HomePageEditor({
       giftTitle,
       giftSubtitle,
       giftFeaturedIds,
+    });
+
+    if (!result.ok) {
+      setModal({ type: "error", title: "No se pudo guardar", message: result.error });
+      setIsLoading(false);
+      return;
+    }
+
+    setStatus(nextStatus);
+    setHero(result.page.hero);
+    setIntroSlides(result.page.introSlides);
+    setClassesTitle(result.page.classesTitle);
+    setClassesSubtitle(result.page.classesSubtitle);
+    setClassesFeaturedIds(result.page.classesFeaturedIds);
+    setWorkshopsTitle(result.page.workshopsTitle);
+    setWorkshopsSubtitle(result.page.workshopsSubtitle);
+    setWorkshopsFeaturedIds(result.page.workshopsFeaturedIds);
+    setGiftTitle(result.page.giftTitle);
+    setGiftSubtitle(result.page.giftSubtitle);
+    setGiftFeaturedIds(result.page.giftFeaturedIds);
+    setSavedSnapshot(serializeEditorState({
+      status: nextStatus,
+      hero: result.page.hero,
+      introSlides: result.page.introSlides,
+      classesTitle: result.page.classesTitle,
+      classesSubtitle: result.page.classesSubtitle,
+      classesFeaturedIds: result.page.classesFeaturedIds,
+      workshopsTitle: result.page.workshopsTitle,
+      workshopsSubtitle: result.page.workshopsSubtitle,
+      workshopsFeaturedIds: result.page.workshopsFeaturedIds,
+      giftTitle: result.page.giftTitle,
+      giftSubtitle: result.page.giftSubtitle,
+      giftFeaturedIds: result.page.giftFeaturedIds,
     }));
     setModal({ type: "success", title: nextStatus === "published" ? "Home publicada" : "Borrador guardado", message: "La configuracion de Home quedo lista." });
     setIsLoading(false);

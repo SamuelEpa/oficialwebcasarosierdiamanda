@@ -9,22 +9,12 @@ export const sortLabels: Record<SortKey, string> = {
 
 export const OFFERINGS_PAGE_SIZE = 8;
 
+import { normalizePlainText, truncatePlainText } from "@/lib/text/plain-text";
+
 export const OFFERING_LIST_EXCERPT_MAX_LENGTH = 120;
 
 export function normalizeOfferingListText(value: string) {
-  return value
-    .replace(/<[^>]*>/g, " ")
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
-    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-    .replace(/[`*_>#~]/g, " ")
-    .replace(/&nbsp;|&#160;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&quot;|&#34;/gi, '"')
-    .replace(/&#39;|&apos;/gi, "'")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/\s+/g, " ")
-    .trim();
+  return normalizePlainText(value);
 }
 
 export function truncateOfferingExcerpt(
@@ -32,10 +22,7 @@ export function truncateOfferingExcerpt(
   maxLength = OFFERING_LIST_EXCERPT_MAX_LENGTH,
   fallback = "Sin descripción corta.",
 ) {
-  const normalized = normalizeOfferingListText(value ?? "");
-  if (!normalized) return fallback;
-  if (normalized.length <= maxLength) return normalized;
-  return `${normalized.slice(0, maxLength).trimEnd()}...`;
+  return truncatePlainText(value, maxLength, { fallback });
 }
 
 export function isSortKey(value: string): value is SortKey {
