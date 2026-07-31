@@ -108,12 +108,15 @@ export function NavbarGlobal({
     "--hero-logo-tablet-position-x": heroLogoTabletPositionX || heroLogoPositionX || "50%",
     "--hero-logo-tablet-position-y": heroLogoTabletPositionY || heroLogoPositionY || "42px",
     "--hero-logo-tablet-width": heroLogoTabletWidth || heroLogoWidth || "106px",
-    "--hero-logo-mobile-position-x": heroLogoMobilePositionX || heroLogoPositionX || "50%",
-    "--hero-logo-mobile-position-y": heroLogoMobilePositionY || "34px",
-    "--hero-logo-mobile-width": heroLogoMobileWidth || "92px",
+    "--hero-logo-mobile-position-x":
+      heroLogoMobilePositionX || heroLogoTabletPositionX || heroLogoPositionX || "50%",
+    "--hero-logo-mobile-position-y":
+      heroLogoMobilePositionY || heroLogoTabletPositionY || heroLogoPositionY || "34px",
+    "--hero-logo-mobile-width": heroLogoMobileWidth || heroLogoTabletWidth || heroLogoWidth || "92px",
     "--hero-menu-position-y": heroMenuPositionY || "132px",
     "--hero-menu-tablet-position-y": heroMenuTabletPositionY || heroMenuPositionY || "118px",
-    "--hero-menu-mobile-position-y": heroMenuMobilePositionY || "96px",
+    "--hero-menu-mobile-position-y":
+      heroMenuMobilePositionY || heroMenuTabletPositionY || heroMenuPositionY || "96px",
   } as CSSProperties;
   const scrollLogoTintStyle = {
     WebkitMaskImage: `url("${logoUrl.replace(/"/g, "%22")}")`,

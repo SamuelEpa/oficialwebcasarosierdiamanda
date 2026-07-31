@@ -59,20 +59,55 @@
   }
 
   .site-nav-shell--home .mobile-scroll-nav.is-at-top .mobile-scroll-nav__logo {
-    left: 50% !important;
-    top: 50% !important;
+    left: var(--hero-logo-tablet-position-x, var(--hero-logo-position-x, 50%)) !important;
+    top: var(--hero-logo-tablet-position-y, var(--hero-logo-position-y, 42px)) !important;
     transform: translate(-50%, -50%);
   }
 
   .site-nav-shell--home .mobile-scroll-nav.is-at-top .mobile-scroll-nav__toggle {
     right: max(12px, env(safe-area-inset-right, 0px));
     left: auto !important;
-    top: 50% !important;
+    top: var(--hero-logo-tablet-position-y, var(--hero-logo-position-y, 42px)) !important;
     transform: translateY(-50%);
+  }
+
+  .header-home--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="primary"],
+  .header-home--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="secondary"] {
+    width: min(70vw, 420px) !important;
+    max-width: min(70vw, 420px) !important;
   }
 }
 
 @media (max-width: 640px) {
+  .site-nav-shell--home .mobile-scroll-nav.is-at-top .mobile-scroll-nav__bar {
+    height: auto;
+    min-height: calc(
+      var(--hero-logo-mobile-position-y, 34px) +
+        (var(--hero-logo-mobile-width, 92px) * 0.5) +
+        env(safe-area-inset-top, 0px) +
+        12px
+    );
+  }
+
+  .site-nav-shell--home .mobile-scroll-nav.is-at-top .mobile-scroll-nav__logo {
+    left: var(--hero-logo-mobile-position-x, var(--hero-logo-tablet-position-x, var(--hero-logo-position-x, 50%))) !important;
+    top: calc(
+      var(--hero-logo-mobile-position-y, var(--hero-logo-tablet-position-y, var(--hero-logo-position-y, 34px))) +
+        env(safe-area-inset-top, 0px)
+    ) !important;
+    transform: translate(-50%, -50%);
+  }
+
+  .site-nav-shell--home .mobile-scroll-nav.is-at-top .mobile-scroll-nav__toggle {
+    right: max(12px, env(safe-area-inset-right, 0px));
+    left: auto !important;
+    top: calc(
+      var(--hero-logo-mobile-position-y, var(--hero-logo-tablet-position-y, var(--hero-logo-position-y, 34px))) +
+        env(safe-area-inset-top, 0px)
+    ) !important;
+    transform: translateY(-50%);
+  }
+
   .testimonial__carousel {
     margin-block: 6px 16px;
   }

@@ -77,26 +77,37 @@ export function buildHeaderInternoStyle(props: HeaderInternoProps): CSSPropertie
     "--hero-logo-tablet-position-x": heroLogoTabletPositionX ?? heroLogoPositionX ?? "50%",
     "--hero-logo-tablet-position-y": heroLogoTabletPositionY ?? heroLogoPositionY ?? "42px",
     "--hero-logo-tablet-width": heroLogoTabletWidth ?? heroLogoWidth ?? "106px",
-    "--hero-logo-mobile-position-x": heroLogoMobilePositionX ?? heroLogoPositionX ?? "50%",
-    "--hero-logo-mobile-position-y": heroLogoMobilePositionY ?? "34px",
-    "--hero-logo-mobile-width": heroLogoMobileWidth ?? "92px",
+    "--hero-logo-mobile-position-x":
+      heroLogoMobilePositionX ?? heroLogoTabletPositionX ?? heroLogoPositionX ?? "50%",
+    "--hero-logo-mobile-position-y":
+      heroLogoMobilePositionY ?? heroLogoTabletPositionY ?? heroLogoPositionY ?? "34px",
+    "--hero-logo-mobile-width":
+      heroLogoMobileWidth ?? heroLogoTabletWidth ?? heroLogoWidth ?? "92px",
     "--hero-menu-position-y": heroMenuPositionY ?? "132px",
     "--hero-menu-tablet-position-y": heroMenuTabletPositionY ?? heroMenuPositionY ?? "118px",
-    "--hero-menu-mobile-position-y": heroMenuMobilePositionY ?? "96px",
+    "--hero-menu-mobile-position-y":
+      heroMenuMobilePositionY ?? heroMenuTabletPositionY ?? heroMenuPositionY ?? "96px",
     "--hero-menu-color": heroMenuColor ?? (heroMenuTone === "light" ? "#ffffff" : "#3f3933"),
     "--hero-menu-scale": heroMenuScale ?? 1,
     "--title-image-scale": heroTitleImageScale ?? 1,
     "--title-image-scale-tablet": heroTitleImageScaleTablet ?? heroTitleImageScale ?? 1,
-    "--title-image-scale-mobile": heroTitleImageScaleMobile ?? heroTitleImageScale ?? 1,
+    "--title-image-scale-mobile":
+      heroTitleImageScaleMobile ?? heroTitleImageScaleTablet ?? heroTitleImageScale ?? 1,
     "--title-image-position-x": heroTitleImagePositionX ?? "50%",
     "--title-image-position-y": heroTitleImagePositionY ?? "50%",
     "--title-image-position-x-tablet": heroTitleImagePositionXTablet ?? heroTitleImagePositionX ?? "50%",
     "--title-image-position-y-tablet": heroTitleImagePositionYTablet ?? heroTitleImagePositionY ?? "50%",
-    "--title-image-position-x-mobile": heroTitleImagePositionXMobile ?? heroTitleImagePositionX ?? "50%",
-    "--title-image-position-y-mobile": heroTitleImagePositionYMobile ?? "50%",
+    "--title-image-position-x-mobile":
+      heroTitleImagePositionXMobile ?? heroTitleImagePositionXTablet ?? heroTitleImagePositionX ?? "50%",
+    "--title-image-position-y-mobile":
+      heroTitleImagePositionYMobile ?? heroTitleImagePositionYTablet ?? heroTitleImagePositionY ?? "50%",
     "--title-image-secondary-scale": heroTitleImageSecondaryScale ?? 1,
     "--title-image-secondary-scale-tablet": heroTitleImageSecondaryScaleTablet ?? heroTitleImageSecondaryScale ?? 1,
-    "--title-image-secondary-scale-mobile": heroTitleImageSecondaryScaleMobile ?? heroTitleImageSecondaryScale ?? 1,
+    "--title-image-secondary-scale-mobile":
+      heroTitleImageSecondaryScaleMobile ??
+      heroTitleImageSecondaryScaleTablet ??
+      heroTitleImageSecondaryScale ??
+      1,
     "--title-image-secondary-position-x": heroTitleImageSecondaryPositionX ?? "50%",
     "--title-image-secondary-position-y": heroTitleImageSecondaryPositionY ?? "50%",
     "--title-image-secondary-position-x-tablet":
@@ -104,17 +115,26 @@ export function buildHeaderInternoStyle(props: HeaderInternoProps): CSSPropertie
     "--title-image-secondary-position-y-tablet":
       heroTitleImageSecondaryPositionYTablet ?? heroTitleImageSecondaryPositionY ?? "50%",
     "--title-image-secondary-position-x-mobile":
-      heroTitleImageSecondaryPositionXMobile ?? heroTitleImageSecondaryPositionX ?? "50%",
-    "--title-image-secondary-position-y-mobile": heroTitleImageSecondaryPositionYMobile ?? "50%",
+      heroTitleImageSecondaryPositionXMobile ??
+      heroTitleImageSecondaryPositionXTablet ??
+      heroTitleImageSecondaryPositionX ??
+      "50%",
+    "--title-image-secondary-position-y-mobile":
+      heroTitleImageSecondaryPositionYMobile ??
+      heroTitleImageSecondaryPositionYTablet ??
+      heroTitleImageSecondaryPositionY ??
+      "50%",
     "--hero-title-position-x": heroTitlePositionX ?? "50%",
     "--hero-title-position-x-tablet": heroTitlePositionXTablet ?? heroTitlePositionX ?? "50%",
-    "--hero-title-position-x-mobile": heroTitlePositionXMobile ?? "50%",
+    "--hero-title-position-x-mobile":
+      heroTitlePositionXMobile ?? heroTitlePositionXTablet ?? heroTitlePositionX ?? "50%",
     "--hero-title-position-y": heroTitlePositionY ?? "50%",
     "--hero-title-position-y-tablet": heroTitlePositionYTablet ?? heroTitlePositionY ?? "50%",
-    "--hero-title-position-y-mobile": heroTitlePositionYMobile ?? "50%",
+    "--hero-title-position-y-mobile":
+      heroTitlePositionYMobile ?? heroTitlePositionYTablet ?? heroTitlePositionY ?? "50%",
     "--hero-title-scale": heroTitleScale ?? 1,
     "--hero-title-scale-tablet": heroTitleScaleTablet ?? heroTitleScale ?? 1,
-    "--hero-title-scale-mobile": heroTitleScaleMobile ?? 1,
+    "--hero-title-scale-mobile": heroTitleScaleMobile ?? heroTitleScaleTablet ?? heroTitleScale ?? 1,
     "--presentation-text-position-x": presentationTextPositionX ?? "8%",
     "--presentation-text-position-y": presentationTextPositionY ?? "50%",
     "--presentation-text-position-x-tablet":
@@ -122,11 +142,13 @@ export function buildHeaderInternoStyle(props: HeaderInternoProps): CSSPropertie
     "--presentation-text-position-y-tablet":
       presentationTextPositionYTablet ?? presentationTextPositionY ?? "50%",
     "--presentation-text-position-x-mobile":
-      presentationTextPositionXMobile ?? presentationTextPositionX ?? "8%",
-    "--presentation-text-position-y-mobile": presentationTextPositionYMobile ?? "50%",
+      presentationTextPositionXMobile ?? presentationTextPositionXTablet ?? presentationTextPositionX ?? "8%",
+    "--presentation-text-position-y-mobile":
+      presentationTextPositionYMobile ?? presentationTextPositionYTablet ?? presentationTextPositionY ?? "50%",
     "--presentation-text-scale": presentationTextScale ?? 1,
     "--presentation-text-scale-tablet": presentationTextScaleTablet ?? presentationTextScale ?? 1,
-    "--presentation-text-scale-mobile": presentationTextScaleMobile ?? 1,
+    "--presentation-text-scale-mobile":
+      presentationTextScaleMobile ?? presentationTextScaleTablet ?? presentationTextScale ?? 1,
     "--presentation-image-position-x": presentationImagePositionX ?? "70%",
     "--presentation-image-position-y": presentationImagePositionY ?? "50%",
     "--presentation-image-position-x-tablet":
@@ -134,11 +156,13 @@ export function buildHeaderInternoStyle(props: HeaderInternoProps): CSSPropertie
     "--presentation-image-position-y-tablet":
       presentationImagePositionYTablet ?? presentationImagePositionY ?? "50%",
     "--presentation-image-position-x-mobile":
-      presentationImagePositionXMobile ?? presentationImagePositionX ?? "70%",
-    "--presentation-image-position-y-mobile": presentationImagePositionYMobile ?? "50%",
+      presentationImagePositionXMobile ?? presentationImagePositionXTablet ?? presentationImagePositionX ?? "70%",
+    "--presentation-image-position-y-mobile":
+      presentationImagePositionYMobile ?? presentationImagePositionYTablet ?? presentationImagePositionY ?? "50%",
     "--presentation-image-scale": presentationImageScale ?? 1,
     "--presentation-image-scale-tablet": presentationImageScaleTablet ?? presentationImageScale ?? 1,
-    "--presentation-image-scale-mobile": presentationImageScaleMobile ?? 1,
+    "--presentation-image-scale-mobile":
+      presentationImageScaleMobile ?? presentationImageScaleTablet ?? presentationImageScale ?? 1,
   } as CSSProperties;
 }
 

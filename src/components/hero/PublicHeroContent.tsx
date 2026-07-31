@@ -13,7 +13,7 @@ import type { CmsHeroSettings } from "@/lib/cms/types";
 export function PublicHeroContent({ hero }: { hero: CmsHeroSettings }) {
   if (hero.heroVariant === "image") {
     return (
-      <div className="public-hero-content" style={{ position: "absolute", inset: 0, zIndex: 10, pointerEvents: "none" }}>
+      <div className="public-hero-content" style={{ position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none" }}>
         {hero.titleImage ? (
           <div
             className="public-hero-title"
@@ -29,7 +29,7 @@ export function PublicHeroContent({ hero }: { hero: CmsHeroSettings }) {
               zIndex: 1,
             } as CSSProperties}
           >
-            <Image src={hero.titleImage} alt="" fill sizes="700px" className="object-contain" style={{ opacity: 0.8 }} unoptimized />
+            <Image src={hero.titleImage} alt="" fill sizes="(max-width: 640px) 72vw, (max-width: 1024px) 70vw, 700px" className="object-contain" style={{ opacity: 0.8 }} unoptimized />
           </div>
         ) : null}
         {hero.titleImageSecondary ? (
@@ -47,7 +47,7 @@ export function PublicHeroContent({ hero }: { hero: CmsHeroSettings }) {
               zIndex: 2,
             } as CSSProperties}
           >
-            <Image src={hero.titleImageSecondary} alt="" fill sizes="700px" className="object-contain" unoptimized />
+            <Image src={hero.titleImageSecondary} alt="" fill sizes="(max-width: 640px) 72vw, (max-width: 1024px) 70vw, 700px" className="object-contain" unoptimized />
           </div>
         ) : null}
       </div>
@@ -61,7 +61,7 @@ export function PublicHeroContent({ hero }: { hero: CmsHeroSettings }) {
     );
 
     return (
-      <div className="public-hero-content public-hero-content--presentation" style={{ position: "absolute", inset: 0, zIndex: 10, pointerEvents: "none" }}>
+      <div className="public-hero-content public-hero-content--presentation" style={{ position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none" }}>
         <div className="page-hero__presentation-stage">
           <div className="page-hero__presentation-text" style={{ color: hero.heroPresentationTextColor || "#FFFFFF" }}>
             <MarkdownContent
@@ -110,7 +110,7 @@ export function PublicHeroTitle({ title, subtitle }: { hero: CmsHeroSettings; ti
       transform: "translateX(-50%) scale(var(--hero-title-scale, 1))",
       transformOrigin: "top center",
       textAlign: "center",
-      zIndex: 10,
+      zIndex: 5,
       pointerEvents: "none",
       maxWidth: "90%",
     } as CSSProperties}>

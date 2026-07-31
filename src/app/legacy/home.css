@@ -65,7 +65,7 @@
 }
 .hero__top {
   position: relative;
-  z-index: 4;
+  z-index: 50;
   padding-top: 54px;
   padding-bottom: 12px;
   text-align: center;
@@ -1675,6 +1675,30 @@ main {
     pointer-events: none;
   }
 
+  /*
+    Mobile image hero: keep title overlays inside the viewport and below the
+    logo/hamburger band so CMS scale (e.g. 1.4x) does not collide with nav.
+  */
+  .header-home--image-hero .public-hero-content {
+    top: max(
+      88px,
+      calc(
+        var(--hero-logo-mobile-position-y, 34px) +
+          (var(--hero-logo-mobile-width, 92px) * 0.55) +
+          env(safe-area-inset-top, 0px)
+      )
+    ) !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  .header-home--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="primary"],
+  .header-home--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="secondary"] {
+    width: min(72vw, 300px) !important;
+    max-width: min(72vw, 300px) !important;
+  }
+
   .header-home--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="primary"] {
     left: var(--title-image-position-x-mobile, var(--title-image-position-x-tablet, var(--title-image-position-x, 50%))) !important;
     top: var(--title-image-position-y-mobile, var(--title-image-position-y-tablet, var(--title-image-position-y, 50%))) !important;
@@ -1685,6 +1709,10 @@ main {
     left: var(--title-image-secondary-position-x-mobile, var(--title-image-secondary-position-x-tablet, var(--title-image-secondary-position-x, 50%))) !important;
     top: var(--title-image-secondary-position-y-mobile, var(--title-image-secondary-position-y-tablet, var(--title-image-secondary-position-y, 50%))) !important;
     transform: translate(-50%, -50%) scale(var(--title-image-secondary-scale-mobile, var(--title-image-secondary-scale-tablet, var(--title-image-secondary-scale, 1)))) !important;
+  }
+
+  .header-home--text-hero .public-hero-title {
+    max-width: min(90vw, 360px) !important;
   }
 }
 

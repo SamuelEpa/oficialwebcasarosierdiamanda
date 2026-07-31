@@ -27,7 +27,7 @@
 .header-interno .hero__top,
 .page-hero .hero__top {
   position: relative;
-  z-index: 30;
+  z-index: 50;
 }
 
 .header-interno .navbar-global.hero__top {

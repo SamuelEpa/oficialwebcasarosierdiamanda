@@ -214,74 +214,137 @@ export function buildHeroPreviewCssVariables(details: CmsHeroSettings, device: D
       device,
       details.heroLogoPositionX || "50%",
       details.heroLogoTabletPositionX || details.heroLogoPositionX || "50%",
-      details.heroLogoMobilePositionX || details.heroLogoPositionX || "50%",
+      details.heroLogoMobilePositionX ||
+        details.heroLogoTabletPositionX ||
+        details.heroLogoPositionX ||
+        "50%",
     ),
     "--hero-logo-position-y": responsivePreviewValue(
       device,
       details.heroLogoPositionY || "46px",
       details.heroLogoTabletPositionY || details.heroLogoPositionY || "42px",
-      details.heroLogoMobilePositionY || "34px",
+      details.heroLogoMobilePositionY ||
+        details.heroLogoTabletPositionY ||
+        details.heroLogoPositionY ||
+        "34px",
     ),
     "--hero-logo-width": responsivePreviewValue(
       device,
       details.heroLogoWidth || "118px",
       details.heroLogoTabletWidth || details.heroLogoWidth || "106px",
-      details.heroLogoMobileWidth || "92px",
+      details.heroLogoMobileWidth || details.heroLogoTabletWidth || details.heroLogoWidth || "92px",
     ),
     "--title-image-scale": details.titleImageScale ?? 1,
     "--title-image-scale-tablet": details.titleImageScaleTablet ?? details.titleImageScale ?? 1,
-    "--title-image-scale-mobile": details.titleImageScaleMobile ?? details.titleImageScale ?? 1,
+    "--title-image-scale-mobile":
+      details.titleImageScaleMobile ?? details.titleImageScaleTablet ?? details.titleImageScale ?? 1,
     "--title-image-position-x": details.titleImagePositionX ?? "50%",
     "--title-image-position-y": details.titleImagePositionY ?? "50%",
     "--title-image-position-x-tablet": details.titleImagePositionXTablet ?? details.titleImagePositionX ?? "50%",
     "--title-image-position-y-tablet": details.titleImagePositionYTablet ?? details.titleImagePositionY ?? "50%",
-    "--title-image-position-x-mobile": details.titleImagePositionXMobile ?? details.titleImagePositionX ?? "50%",
-    "--title-image-position-y-mobile": details.titleImagePositionYMobile ?? "50%",
+    "--title-image-position-x-mobile":
+      details.titleImagePositionXMobile ?? details.titleImagePositionXTablet ?? details.titleImagePositionX ?? "50%",
+    "--title-image-position-y-mobile":
+      details.titleImagePositionYMobile ??
+      details.titleImagePositionYTablet ??
+      details.titleImagePositionY ??
+      "50%",
     "--title-image-secondary-scale": details.titleImageSecondaryScale ?? 1,
-    "--title-image-secondary-scale-tablet": details.titleImageSecondaryScaleTablet ?? details.titleImageSecondaryScale ?? 1,
-    "--title-image-secondary-scale-mobile": details.titleImageSecondaryScaleMobile ?? details.titleImageSecondaryScale ?? 1,
+    "--title-image-secondary-scale-tablet":
+      details.titleImageSecondaryScaleTablet ?? details.titleImageSecondaryScale ?? 1,
+    "--title-image-secondary-scale-mobile":
+      details.titleImageSecondaryScaleMobile ??
+      details.titleImageSecondaryScaleTablet ??
+      details.titleImageSecondaryScale ??
+      1,
     "--title-image-secondary-position-x": details.titleImageSecondaryPositionX ?? "50%",
     "--title-image-secondary-position-y": details.titleImageSecondaryPositionY ?? "50%",
-    "--title-image-secondary-position-x-tablet": details.titleImageSecondaryPositionXTablet ?? details.titleImageSecondaryPositionX ?? "50%",
-    "--title-image-secondary-position-y-tablet": details.titleImageSecondaryPositionYTablet ?? details.titleImageSecondaryPositionY ?? "50%",
-    "--title-image-secondary-position-x-mobile": details.titleImageSecondaryPositionXMobile ?? details.titleImageSecondaryPositionX ?? "50%",
-    "--title-image-secondary-position-y-mobile": details.titleImageSecondaryPositionYMobile ?? "50%",
+    "--title-image-secondary-position-x-tablet":
+      details.titleImageSecondaryPositionXTablet ?? details.titleImageSecondaryPositionX ?? "50%",
+    "--title-image-secondary-position-y-tablet":
+      details.titleImageSecondaryPositionYTablet ?? details.titleImageSecondaryPositionY ?? "50%",
+    "--title-image-secondary-position-x-mobile":
+      details.titleImageSecondaryPositionXMobile ??
+      details.titleImageSecondaryPositionXTablet ??
+      details.titleImageSecondaryPositionX ??
+      "50%",
+    "--title-image-secondary-position-y-mobile":
+      details.titleImageSecondaryPositionYMobile ??
+      details.titleImageSecondaryPositionYTablet ??
+      details.titleImageSecondaryPositionY ??
+      "50%",
     "--hero-title-position-x": responsivePreviewValue(
       device,
       details.heroTitlePositionX ?? "50%",
       details.heroTitlePositionXTablet ?? details.heroTitlePositionX ?? "50%",
-      details.heroTitlePositionXMobile ?? "50%",
+      details.heroTitlePositionXMobile ??
+        details.heroTitlePositionXTablet ??
+        details.heroTitlePositionX ??
+        "50%",
     ),
     "--hero-title-position-y": responsivePreviewValue(
       device,
       details.heroTitlePositionY ?? "50%",
       details.heroTitlePositionYTablet ?? details.heroTitlePositionY ?? "50%",
-      details.heroTitlePositionYMobile ?? "50%",
+      details.heroTitlePositionYMobile ??
+        details.heroTitlePositionYTablet ??
+        details.heroTitlePositionY ??
+        "50%",
     ),
     "--hero-title-scale": responsivePreviewValue(
       device,
       details.heroTitleScale ?? 1,
       details.heroTitleScaleTablet ?? details.heroTitleScale ?? 1,
-      details.heroTitleScaleMobile ?? 1,
+      details.heroTitleScaleMobile ?? details.heroTitleScaleTablet ?? details.heroTitleScale ?? 1,
     ),
     "--presentation-text-position-x": details.presentationTextPositionX ?? "8%",
     "--presentation-text-position-y": details.presentationTextPositionY ?? "50%",
-    "--presentation-text-position-x-tablet": details.presentationTextPositionXTablet ?? details.presentationTextPositionX ?? "8%",
-    "--presentation-text-position-y-tablet": details.presentationTextPositionYTablet ?? details.presentationTextPositionY ?? "50%",
-    "--presentation-text-position-x-mobile": details.presentationTextPositionXMobile ?? details.presentationTextPositionX ?? "8%",
-    "--presentation-text-position-y-mobile": details.presentationTextPositionYMobile ?? "50%",
+    "--presentation-text-position-x-tablet":
+      details.presentationTextPositionXTablet ?? details.presentationTextPositionX ?? "8%",
+    "--presentation-text-position-y-tablet":
+      details.presentationTextPositionYTablet ?? details.presentationTextPositionY ?? "50%",
+    "--presentation-text-position-x-mobile":
+      details.presentationTextPositionXMobile ??
+      details.presentationTextPositionXTablet ??
+      details.presentationTextPositionX ??
+      "8%",
+    "--presentation-text-position-y-mobile":
+      details.presentationTextPositionYMobile ??
+      details.presentationTextPositionYTablet ??
+      details.presentationTextPositionY ??
+      "50%",
     "--presentation-text-scale": details.presentationTextScale ?? 1,
-    "--presentation-text-scale-tablet": details.presentationTextScaleTablet ?? details.presentationTextScale ?? 1,
-    "--presentation-text-scale-mobile": details.presentationTextScaleMobile ?? 1,
+    "--presentation-text-scale-tablet":
+      details.presentationTextScaleTablet ?? details.presentationTextScale ?? 1,
+    "--presentation-text-scale-mobile":
+      details.presentationTextScaleMobile ??
+      details.presentationTextScaleTablet ??
+      details.presentationTextScale ??
+      1,
     "--presentation-image-position-x": details.presentationImagePositionX ?? "70%",
     "--presentation-image-position-y": details.presentationImagePositionY ?? "50%",
-    "--presentation-image-position-x-tablet": details.presentationImagePositionXTablet ?? details.presentationImagePositionX ?? "70%",
-    "--presentation-image-position-y-tablet": details.presentationImagePositionYTablet ?? details.presentationImagePositionY ?? "50%",
-    "--presentation-image-position-x-mobile": details.presentationImagePositionXMobile ?? details.presentationImagePositionX ?? "70%",
-    "--presentation-image-position-y-mobile": details.presentationImagePositionYMobile ?? "50%",
+    "--presentation-image-position-x-tablet":
+      details.presentationImagePositionXTablet ?? details.presentationImagePositionX ?? "70%",
+    "--presentation-image-position-y-tablet":
+      details.presentationImagePositionYTablet ?? details.presentationImagePositionY ?? "50%",
+    "--presentation-image-position-x-mobile":
+      details.presentationImagePositionXMobile ??
+      details.presentationImagePositionXTablet ??
+      details.presentationImagePositionX ??
+      "70%",
+    "--presentation-image-position-y-mobile":
+      details.presentationImagePositionYMobile ??
+      details.presentationImagePositionYTablet ??
+      details.presentationImagePositionY ??
+      "50%",
     "--presentation-image-scale": details.presentationImageScale ?? 1,
-    "--presentation-image-scale-tablet": details.presentationImageScaleTablet ?? details.presentationImageScale ?? 1,
-    "--presentation-image-scale-mobile": details.presentationImageScaleMobile ?? 1,
+    "--presentation-image-scale-tablet":
+      details.presentationImageScaleTablet ?? details.presentationImageScale ?? 1,
+    "--presentation-image-scale-mobile":
+      details.presentationImageScaleMobile ??
+      details.presentationImageScaleTablet ??
+      details.presentationImageScale ??
+      1,
     "--preview-presentation-text-x": presentationTextX,
     "--preview-presentation-text-y": presentationTextY,
     "--preview-presentation-text-scale": presentationTextScale,

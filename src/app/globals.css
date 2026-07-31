@@ -7452,6 +7452,30 @@ button:disabled {
   height: 10px;
 }
 
+.carousel--draggable .carousel__viewport {
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.carousel--draggable.is-dragging .carousel__viewport {
+  cursor: grabbing;
+}
+
+.carousel--draggable.is-dragging .carousel__track {
+  transition: none !important;
+}
+
+.carousel--draggable .carousel__slide {
+  cursor: grab;
+}
+
+.carousel--draggable.is-dragging .carousel__slide {
+  cursor: grabbing;
+  pointer-events: none;
+}
+
 .blog-post__content h2 {
   font-weight: 700;
 }
@@ -7482,6 +7506,82 @@ body {
   top: 100%;
   z-index: 19;
   height: 20px;
+}
+
+/*
+  Header chrome must sit above hero copy/overlays.
+  Public hero content uses z-index ~5–10; without a higher stacking
+  context on the nav shell, dropdowns paint under presentation titles.
+*/
+.header-home > .site-nav-shell,
+.header-interno > .site-nav-shell {
+  position: relative;
+  z-index: 50;
+}
+
+/* Keep home + internal mobile chrome above hero overlays */
+.header-home.hero,
+.header-interno.page-hero,
+.header-interno {
+  position: relative;
+  z-index: 40;
+}
+
+.header-home > .site-nav-shell,
+.header-home .site-nav-shell--home,
+.header-interno > .site-nav-shell,
+.header-interno .site-nav-shell--internal {
+  z-index: 1400;
+}
+
+.header-home .mobile-static-nav,
+.header-home .mobile-scroll-nav,
+.header-interno .mobile-static-nav,
+.header-interno .mobile-scroll-nav {
+  z-index: 1500;
+}
+
+.header-home .mobile-scroll-nav__logo,
+.header-home .mobile-static-nav__logo,
+.header-interno .mobile-scroll-nav__logo,
+.header-interno .mobile-static-nav__logo {
+  z-index: 3;
+}
+
+.header-home .mobile-scroll-nav__toggle,
+.header-home .mobile-static-nav__toggle,
+.header-interno .mobile-scroll-nav__toggle,
+.header-interno .mobile-static-nav__toggle {
+  z-index: 4;
+}
+
+.header-home .mobile-scroll-menu,
+.header-interno .mobile-scroll-menu {
+  position: relative;
+  z-index: 2;
+}
+
+.header-home .navbar-global.hero__top,
+.header-interno .navbar-global.hero__top,
+.header-interno .hero__top,
+.page-hero .hero__top {
+  z-index: 50;
+}
+
+.header-home .hero__logo,
+.header-home .hero__nav,
+.header-interno .hero__logo,
+.header-interno .hero__nav {
+  z-index: 51;
+}
+
+.header-home .nav-submenu,
+.header-interno .nav-submenu,
+.page-hero .nav-submenu,
+.header-home .navbar-global .nav-submenu,
+.header-interno .navbar-global .nav-submenu,
+.site-nav-shell .navbar-global .nav-submenu {
+  z-index: 60;
 }
 
 .site-nav-shell--internal .navbar-global {
@@ -7545,11 +7645,13 @@ body {
 }
 
 .header-interno--text-hero .hero__logo-image,
-.header-interno--text-hero .mobile-static-nav__logo-image {
+.header-interno--text-hero .mobile-static-nav__logo-image,
+.header-interno--text-hero .mobile-scroll-nav__logo-image {
   filter: brightness(0) saturate(100%) !important;
 }
 
 .header-interno--text-hero .mobile-static-nav__logo-tint,
+.header-interno--text-hero .mobile-scroll-nav__logo-tint,
 .header-interno--text-hero .hero__logo-tint {
   background: #4a443d !important;
 }
@@ -7557,7 +7659,8 @@ body {
 .header-interno--text-hero .mobile-static-nav__toggle,
 .header-interno--text-hero .mobile-static-nav__toggle .mobile-scroll-nav__icon,
 .header-interno--text-hero .mobile-static-nav__toggle .mobile-scroll-nav__icon::before,
-.header-interno--text-hero .mobile-static-nav__toggle .mobile-scroll-nav__icon::after {
+.header-interno--text-hero .mobile-static-nav__toggle .mobile-scroll-nav__icon::after,
+.header-interno--text-hero .mobile-scroll-nav__toggle {
   color: #4a443d !important;
 }
 
@@ -7993,11 +8096,13 @@ body {
   }
 
   .header-interno--text-hero .hero__logo-image,
-  .header-interno--text-hero .mobile-static-nav__logo-image {
+  .header-interno--text-hero .mobile-static-nav__logo-image,
+  .header-interno--text-hero .mobile-scroll-nav__logo-image {
     filter: brightness(0) saturate(100%) !important;
   }
 
   .header-interno--text-hero .mobile-static-nav__logo-tint,
+  .header-interno--text-hero .mobile-scroll-nav__logo-tint,
   .header-interno--text-hero .hero__logo-tint {
     background: #4a443d !important;
   }
@@ -8005,7 +8110,8 @@ body {
   .header-interno--text-hero .mobile-static-nav__toggle,
   .header-interno--text-hero .mobile-static-nav__toggle .mobile-scroll-nav__icon,
   .header-interno--text-hero .mobile-static-nav__toggle .mobile-scroll-nav__icon::before,
-  .header-interno--text-hero .mobile-static-nav__toggle .mobile-scroll-nav__icon::after {
+  .header-interno--text-hero .mobile-static-nav__toggle .mobile-scroll-nav__icon::after,
+  .header-interno--text-hero .mobile-scroll-nav__toggle {
     color: #4a443d !important;
   }
 
@@ -8585,6 +8691,16 @@ body {
   .header-home--video-hero .hero__bg {
     background: var(--home-hero-image-mobile, var(--home-hero-image)) center center / cover no-repeat #61563a;
   }
+
+  /* Portrait cover: fill the hero without letterboxing */
+  .header-home .hero__video--embed {
+    width: max(100%, 177.78vh);
+    height: max(100%, 56.25vw);
+  }
+
+  .header-home .hero__video {
+    object-position: center center;
+  }
 }
 
 @media (max-width: 1180px) {
@@ -8771,6 +8887,7 @@ body {
 
   .mobile-scroll-nav.is-at-top .mobile-scroll-nav__logo {
     position: absolute;
+    z-index: 3;
     left: var(--hero-logo-tablet-position-x, var(--hero-logo-position-x, 50%)) !important;
     top: var(--hero-logo-tablet-position-y, var(--hero-logo-position-y, 42px)) !important;
     transform: translate(-50%, -50%);
@@ -8821,7 +8938,7 @@ body {
 
   .mobile-scroll-nav.is-at-top .mobile-scroll-nav__toggle {
     position: absolute;
-    z-index: 2;
+    z-index: 4;
     right: max(12px, env(safe-area-inset-right, 0px));
     left: auto;
     top: var(--hero-logo-tablet-position-y, var(--hero-logo-position-y, 42px)) !important;
@@ -8831,7 +8948,7 @@ body {
     padding: 0;
     border: 0;
     background: transparent;
-    color: var(--site-scroll-menu-icon, var(--site-scroll-menu-text, #fff9f1));
+    color: var(--site-hero-menu-color, var(--site-scroll-menu-icon, var(--site-scroll-menu-text, #fff9f1)));
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -12702,16 +12819,56 @@ body {
   }
 }
 
-/* Responsive position for the typographic hero title */
+/* Typographic hero title: honor tablet/mobile X, Y and scale from CMS */
 @media (max-width: 1024px) {
-  .public-hero-title {
+  .header-home--text-hero .public-hero-title,
+  .header-interno--text-hero .public-hero-title {
     left: var(--hero-title-position-x-tablet, var(--hero-title-position-x, 50%)) !important;
+    top: var(--hero-title-position-y-tablet, var(--hero-title-position-y, 50%)) !important;
+    transform: translateX(-50%) scale(var(--hero-title-scale-tablet, var(--hero-title-scale, 1))) !important;
+    transform-origin: top center;
   }
 }
 
 @media (max-width: 640px) {
-  .public-hero-title {
+  .header-home--text-hero .public-hero-title,
+  .header-interno--text-hero .public-hero-title {
     left: var(--hero-title-position-x-mobile, var(--hero-title-position-x-tablet, var(--hero-title-position-x, 50%))) !important;
+    top: var(--hero-title-position-y-mobile, var(--hero-title-position-y-tablet, var(--hero-title-position-y, 50%))) !important;
+    transform: translateX(-50%) scale(var(--hero-title-scale-mobile, var(--hero-title-scale-tablet, var(--hero-title-scale, 1)))) !important;
+    transform-origin: top center;
+  }
+}
+
+/*
+  Internal image heroes (studio, shop, offerings) must honor CMS
+  tablet/mobile title-image positions just like the home hero does.
+*/
+@media (max-width: 1024px) {
+  .header-interno--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="primary"] {
+    left: var(--title-image-position-x-tablet, var(--title-image-position-x, 50%)) !important;
+    top: var(--title-image-position-y-tablet, var(--title-image-position-y, 50%)) !important;
+    transform: translate(-50%, -50%) scale(var(--title-image-scale-tablet, var(--title-image-scale, 1))) !important;
+  }
+
+  .header-interno--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="secondary"] {
+    left: var(--title-image-secondary-position-x-tablet, var(--title-image-secondary-position-x, 50%)) !important;
+    top: var(--title-image-secondary-position-y-tablet, var(--title-image-secondary-position-y, 50%)) !important;
+    transform: translate(-50%, -50%) scale(var(--title-image-secondary-scale-tablet, var(--title-image-secondary-scale, 1))) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .header-interno--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="primary"] {
+    left: var(--title-image-position-x-mobile, var(--title-image-position-x-tablet, var(--title-image-position-x, 50%))) !important;
+    top: var(--title-image-position-y-mobile, var(--title-image-position-y-tablet, var(--title-image-position-y, 50%))) !important;
+    transform: translate(-50%, -50%) scale(var(--title-image-scale-mobile, var(--title-image-scale-tablet, var(--title-image-scale, 1)))) !important;
+  }
+
+  .header-interno--image-hero .public-hero-content > .public-hero-title[data-hero-overlay="secondary"] {
+    left: var(--title-image-secondary-position-x-mobile, var(--title-image-secondary-position-x-tablet, var(--title-image-secondary-position-x, 50%))) !important;
+    top: var(--title-image-secondary-position-y-mobile, var(--title-image-secondary-position-y-tablet, var(--title-image-secondary-position-y, 50%))) !important;
+    transform: translate(-50%, -50%) scale(var(--title-image-secondary-scale-mobile, var(--title-image-secondary-scale-tablet, var(--title-image-secondary-scale, 1)))) !important;
   }
 }
 
@@ -13252,12 +13409,11 @@ body {
   }
 
   .experience-detail-hero.header-interno--text-hero .public-hero-title {
-    position: relative !important;
-    inset: auto !important;
+    left: var(--hero-title-position-x-tablet, var(--hero-title-position-x, 50%)) !important;
+    top: var(--hero-title-position-y-tablet, var(--hero-title-position-y, 50%)) !important;
     width: min(88%, 760px);
     max-width: 760px !important;
-    margin: clamp(166px, 20vw, 196px) auto 0;
-    transform: scale(clamp(0.82, var(--hero-title-scale-tablet, 1), 1.05)) !important;
+    transform: translateX(-50%) scale(var(--hero-title-scale-tablet, var(--hero-title-scale, 1))) !important;
     transform-origin: top center;
   }
 
@@ -13291,9 +13447,11 @@ body {
   }
 
   .experience-detail-hero.header-interno--text-hero .public-hero-title {
+    left: var(--hero-title-position-x-mobile, var(--hero-title-position-x-tablet, var(--hero-title-position-x, 50%))) !important;
+    top: var(--hero-title-position-y-mobile, var(--hero-title-position-y-tablet, var(--hero-title-position-y, 50%))) !important;
     width: min(88%, 420px);
-    margin-top: 132px;
-    transform: scale(clamp(0.82, var(--hero-title-scale-mobile, 1), 1)) !important;
+    transform: translateX(-50%) scale(var(--hero-title-scale-mobile, var(--hero-title-scale-tablet, var(--hero-title-scale, 1)))) !important;
+    transform-origin: top center;
   }
 
   .experience-detail-hero.header-interno--text-hero .page-hero__title {
