@@ -23,6 +23,7 @@ import "./legacy/cookiebar.css";
 import "./legacy/site.css";
 import "./globals.css";
 import "./responsive-tuning.css";
+import "./public-header-desktop.css";
 import "../components/home/gift-carousel.css";
 import "../components/home/social-gallery-home.css";
 import "../components/home/testimonial-slider-home.css";
