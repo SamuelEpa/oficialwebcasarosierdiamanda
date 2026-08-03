@@ -15,6 +15,14 @@ function clientIdentifier(request: Request) {
   return createHash("sha256").update(`${salt}:${address}`).digest("hex");
 }
 
+export async function resetRateLimit(request: Request, route: string) {
+  const { error } = await createAdminClient().rpc("reset_api_rate_limit", {
+    p_route: route,
+    p_identifier_hash: clientIdentifier(request),
+  });
+  if (error) throw error;
+}
+
 export async function enforceRateLimit(
   request: Request,
   input: { route: string; limit: number; windowSeconds: number },

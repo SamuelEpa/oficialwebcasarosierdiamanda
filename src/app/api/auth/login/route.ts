@@ -8,7 +8,7 @@ import {
 } from "@/lib/auth/local-auth";
 import { getProfile, isAdminRole } from "@/lib/auth/supabase-auth";
 import { logAction } from "@/lib/cms/history-logs";
-import { apiErrorResponse, enforceRateLimit, readJsonObject } from "@/lib/security/api-protection";
+import { apiErrorResponse, enforceRateLimit, readJsonObject, resetRateLimit } from "@/lib/security/api-protection";
 
 function hasSupabaseAuthEnv() {
   return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
@@ -88,6 +88,8 @@ export async function POST(request: Request) {
       user_email: data.user.email ?? normalizedEmail,
     });
 
+    await resetRateLimit(request, "auth/login").catch(() => undefined);
+
     return response;
   }
 
@@ -102,6 +104,8 @@ export async function POST(request: Request) {
     user_id: "bootstrap-admin",
     user_email: normalizedEmail,
   });
+
+  await resetRateLimit(request, "auth/login").catch(() => undefined);
 
   return response;
 }
