@@ -17,6 +17,23 @@ import {
 export const runtime = "nodejs";
 
 const STORAGE_BUCKET = "media";
+
+async function verifyStoredFile(
+  supabase: ReturnType<typeof createAdminClient>,
+  storagePath: string,
+  expectedSize: number,
+) {
+  const { data, error } = await supabase.storage.from(STORAGE_BUCKET).download(storagePath);
+  if (error || !data || data.size !== expectedSize) {
+    try {
+      await supabase.storage.from(STORAGE_BUCKET).remove([storagePath]);
+    } catch {
+      // Best effort cleanup after a failed verification.
+    }
+    throw error ?? new Error("El archivo guardado no coincide con la imagen enviada.");
+  }
+}
+
 export async function POST(request: NextRequest) {
   const session = await requireAdminApi();
   if (!session) {
@@ -91,6 +108,9 @@ export async function POST(request: NextRequest) {
     if (uploadError) {
       return internalApiError(uploadError, "No se pudo guardar el archivo.");
     }
+
+    // Never persist or return a public URL until the exact uploaded bytes can be read back.
+    await verifyStoredFile(supabase, storagePath, optimizedFile.size);
 
     const { data: publicUrlData } = supabase.storage
       .from(STORAGE_BUCKET)

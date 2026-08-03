@@ -31,6 +31,33 @@ function formatMegabytes(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function wait(milliseconds: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+}
+
+async function canDisplayUploadedImage(url: string) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const loaded = await new Promise<boolean>((resolve) => {
+      const image = new Image();
+      const timeout = window.setTimeout(() => resolve(false), 5_000);
+      image.onload = () => {
+        window.clearTimeout(timeout);
+        resolve(image.naturalWidth > 0 && image.naturalHeight > 0);
+      };
+      image.onerror = () => {
+        window.clearTimeout(timeout);
+        resolve(false);
+      };
+      const separator = url.includes("?") ? "&" : "?";
+      image.src = `${url}${separator}upload_check=${Date.now()}_${attempt}`;
+    });
+
+    if (loaded) return true;
+    if (attempt < 2) await wait(500 * (attempt + 1));
+  }
+  return false;
+}
+
 export function validateImageFileForUpload(file: File): string | null {
   if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
     return "Selecciona una imagen o PDF válido.";
@@ -74,6 +101,13 @@ export async function uploadAdminMediaFile(input: UploadAdminMediaInput): Promis
 
     if (!response.ok || !data.asset?.file_url) {
       return { ok: false, error: data.error || "No se pudo subir el archivo." };
+    }
+
+    if (prepared.file.type.startsWith("image/") && !(await canDisplayUploadedImage(data.asset.file_url))) {
+      return {
+        ok: false,
+        error: "La carga termin\u00f3, pero la imagen no est\u00e1 disponible en Storage. Intenta subirla nuevamente.",
+      };
     }
 
     return {
