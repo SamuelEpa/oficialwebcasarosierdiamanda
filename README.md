@@ -345,8 +345,7 @@ El proyecto es compatible con Vercel. Para produccion:
 
 ## Creador del proyecto
 
-Creador del proyecto: Jose Manuel Castillo Queh (Desarrollador Full Stack:
-NextJS, Supabase).
+Creador del proyecto: erick elektrorate
 
 Tecnologias del proyecto: Next.js 16, App Router, React 19, React DOM 19,
 TypeScript 6, Tailwind CSS 4, PostCSS, Supabase Auth, Supabase PostgreSQL,
