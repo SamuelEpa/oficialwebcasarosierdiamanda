@@ -1,6 +1,4 @@
-import { createAdminClient } from "../supabase/admin";
 import type { Offering } from "./types";
-import { deleteStorageFiles } from "./media";
 
 const STORAGE_MEDIA_URL =
   /\/storage\/v1\/object\/(?:public|sign)\/media\/([^?#]+)/i;
@@ -52,24 +50,11 @@ export function collectOfferingMediaStoragePaths(offering: Offering): string[] {
   return [...paths];
 }
 
-async function deleteMediaAssetRecords(filePaths: string[]) {
-  if (!filePaths.length) return;
-
-  try {
-    const supabase = createAdminClient();
-    await supabase.from("media_assets").delete().in("file_name", filePaths);
-  } catch {
-    /* best-effort */
-  }
-}
-
 export async function deleteOfferingMediaAssets(offering: Offering) {
   const paths = collectOfferingMediaStoragePaths(offering);
-  if (!paths.length) {
-    return { paths: [], deleted: [] as string[] };
-  }
 
-  const deleted = await deleteStorageFiles(paths);
-  await deleteMediaAssetRecords(deleted);
-  return { paths, deleted };
+  // Permanent deletion removes the offering record, but preserves its files.
+  // Media can be shared by duplicated offerings or other CMS content, so
+  // deleting it automatically risks breaking still-published pages.
+  return { paths, deleted: [] as string[] };
 }

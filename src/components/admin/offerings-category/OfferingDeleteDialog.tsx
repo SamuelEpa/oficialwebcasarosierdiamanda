@@ -36,7 +36,7 @@ export function OfferingDeleteDialog({
             ? "No se pudo completar"
             : isPermanent
               ? "Eliminar permanentemente"
-              : `Eliminar ${typeLabel.toLowerCase()}`
+              : `Mover ${typeLabel.toLowerCase()} a papelera`
       }
       description={
         isLoading
@@ -44,7 +44,7 @@ export function OfferingDeleteDialog({
           : isError
             ? state.errorMessage
             : isPermanent
-              ? `Se eliminará "${state.offering.title}" de forma permanente junto con sus imágenes en el bucket de almacenamiento.`
+              ? `Se eliminará "${state.offering.title}" de forma permanente. Sus archivos permanecerán en la biblioteca multimedia para proteger cualquier contenido que los comparta.`
               : `Se moverá "${state.offering.title}" a la papelera. Podrás restaurarlo después desde Papelera.`
       }
       details={
@@ -53,7 +53,7 @@ export function OfferingDeleteDialog({
           : isPermanent
             ? [
                 "Esta acción no se puede deshacer.",
-                "Se borrarán imágenes y archivos asociados en Supabase Storage.",
+                "Las imágenes y archivos asociados se conservarán en Supabase Storage.",
                 "También se eliminarán ajustes de hero, tarjeta Home y textos vinculados.",
               ]
             : [

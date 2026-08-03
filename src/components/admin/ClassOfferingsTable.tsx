@@ -60,13 +60,13 @@ function OfferingRowActions({
         disabled={isBusy}
         onClick={onDelete}
         className="offerings-category-row-actions__btn offerings-category-row-actions__btn--danger"
-        title="Eliminar"
+        title="Papelera"
         aria-haspopup="dialog"
       >
         <span className="material-symbols-outlined" aria-hidden="true">
           delete
         </span>
-        <span className="offerings-category-row-actions__label">{isPending ? "..." : "Eliminar"}</span>
+        <span className="offerings-category-row-actions__label">{isPending ? "..." : "Papelera"}</span>
       </button>
     </div>
   );
@@ -192,7 +192,7 @@ export default function ClassOfferingsTable({
                       isBusy={actions.isBusy}
                       isPending={isPending}
                       onDuplicate={() => void actions.runPatchAction(offering.id, "duplicate")}
-                      onDelete={() => actions.openPermanentDeleteDialog(offering)}
+                      onDelete={() => actions.openTrashDialog(offering)}
                     />
                   </td>
                 </tr>
