@@ -11,6 +11,7 @@ import {
 } from "@/lib/cms/offerings";
 import { invalidatePublicNavigationCache } from "@/lib/cms/navigation-public";
 import type { Offering } from "@/lib/cms/types";
+import { internalApiError } from "@/lib/security/api-response";
 
 function publicOfferingPath(offering: Pick<Offering, "type" | "slug"> | null | undefined) {
   if (!offering?.slug) return null;
@@ -59,7 +60,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
     refreshOfferingAdminPaths(previous, offering);
     return NextResponse.json({ offering });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "No se pudo actualizar el offering" }, { status: 400 });
+    return internalApiError(error, "No se pudo actualizar el offering.", 400);
   }
 }
 

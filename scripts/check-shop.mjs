@@ -6,7 +6,7 @@ const tokenMatch = env.match(/SUPABASE_ACCESS_TOKEN=(.+)/);
 if (!tokenMatch) throw new Error("SUPABASE_ACCESS_TOKEN no está definido en .env");
 
 const token = tokenMatch[1].trim();
-const projectRef = "ilkrcakrduibgsfqfzti";
+const projectRef = "hhxftxxshwgmfxuyrjmz";
 const query = `SELECT hero->>'heroVariant' as variant, hero->>'heroTitlePositionY' as pos_y, hero->>'heroTitleScale' as scale, hero->>'heroTitle' as title, hero->>'heroMenuTone' as tone FROM public.shop_page_settings WHERE id = 'shop-page';`;
 const data = JSON.stringify({ query });
 const options = {

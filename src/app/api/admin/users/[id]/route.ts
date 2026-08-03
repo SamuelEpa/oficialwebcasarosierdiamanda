@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/auth/supabase-auth";
 import { deleteCmsAdminUser, updateCmsAdminUserPassword } from "@/lib/admin/users";
+import { internalApiError } from "@/lib/security/api-response";
 
 export async function PATCH(request: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const session = await requireAdminApi();
@@ -12,10 +13,7 @@ export async function PATCH(request: NextRequest, ctx: { params: Promise<{ id: s
     await updateCmsAdminUserPassword(id, body.password ?? "", session.userEmail);
     return NextResponse.json({ ok: true });
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "No se pudo actualizar la contraseña." },
-      { status: 400 },
-    );
+    return internalApiError(error, "No se pudo actualizar la contraseña.", 400);
   }
 }
 
@@ -28,9 +26,6 @@ export async function DELETE(_request: NextRequest, ctx: { params: Promise<{ id:
     await deleteCmsAdminUser(id, session.userEmail);
     return NextResponse.json({ ok: true });
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "No se pudo eliminar el usuario." },
-      { status: 400 },
-    );
+    return internalApiError(error, "No se pudo eliminar el usuario.", 400);
   }
 }

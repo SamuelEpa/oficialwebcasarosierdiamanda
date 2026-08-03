@@ -11,7 +11,7 @@ set
   header_logo_url = coalesce(
     nullif(header_logo_url, ''),
     nullif(logo_url, ''),
-    'https://ilkrcakrduibgsfqfzti.supabase.co/storage/v1/object/public/media/img/logo-header.png'
+    'https://hhxftxxshwgmfxuyrjmz.supabase.co/storage/v1/object/public/media/img/logo-header.png'
   ),
   scroll_menu_background_color = coalesce(nullif(scroll_menu_background_color, ''), '#8c7457'),
   scroll_menu_text_color = coalesce(nullif(scroll_menu_text_color, ''), '#fff9f1')

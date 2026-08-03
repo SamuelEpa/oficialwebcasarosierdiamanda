@@ -1,6 +1,7 @@
 import { requireAdminApi } from "@/lib/auth/supabase-auth";
 import { getCampaignById, updateCampaign, deleteCampaign, generateCampaignUrl } from "@/lib/cms/marketing";
 import { type NextRequest, NextResponse } from "next/server";
+import { internalApiError } from "@/lib/security/api-response";
 
 type CampaignRouteContext = { params: Promise<{ id: string }> };
 
@@ -23,7 +24,7 @@ export async function PUT(request: NextRequest, { params }: CampaignRouteContext
     const campaign = await updateCampaign(id, body);
     return NextResponse.json(campaign);
   } catch (e) {
-    return NextResponse.json({ error: (e as Error).message }, { status: 400 });
+    return internalApiError(e, "No se pudo procesar la campaña.", 400);
   }
 }
 
@@ -37,7 +38,7 @@ export async function PATCH(request: NextRequest, { params }: CampaignRouteConte
     const campaign = await updateCampaign(id, { status } as Partial<import("@/lib/cms/types").MarketingCampaign>);
     return NextResponse.json(campaign);
   } catch (e) {
-    return NextResponse.json({ error: (e as Error).message }, { status: 400 });
+    return internalApiError(e, "No se pudo procesar la campaña.", 400);
   }
 }
 
@@ -48,6 +49,6 @@ export async function DELETE(_request: NextRequest, { params }: CampaignRouteCon
     await deleteCampaign(id);
     return NextResponse.json({ success: true });
   } catch (e) {
-    return NextResponse.json({ error: (e as Error).message }, { status: 400 });
+    return internalApiError(e, "No se pudo procesar la campaña.", 400);
   }
 }

@@ -1,6 +1,7 @@
 import { requireAdminApi } from "@/lib/auth/supabase-auth";
 import { getCampaigns, createCampaign, generateCampaignUrl } from "@/lib/cms/marketing";
 import { type NextRequest, NextResponse } from "next/server";
+import { internalApiError } from "@/lib/security/api-response";
 
 export async function GET() {
   if (!(await requireAdminApi())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -16,6 +17,6 @@ export async function POST(request: NextRequest) {
     const campaign = await createCampaign({ ...body, generated_url: generatedUrl });
     return NextResponse.json(campaign, { status: 201 });
   } catch (e) {
-    return NextResponse.json({ error: (e as Error).message }, { status: 400 });
+    return internalApiError(e, "No se pudo procesar la campaña.", 400);
   }
 }

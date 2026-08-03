@@ -6,22 +6,40 @@ import { optimizeImageForUpload } from "@/lib/cms/image-optimization";
 import { isMediaFolder } from "@/lib/cms/types";
 import { requireAdminApi } from "@/lib/auth/supabase-auth";
 import { randomUUID } from "crypto";
+import { internalApiError } from "@/lib/security/api-response";
+import {
+  ALLOWED_UPLOAD_EXTENSIONS,
+  ALLOWED_UPLOAD_MIME_PREFIXES,
+  hasAllowedFileSignature,
+  MAX_UPLOAD_SIZE,
+} from "@/lib/security/file-upload";
 
 export const runtime = "nodejs";
 
 const STORAGE_BUCKET = "media";
-const ALLOWED_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "avif", "gif", "svg", "pdf"]);
-const ALLOWED_MIME_PREFIXES = ["image/", "application/pdf"];
-const MAX_SIZE = 10 * 1024 * 1024;
-
 export async function POST(request: NextRequest) {
   const session = await requireAdminApi();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const formData = await request.formData();
-  const file = formData.get("file") as File | null;
+  const contentType = request.headers.get("content-type")?.toLowerCase() ?? "";
+  if (!contentType.startsWith("multipart/form-data;")) {
+    return NextResponse.json({ error: "El contenido debe ser multipart/form-data." }, { status: 415 });
+  }
+  const declaredLength = Number(request.headers.get("content-length"));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_UPLOAD_SIZE + 256 * 1024) {
+    return NextResponse.json({ error: "La solicitud supera el limite permitido." }, { status: 413 });
+  }
+
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch (error) {
+    return internalApiError(error, "No se pudo leer el archivo enviado.", 400);
+  }
+  const fileValue = formData.get("file");
+  const file = fileValue instanceof File ? fileValue : null;
   const folder = String(formData.get("folder") || "general").trim();
   const altText = String(formData.get("alt_text") || "").trim();
   const title = String(formData.get("title") || "").trim();
@@ -37,19 +55,22 @@ export async function POST(request: NextRequest) {
   }
 
   const ext = file.name.split(".").pop()?.toLowerCase() || "";
-  if (!ALLOWED_EXTENSIONS.has(ext)) {
+  if (!ALLOWED_UPLOAD_EXTENSIONS.has(ext)) {
     return NextResponse.json({ error: `Extensión .${ext} no permitida. Solo se aceptan imágenes y PDF.` }, { status: 400 });
   }
 
-  if (!ALLOWED_MIME_PREFIXES.some((p) => file.type.startsWith(p))) {
+  if (!ALLOWED_UPLOAD_MIME_PREFIXES.some((p) => file.type.startsWith(p))) {
     return NextResponse.json({ error: "Tipo de archivo no permitido." }, { status: 400 });
   }
 
-  if (file.size > MAX_SIZE) {
+  if (file.size > MAX_UPLOAD_SIZE) {
     return NextResponse.json({ error: "El archivo supera el límite de 10 MB." }, { status: 400 });
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
+  if (!hasAllowedFileSignature(buffer, ext)) {
+    return NextResponse.json({ error: "El contenido del archivo no coincide con su tipo." }, { status: 400 });
+  }
 
   try {
     const optimizedFile = await optimizeImageForUpload({
@@ -68,7 +89,7 @@ export async function POST(request: NextRequest) {
         upsert: false,
       });
     if (uploadError) {
-      return NextResponse.json({ error: uploadError.message }, { status: 500 });
+      return internalApiError(uploadError, "No se pudo guardar el archivo.");
     }
 
     const { data: publicUrlData } = supabase.storage
@@ -104,7 +125,6 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "No se pudo subir el archivo a Supabase Storage.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return internalApiError(error, "No se pudo subir el archivo.");
   }
 }

@@ -2,6 +2,7 @@ import { requireAdminApi } from "@/lib/auth/supabase-auth";
 import { getEventTypes, getMarketingSettings, updateEventType, updateMarketingSettings } from "@/lib/cms/marketing";
 import { MARKETING_EVENTS, type MarketingEvent } from "@/lib/cms/types";
 import { type NextRequest, NextResponse } from "next/server";
+import { internalApiError } from "@/lib/security/api-response";
 
 function isMarketingEvent(value: string): value is MarketingEvent {
   return (MARKETING_EVENTS as readonly string[]).includes(value);
@@ -36,6 +37,6 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(updated);
   } catch (e) {
-    return NextResponse.json({ error: (e as Error).message }, { status: 400 });
+    return internalApiError(e, "No se pudo procesar el evento.", 400);
   }
 }

@@ -3,6 +3,7 @@ import { getFormBySlug } from "@/lib/cms/forms";
 import { createFormSubmission, updateFormSubmission } from "@/lib/cms/form-submissions";
 import type { Form, FormField } from "@/lib/cms/types";
 import { sendFormNotificationEmail } from "@/lib/email/form-notifications";
+import { apiErrorResponse, enforceRateLimit, readJsonObject } from "@/lib/security/api-protection";
 
 type SubmittedData = Record<string, unknown>;
 
@@ -102,14 +103,23 @@ function submissionMessage(form: Form, data: SubmittedData) {
 }
 
 export async function POST(request: NextRequest, ctx: { params: Promise<{ slug: string }> }) {
-  const form = await getFormBySlug((await ctx.params).slug);
+  const slug = (await ctx.params).slug;
+  try {
+    await enforceRateLimit(request, { route: `forms/${slug}`, limit: 10, windowSeconds: 10 * 60 });
+  } catch (error) {
+    return apiErrorResponse(error);
+  }
+
+  const form = await getFormBySlug(slug);
   if (!form || form.status !== "active") {
     return NextResponse.json({ error: "Formulario no encontrado o inactivo." }, { status: 404 });
   }
 
-  const body = await request.json().catch(() => ({}));
-  if (!isRecord(body)) {
-    return NextResponse.json({ error: "Solicitud no valida." }, { status: 400 });
+  let body: Record<string, unknown>;
+  try {
+    body = await readJsonObject(request, 64 * 1024);
+  } catch (error) {
+    return apiErrorResponse(error);
   }
 
   if (stringValue(body.website || body.company_url)) {

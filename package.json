@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "supabase:push": "npx supabase db push",
-    "supabase:seed": "node scripts/seed-supabase.mjs"
+    "supabase:seed": "node scripts/seed-supabase.mjs",
+    "test:backend": "node --no-warnings --test --experimental-strip-types tests/security.test.ts",
+    "lint:backend": "eslint src/app/api src/lib --quiet",
+    "check:backend": "npm run lint:backend && npm run typecheck && npm run test:backend"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
@@ -25,21 +28,25 @@
     "@tiptap/extension-underline": "^3.28.0",
     "@tiptap/react": "^3.28.0",
     "@tiptap/starter-kit": "^3.28.0",
-    "next": "^16.2.9",
+    "next": "^16.2.12",
     "react": "19.2.7",
     "react-dom": "19.2.7",
-    "sharp": "^0.34.5"
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "4.3.1",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.0.0",
-    "eslint-config-next": "16.2.9",
+    "eslint-config-next": "^16.2.12",
     "playwright-core": "^1.61.1",
     "supabase": "^2.109.1",
-    "tailwindcss": "4.3.1",
+    "tailwindcss": "^4.3.3",
     "typescript": "6.0.3"
+  },
+  "overrides": {
+    "postcss": "8.5.25",
+    "sharp": "$sharp"
   }
 }

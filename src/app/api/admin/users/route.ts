@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/auth/supabase-auth";
 import { createCmsAdminUser, getCmsAdminUsers } from "@/lib/admin/users";
+import { internalApiError } from "@/lib/security/api-response";
 
 export async function GET() {
   if (!(await requireAdminApi())) {
@@ -11,10 +12,7 @@ export async function GET() {
     const users = await getCmsAdminUsers();
     return NextResponse.json({ users });
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "No se pudieron cargar los usuarios." },
-      { status: 500 },
-    );
+    return internalApiError(error, "No se pudieron cargar los usuarios.");
   }
 }
 
@@ -38,9 +36,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "No se pudo crear el usuario." },
-      { status: 400 },
-    );
+    return internalApiError(error, "No se pudo crear el usuario.", 400);
   }
 }

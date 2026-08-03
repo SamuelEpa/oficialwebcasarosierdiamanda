@@ -6,8 +6,9 @@ import {
   createLocalSessionToken,
   validateLocalCredentials,
 } from "@/lib/auth/local-auth";
-import { ensureProfile, isAdminRole } from "@/lib/auth/supabase-auth";
+import { getProfile, isAdminRole } from "@/lib/auth/supabase-auth";
 import { logAction } from "@/lib/cms/history-logs";
+import { apiErrorResponse, enforceRateLimit, readJsonObject } from "@/lib/security/api-protection";
 
 function hasSupabaseAuthEnv() {
   return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
@@ -29,9 +30,18 @@ function scheduleLoginLog(input: {
 }
 
 export async function POST(request: Request) {
-  const { email, password } = (await request.json().catch(() => ({}))) as { email?: string; password?: string };
+  let body: Record<string, unknown>;
+  try {
+    await enforceRateLimit(request, { route: "auth/login", limit: 5, windowSeconds: 15 * 60 });
+    body = await readJsonObject(request, 8 * 1024);
+  } catch (error) {
+    return apiErrorResponse(error);
+  }
 
-  if (!email || !password) {
+  const email = typeof body.email === "string" ? body.email : "";
+  const password = typeof body.password === "string" ? body.password : "";
+
+  if (!email || !password || email.length > 254 || password.length > 1024) {
     return NextResponse.json({ error: "Email y contraseña requeridos" }, { status: 400 });
   }
 
@@ -66,7 +76,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email o contraseña incorrectos" }, { status: 401 });
     }
 
-    const profile = await ensureProfile(data.user.id, data.user.email ?? normalizedEmail);
+    const profile = await getProfile(data.user.id);
     if (!profile || !isAdminRole(profile.role)) {
       return NextResponse.json({ error: "Usuario sin permisos de administracion" }, { status: 403 });
     }

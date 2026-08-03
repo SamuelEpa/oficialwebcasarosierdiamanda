@@ -4,7 +4,7 @@
 create table if not exists public.menu_visual_settings (
   id uuid primary key default gen_random_uuid(),
   key text not null unique default 'default',
-  header_logo_url text not null default 'https://ilkrcakrduibgsfqfzti.supabase.co/storage/v1/object/public/media/img/logo-header.png',
+  header_logo_url text not null default 'https://hhxftxxshwgmfxuyrjmz.supabase.co/storage/v1/object/public/media/img/logo-header.png',
   scroll_menu_background_color text not null default '#8c7457',
   scroll_menu_text_color text not null default '#fff9f1',
   scroll_menu_icon_color text not null default '#fff9f1',
@@ -33,7 +33,7 @@ insert into public.menu_visual_settings (
 )
 select
   'default',
-  coalesce(nullif(header_logo_url, ''), nullif(logo_url, ''), 'https://ilkrcakrduibgsfqfzti.supabase.co/storage/v1/object/public/media/img/logo-header.png'),
+  coalesce(nullif(header_logo_url, ''), nullif(logo_url, ''), 'https://hhxftxxshwgmfxuyrjmz.supabase.co/storage/v1/object/public/media/img/logo-header.png'),
   coalesce(nullif(scroll_menu_background_color, ''), '#8c7457'),
   coalesce(nullif(scroll_menu_text_color, ''), '#fff9f1'),
   coalesce(nullif(scroll_menu_icon_color, ''), nullif(scroll_menu_text_color, ''), '#fff9f1'),

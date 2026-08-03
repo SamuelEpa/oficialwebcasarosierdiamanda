@@ -19,7 +19,7 @@ begin
     new.id,
     lower(new.email),
     split_part(new.email, '@', 1),
-    case when (select count(*) from public.profiles) = 0 then 'admin' else 'editor' end
+    'collaborator'
   );
   return new;
 end;

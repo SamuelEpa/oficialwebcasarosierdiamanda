@@ -3,8 +3,8 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 import { createAdminClient } from "../supabase/admin";
 import { getCurrentLocalSession, LOCAL_ADMIN_EMAIL } from "./local-auth";
-
-export type AdminRole = "admin" | "editor" | "teacher" | "collaborator";
+import { isAdminRole, type AdminRole } from "./roles";
+export { ADMIN_ROLES, isAdminRole } from "./roles";
 
 export interface AdminProfile {
   id: string;
@@ -14,7 +14,6 @@ export interface AdminProfile {
   avatar_url: string | null;
 }
 
-export const ADMIN_ROLES: AdminRole[] = ["admin", "editor"];
 
 function isLocalAuthBypassEnabled() {
   return process.env.NODE_ENV !== "production" && process.env.LOCAL_AUTH_BYPASS === "true";
@@ -76,53 +75,8 @@ export async function getProfile(userId: string): Promise<AdminProfile | null> {
   }
 }
 
-export async function getProfileByEmail(email: string): Promise<AdminProfile | null> {
-  try {
-    const admin = createAdminClient();
-    const { data } = await admin
-      .from("profiles")
-      .select("*")
-      .eq("email", email.toLowerCase())
-      .maybeSingle();
-    return data as AdminProfile | null;
-  } catch {
-    return null;
-  }
-}
 
-export async function ensureProfile(userId: string, email: string): Promise<AdminProfile | null> {
-  const existing = await getProfile(userId);
-  if (existing) return existing;
 
-  try {
-    const admin = createAdminClient();
-    const profileCount = await getProfileCount();
-    const role: AdminRole = profileCount === 0 ? "admin" : "editor";
-    const { data, error } = await admin
-      .from("profiles")
-      .insert({ id: userId, email: email.toLowerCase(), role, full_name: email.split("@")[0] })
-      .select()
-      .maybeSingle();
-    if (error) return null;
-    return data as AdminProfile;
-  } catch {
-    return null;
-  }
-}
-
-async function getProfileCount(): Promise<number> {
-  try {
-    const admin = createAdminClient();
-    const { count } = await admin.from("profiles").select("*", { count: "exact", head: true });
-    return count ?? 0;
-  } catch {
-    return 0;
-  }
-}
-
-export function isAdminRole(role: string): role is AdminRole {
-  return ADMIN_ROLES.includes(role as AdminRole);
-}
 
 async function requireAdminProfileUncached(): Promise<{ user: { id: string; email?: string | null }; profile: AdminProfile } | null> {
   if (isLocalAuthBypassEnabled()) {
@@ -180,16 +134,12 @@ export async function requireAdminApi(): Promise<AdminSession | null> {
   try {
     const supabase = await createSupabaseAuthClient();
     const { data: { user } } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
-    if (user?.email) {
-      const profile = await getProfileByEmail(user.email);
-      if (profile && isAdminRole(profile.role)) {
-        return { userId: user.id, userEmail: user.email };
-      }
-    }
+    if (!user?.email) return null;
 
-    const profile = await getProfileByEmail(LOCAL_ADMIN_EMAIL);
-    if (profile && isAdminRole(profile.role)) return { userId: profile.id, userEmail: profile.email };
-    return null;
+    const profile = await getProfile(user.id);
+    if (!profile || !isAdminRole(profile.role)) return null;
+
+    return { userId: user.id, userEmail: user.email };
   } catch {
     return null;
   }

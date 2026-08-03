@@ -4,6 +4,7 @@ import { createOffering, getOfferings } from "@/lib/cms/offerings";
 import { requireAdminApi } from "@/lib/auth/supabase-auth";
 import { invalidatePublicNavigationCache } from "@/lib/cms/navigation-public";
 import type { Offering } from "@/lib/cms/types";
+import { internalApiError } from "@/lib/security/api-response";
 
 function publicOfferingPath(offering: Pick<Offering, "type" | "slug"> | null | undefined) {
   if (!offering?.slug) return null;
@@ -56,6 +57,6 @@ export async function POST(request: NextRequest) {
     refreshOfferingPaths(offering);
     return NextResponse.json({ offering });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "No se pudo crear el offering" }, { status: 400 });
+    return internalApiError(error, "No se pudo crear el offering.", 400);
   }
 }

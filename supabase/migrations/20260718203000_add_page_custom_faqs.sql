@@ -1,4 +1,4 @@
-﻿create table if not exists public.page_faq_sections (
+create table if not exists public.page_faq_sections (
   id uuid primary key default gen_random_uuid(),
   page_id uuid not null references public.pages(id) on delete cascade,
   title text not null default '',

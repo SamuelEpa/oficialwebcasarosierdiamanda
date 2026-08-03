@@ -2,6 +2,7 @@ import { requireAdminApi } from "@/lib/auth/supabase-auth";
 import { getReports, createReport } from "@/lib/cms/marketing";
 import { MARKETING_REPORT_TYPES } from "@/lib/cms/types";
 import { type NextRequest, NextResponse } from "next/server";
+import { internalApiError } from "@/lib/security/api-response";
 
 export async function GET() {
   if (!(await requireAdminApi())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -22,6 +23,6 @@ export async function POST(request: NextRequest) {
     const report = await createReport(body);
     return NextResponse.json(report, { status: 201 });
   } catch (e) {
-    return NextResponse.json({ error: (e as Error).message }, { status: 400 });
+    return internalApiError(e, "No se pudo procesar el informe.", 400);
   }
 }
