@@ -5,7 +5,7 @@ mostrar la experiencia comercial de la marca y administrar contenido, tienda,
 marketing, multimedia, formularios, reservas, menus y configuracion general
 desde un panel privado.
 
-Deploy publico: [https://casa-rosier-ceramica.vercel.app](https://casa-rosier-ceramica.vercel.app)
+Deploy publico: 
 
 Version del proyecto: `V1.113.53`
 
