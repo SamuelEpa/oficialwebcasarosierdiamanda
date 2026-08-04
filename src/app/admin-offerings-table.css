@@ -1,0 +1,125 @@
+/* Offerings lists: fit the admin content area without horizontal scrolling. */
+.offerings-category-table-wrap {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.offerings-category-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.offerings-category-table th:first-child,
+.offerings-category-table td:first-child {
+  width: auto;
+}
+
+.offerings-category-table__status-head,
+.offerings-category-table__status-cell {
+  width: 112px;
+  min-width: 0;
+}
+
+.offerings-category-table th:nth-child(3),
+.offerings-category-table td:nth-child(3) {
+  width: 92px;
+}
+
+.offerings-category-table th:nth-child(4),
+.offerings-category-table td:nth-child(4) {
+  width: 118px;
+}
+
+.offerings-category-table__actions-head,
+.offerings-category-table__actions-cell {
+  width: 126px;
+  min-width: 0;
+}
+
+.offerings-category-table__copy,
+.offerings-category-table__title,
+.offerings-category-table__excerpt,
+.offerings-category-table__slug {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.offerings-category-row-actions__label {
+  display: none;
+}
+
+.offerings-category-row-actions__btn {
+  width: 34px;
+  min-width: 34px;
+  justify-content: center;
+  padding-inline: 7px;
+}
+
+@media (max-width: 900px) {
+  .offerings-category-table-wrap {
+    overflow: visible;
+  }
+
+  .offerings-category-table,
+  .offerings-category-table tbody,
+  .offerings-category-table tr,
+  .offerings-category-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .offerings-category-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .offerings-category-table tbody {
+    display: grid;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .offerings-category-table tr {
+    overflow: hidden;
+    border: 1px solid #ebe7f2;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .offerings-category-table td {
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0ecf5;
+  }
+
+  .offerings-category-table td:not(:first-child) {
+    display: grid;
+    grid-template-columns: minmax(92px, 0.35fr) minmax(0, 0.65fr);
+    align-items: center;
+    gap: 12px;
+  }
+
+  .offerings-category-table td:not(:first-child)::before {
+    content: attr(data-label);
+    color: #6c6675;
+    font: 800 10px/14px var(--font-inter), Inter, sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .offerings-category-table__actions-cell {
+    text-align: left;
+  }
+
+  .offerings-category-row-actions {
+    justify-content: flex-start;
+  }
+}
