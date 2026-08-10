@@ -1,0 +1,349 @@
+.page {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0 0 92px;
+  background: #f7f5ef;
+  color: #77716b;
+}
+
+.header {
+  width: min(780px, calc(100% - 40px));
+  margin: 0 auto;
+  padding-top: 23px;
+  text-align: center;
+}
+
+.logo {
+  display: block;
+  width: auto;
+  height: 48px;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-top: 21px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.nav a {
+  position: relative;
+  padding: 0 13px;
+  color: #5f5b56;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav a + a::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1px;
+  height: 10px;
+  background: #ddd7ce;
+  transform: translateY(-50%);
+}
+
+.nav span {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 11px;
+  color: #aaa39a;
+}
+
+.nav a:hover {
+  opacity: 0.62;
+}
+
+.titleBlock {
+  margin: 77px auto 73px;
+  text-align: center;
+}
+
+.titleBlock h1 {
+  margin: 0;
+  color: #4f4a46;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 38px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+
+.titleBlock p {
+  margin: 14px 0 0;
+  color: #b8b0a8;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 7px;
+  letter-spacing: 2.8px;
+}
+
+.timeline {
+  position: relative;
+  width: min(760px, calc(100% - 42px));
+  margin: 0 auto;
+}
+
+.centerLine {
+  position: absolute;
+  top: 0;
+  bottom: 4px;
+  left: 50%;
+  width: 1px;
+  background: #d2cbc2;
+  transform: translateX(-0.5px);
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+}
+
+.half {
+  min-width: 0;
+}
+
+.leftHalf {
+  padding-right: 44px;
+}
+
+.rightHalf {
+  padding-left: 44px;
+}
+
+.introRow {
+  min-height: 285px;
+}
+
+.introTitle {
+  margin: 43px 0 0;
+  color: #b87c50;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 37px;
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.5px;
+}
+
+.introText {
+  margin: 55px 0 0;
+  color: #77716b;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 1.38;
+}
+
+.bioLeft,
+.bioRight {
+  color: #77716b;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.bioLeft {
+  padding-top: 4px;
+  padding-left: 8px;
+  text-align: right;
+}
+
+.bioRight {
+  padding-top: 3px;
+  padding-right: 14px;
+  text-align: left;
+}
+
+.bioLeft h3,
+.bioRight h3 {
+  margin: 0 0 6px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.bioLeft h3 {
+  color: #62584f;
+}
+
+.bioRight h3 {
+  color: #b87c50;
+}
+
+.role {
+  margin: 0 0 26px !important;
+  color: #847e78;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.bioLeft p,
+.bioRight p {
+  margin: 0 0 17px;
+}
+
+.imageRight,
+.imageLeft {
+  display: flex;
+}
+
+.imageRight {
+  justify-content: flex-start;
+}
+
+.imageLeft {
+  justify-content: flex-end;
+}
+
+.profileImage {
+  display: block;
+  width: 100%;
+  max-width: 292px;
+  height: 362px;
+  object-fit: cover;
+}
+
+.lastRow {
+  margin-top: 81px;
+}
+
+@media (max-width: 820px) {
+  .header,
+  .timeline {
+    width: calc(100% - 44px);
+  }
+
+  .leftHalf {
+    padding-right: 32px;
+  }
+
+  .rightHalf {
+    padding-left: 32px;
+  }
+
+  .introTitle {
+    font-size: 33px;
+  }
+
+  .profileImage {
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 0.81;
+  }
+}
+
+@media (max-width: 650px) {
+  .page {
+    padding-bottom: 56px;
+  }
+
+  .header {
+    width: calc(100% - 28px);
+    padding-top: 16px;
+  }
+
+  .logo {
+    height: 43px;
+  }
+
+  .nav {
+    margin-top: 16px;
+    row-gap: 12px;
+    font-size: 9px;
+    line-height: 1.2;
+  }
+
+  .nav a {
+    padding: 0 9px;
+  }
+
+  .titleBlock {
+    margin: 56px auto 52px;
+  }
+
+  .titleBlock h1 {
+    font-size: 31px;
+  }
+
+  .timeline {
+    width: calc(100% - 36px);
+  }
+
+  .centerLine {
+    display: none;
+  }
+
+  .row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .leftHalf,
+  .rightHalf {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .introRow {
+    min-height: auto;
+  }
+
+  .introTitle {
+    margin-top: 0;
+    font-size: 34px;
+  }
+
+  .introText {
+    margin-top: 24px;
+    font-size: 13px;
+  }
+
+  .bioLeft,
+  .bioRight {
+    padding: 0;
+    text-align: left;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .bioLeft {
+    margin-top: 52px;
+  }
+
+  .imageRight {
+    margin-top: 22px;
+  }
+
+  .lastRow {
+    margin-top: 50px;
+  }
+
+  .imageLeft {
+    order: 1;
+  }
+
+  .bioRight {
+    order: 2;
+    margin-top: 22px;
+  }
+
+  .profileImage {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    aspect-ratio: 0.81;
+  }
+}
