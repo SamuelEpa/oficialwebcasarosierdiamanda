@@ -15,6 +15,7 @@ export async function StudioPage() {
     testimonials,
     showIdeaPrompt,
   } = await loadStudioPage();
+
   const hero = pageSettings.hero;
 
   return (
@@ -24,14 +25,24 @@ export async function StudioPage() {
         <HeaderInterno
           hero={hero}
           image={hero.heroImage}
+          mobileImage={hero.heroImageMobile || hero.heroImage}
           height="large"
           overlayTitle
+          className="studio-page-hero"
         />
       }
     >
       <StudioTeamEditorialSection intro={intro} team={team} />
-      <PublicFaqSection pageSection={faqSection} eyebrow="" />
-      {showIdeaPrompt ? <IdeaPromptSection context="home" /> : null}
+
+      <PublicFaqSection
+        pageSection={faqSection}
+        eyebrow=""
+      />
+
+      {showIdeaPrompt ? (
+        <IdeaPromptSection context="home" />
+      ) : null}
+
       <TestimonialSlider testimonials={testimonials} />
     </SitePage>
   );

@@ -1,4 +1,4 @@
-/* Keep the public home hero full-height at every desktop width. */
+/* Cabecera pública de escritorio: misma identidad visual, adaptada a todos los anchos desktop. */
 @media (min-width: 1025px) {
   .header-home.hero {
     height: 100vh;
@@ -7,13 +7,28 @@
     min-height: 100svh;
   }
 
+  .header-home .navbar-global.hero__top.container {
+    width: 100%;
+    max-width: none;
+    padding-inline: clamp(20px, 3.5vw, 56px);
+  }
+
   .header-home .navbar-global .hero__logo-image,
   .header-home .navbar-global .hero__logo-tint {
     filter: drop-shadow(0 2px 10px rgba(20, 16, 12, 0.34));
   }
 
+  .header-home .navbar-global .hero__nav {
+    width: min(96vw, 1360px);
+    max-width: 96vw;
+  }
+
   .header-home .navbar-global .hero__nav-list {
-    padding: 0 10px;
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: nowrap;
+    gap: clamp(0px, 0.35vw, 6px);
+    padding: 0 clamp(6px, 0.8vw, 10px);
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 999px;
     background: rgba(28, 23, 18, 0.24);
@@ -24,6 +39,41 @@
 
   .header-home .navbar-global .hero__nav-link,
   .header-home .navbar-global .hero__nav-toggle {
+    min-height: 40px;
+    padding-inline: clamp(8px, 0.95vw, 14px);
+    font-size: clamp(12px, 0.95vw, 16px);
     text-shadow: 0 1px 8px rgba(20, 16, 12, 0.5);
+  }
+
+  .header-home .navbar-global .hero__nav-item--has-children .hero__nav-link {
+    padding-right: clamp(6px, 0.6vw, 10px);
+  }
+
+  .header-home .navbar-global .hero__nav-toggle {
+    padding-left: clamp(4px, 0.45vw, 6px);
+    padding-right: clamp(8px, 0.8vw, 12px);
+  }
+}
+
+/* Laptop pequeño: conserva el diseño web evitando que el menú se desborde. */
+@media (min-width: 1025px) and (max-width: 1180px) {
+  .header-home .navbar-global .hero__nav {
+    width: min(98vw, 1180px);
+  }
+
+  .header-home .navbar-global .hero__nav-list {
+    padding-inline: 6px;
+  }
+
+  .header-home .navbar-global .hero__nav-link,
+  .header-home .navbar-global .hero__nav-toggle {
+    min-height: 38px;
+    padding-inline: 8px;
+    font-size: 12px;
+  }
+
+  .header-home .navbar-global .hero__nav-toggle {
+    padding-left: 4px;
+    padding-right: 8px;
   }
 }

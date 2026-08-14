@@ -411,3 +411,300 @@
     height: 40px;
   }
 }
+
+
+/* =========================================================
+   CASA ROSIER — MENU MOVIL NATIVO
+   Abre con HTML <details>/<summary>; no depende de React.
+   ========================================================= */
+
+.native-mobile-nav {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .site-nav-shell > .mobile-scroll-nav {
+    display: none !important;
+  }
+
+  .native-mobile-nav {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 2147483000 !important;
+    display: block !important;
+    width: 100%;
+    min-height: 82px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(251, 250, 246, 0.96);
+    box-shadow: 0 1px 0 rgba(63, 57, 51, 0.08);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    pointer-events: auto !important;
+    isolation: isolate;
+  }
+
+  .native-mobile-nav__summary {
+    position: absolute !important;
+    top: 17px !important;
+    right: max(18px, env(safe-area-inset-right, 0px)) !important;
+    z-index: 2147483003 !important;
+    width: 50px;
+    height: 50px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 0;
+    background: transparent;
+    color: #403b36;
+    cursor: pointer;
+    pointer-events: auto !important;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .native-mobile-nav__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .native-mobile-nav__summary::marker {
+    content: "";
+  }
+
+  .native-mobile-nav__logo {
+    position: absolute !important;
+    top: 12px !important;
+    left: 50% !important;
+    z-index: 2147483002 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: min(130px, 30vw);
+    height: 62px;
+    transform: translateX(-50%) !important;
+    text-decoration: none;
+    pointer-events: auto !important;
+  }
+
+  .native-mobile-nav__logo-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 130px;
+    max-height: 62px;
+    object-fit: contain;
+    filter: none !important;
+  }
+
+  .native-mobile-nav__hamburger,
+  .native-mobile-nav__hamburger::before,
+  .native-mobile-nav__hamburger::after {
+    width: 32px;
+    height: 3px;
+    display: block;
+    border-radius: 999px;
+    background: currentColor;
+    transition: transform 180ms ease, opacity 180ms ease;
+  }
+
+  .native-mobile-nav__hamburger {
+    position: relative;
+  }
+
+  .native-mobile-nav__hamburger::before,
+  .native-mobile-nav__hamburger::after {
+    content: "";
+    position: absolute;
+    left: 0;
+  }
+
+  .native-mobile-nav__hamburger::before {
+    transform: translateY(-10px);
+  }
+
+  .native-mobile-nav__hamburger::after {
+    transform: translateY(10px);
+  }
+
+  .native-mobile-nav[open] .native-mobile-nav__hamburger {
+    background: transparent;
+  }
+
+  .native-mobile-nav[open] .native-mobile-nav__hamburger::before {
+    transform: rotate(45deg);
+  }
+
+  .native-mobile-nav[open] .native-mobile-nav__hamburger::after {
+    transform: rotate(-45deg);
+  }
+
+  .native-mobile-nav__panel {
+    position: fixed !important;
+    top: 82px !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 2147483001 !important;
+    width: 100%;
+    max-height: calc(100dvh - 82px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 18px 22px calc(28px + env(safe-area-inset-bottom, 0px));
+    background: var(--site-scroll-menu-bg, #8c7457);
+    color: var(--site-scroll-menu-text, #fff9f1);
+    box-shadow: 0 22px 45px rgba(40, 32, 22, 0.2);
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    pointer-events: auto !important;
+  }
+
+  .native-mobile-nav:not([open]) .native-mobile-nav__panel {
+    display: none !important;
+  }
+
+  .native-mobile-nav[open] .native-mobile-nav__panel {
+    display: block !important;
+  }
+
+  .native-mobile-nav__list,
+  .native-mobile-nav__submenu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .native-mobile-nav__list {
+    width: min(100%, 540px);
+    margin-inline: auto;
+  }
+
+  .native-mobile-nav__item {
+    width: 100%;
+    padding: 0;
+    border-bottom: 1px solid rgba(255, 249, 241, 0.18);
+  }
+
+  .native-mobile-nav__link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 54px;
+    box-sizing: border-box;
+    padding: 10px 4px;
+    color: var(--site-scroll-menu-text, #fff9f1) !important;
+    text-decoration: none;
+    font: 600 16px/1.3 var(--font-menu);
+  }
+
+  .native-mobile-nav__link[aria-current="page"] {
+    opacity: 0.72;
+  }
+
+  .native-mobile-nav__submenu {
+    display: grid;
+    gap: 0;
+    margin: 0 0 12px 12px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    background: rgba(255, 249, 241, 0.1);
+  }
+
+  .native-mobile-nav__submenu-link {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 0;
+    color: var(--site-scroll-menu-text, #fff9f1) !important;
+    text-decoration: none;
+    font: 500 14px/1.4 var(--font-menu);
+  }
+}
+
+@media (max-width: 640px) {
+  .native-mobile-nav {
+    min-height: 78px;
+  }
+
+  .native-mobile-nav__summary {
+    top: 14px !important;
+    right: max(14px, env(safe-area-inset-right, 0px)) !important;
+  }
+
+  .native-mobile-nav__logo {
+    top: 9px !important;
+    width: min(122px, 32vw);
+    height: 60px;
+  }
+
+  .native-mobile-nav__panel {
+    top: 78px !important;
+    max-height: calc(100dvh - 78px);
+    padding-inline: 18px;
+  }
+}
+
+
+/* =========================================================
+   FIX VISIBILIDAD TEXTO — MENU MOVIL CASA ROSIER
+   Fondo claro + texto oscuro para asegurar contraste.
+   ========================================================= */
+
+@media (max-width: 1024px) {
+  .native-mobile-nav {
+    background: #fbfaf6 !important;
+    color: #403b36 !important;
+  }
+
+  .native-mobile-nav__summary {
+    color: #403b36 !important;
+  }
+
+  .native-mobile-nav__logo-image {
+    filter: brightness(0) saturate(100%) !important;
+    opacity: 0.9 !important;
+  }
+
+  .native-mobile-nav__panel {
+    background: #fbfaf6 !important;
+    color: #403b36 !important;
+    border-top: 1px solid rgba(64, 59, 54, 0.10) !important;
+  }
+
+  .native-mobile-nav__item {
+    border-bottom: 1px solid rgba(64, 59, 54, 0.14) !important;
+  }
+
+  .native-mobile-nav__link {
+    color: #403b36 !important;
+    opacity: 1 !important;
+    font-weight: 600 !important;
+  }
+
+  .native-mobile-nav__link:hover,
+  .native-mobile-nav__link:focus-visible,
+  .native-mobile-nav__link[aria-current="page"] {
+    color: #8c7457 !important;
+    opacity: 1 !important;
+  }
+
+  .native-mobile-nav__submenu {
+    background: #f1ece4 !important;
+  }
+
+  .native-mobile-nav__submenu-link {
+    color: #5a5148 !important;
+    opacity: 1 !important;
+  }
+
+  .native-mobile-nav__submenu-link:hover,
+  .native-mobile-nav__submenu-link:focus-visible,
+  .native-mobile-nav__submenu-link[aria-current="page"] {
+    color: #8c7457 !important;
+  }
+}

@@ -1,12 +1,14 @@
 /**
- * Editorial scrolled sticky nav — cream bar, soft shadow, centered logo + split links.
- * Used by HeaderHome and HeaderInterno.
+ * Navegación sticky editorial.
+ * Mantiene la composición de escritorio y adapta tamaños para laptop,
+ * tablet y móvil sin cambiar la identidad visual del sitio.
  */
 
 @media (min-width: 1025px) {
   .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial {
     min-height: 88px;
-    padding: 14px clamp(28px, 4vw, 64px);
+    width: 100%;
+    padding: 14px clamp(24px, 4vw, 64px);
     background: var(--site-scroll-menu-bg, #f9f8f3);
     box-shadow:
       0 1px 0 rgba(63, 57, 51, 0.06),
@@ -18,10 +20,12 @@
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     justify-content: stretch;
-    gap: clamp(16px, 2.5vw, 32px);
+    gap: clamp(12px, 2vw, 32px);
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial-split .mobile-scroll-nav__logo {
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial-split
+    .mobile-scroll-nav__logo {
     justify-self: center;
   }
 
@@ -33,54 +37,124 @@
     justify-content: flex-start;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .scroll-desktop-nav--left .scroll-desktop-nav__list {
+  .mobile-scroll-nav.is-desktop-sticky
+    .scroll-desktop-nav--left
+    .scroll-desktop-nav__list {
     justify-content: flex-end;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .scroll-desktop-nav--right .scroll-desktop-nav__list {
+  .mobile-scroll-nav.is-desktop-sticky
+    .scroll-desktop-nav--right
+    .scroll-desktop-nav__list {
     justify-content: flex-start;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__list {
-    gap: clamp(18px, 2.2vw, 28px);
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial
+    .scroll-desktop-nav__list {
+    max-width: 100%;
+    gap: clamp(10px, 1.65vw, 28px);
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__item {
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial
+    .scroll-desktop-nav__item {
     gap: 0;
+    min-width: 0;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__separator {
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial
+    .scroll-desktop-nav__separator {
     display: none;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__link {
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial
+    .scroll-desktop-nav__link {
     min-height: 40px;
     color: var(--site-scroll-menu-text, #3f3933);
-    font: 400 14px / 1.2 var(--font-menu);
+    font: 400 clamp(12px, 0.95vw, 14px) / 1.2 var(--font-menu);
     letter-spacing: 0.01em;
     text-transform: lowercase;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__link:hover,
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__link:focus-visible,
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__link[aria-current="page"] {
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial
+    .scroll-desktop-nav__link:hover,
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial
+    .scroll-desktop-nav__link:focus-visible,
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial
+    .scroll-desktop-nav__link[aria-current="page"] {
     color: var(--site-scroll-menu-text, #3f3933);
     opacity: 0.78;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .scroll-desktop-nav__plus {
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial
+    .scroll-desktop-nav__plus {
     color: var(--site-scroll-menu-icon, var(--site-scroll-menu-text, #3f3933));
     font-size: 13px;
     font-weight: 400;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .mobile-scroll-nav__logo-image {
-    height: clamp(52px, 5.5vw, 64px);
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial
+    .mobile-scroll-nav__logo-image {
+    width: auto;
+    height: clamp(48px, 5vw, 64px);
+    max-width: clamp(104px, 11vw, 140px);
+    object-fit: contain;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial .mobile-scroll-nav__logo-tint {
-    width: clamp(110px, 12vw, 140px);
-    height: clamp(52px, 5.5vw, 64px);
-    background: var(--site-scroll-logo-tint, var(--site-scroll-menu-icon, #3f3933));
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial
+    .mobile-scroll-nav__logo-tint {
+    width: clamp(104px, 11vw, 140px);
+    height: clamp(48px, 5vw, 64px);
+    background: var(
+      --site-scroll-logo-tint,
+      var(--site-scroll-menu-icon, #3f3933)
+    );
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1180px) {
+  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial {
+    padding-inline: 20px;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial-split {
+    gap: 10px;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial
+    .scroll-desktop-nav__list {
+    gap: 9px;
+  }
+
+  .mobile-scroll-nav.is-desktop-sticky
+    .mobile-scroll-nav__bar--editorial
+    .scroll-desktop-nav__link {
+    font-size: 12px;
+  }
+}
+
+/* Tablet y móvil: la barra conserva logo + menú hamburguesa.
+   Los colores siguen viniendo del CMS, igual que en escritorio. */
+@media (max-width: 1024px) {
+  .mobile-scroll-nav__bar--editorial {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .mobile-scroll-nav:not(.is-at-top) .mobile-scroll-nav__bar--editorial {
+    box-shadow:
+      0 1px 0 rgba(63, 57, 51, 0.05),
+      0 8px 24px rgba(63, 57, 51, 0.1);
   }
 }

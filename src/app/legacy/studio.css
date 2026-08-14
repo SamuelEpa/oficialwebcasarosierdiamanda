@@ -542,3 +542,624 @@
     transition: none;
   }
 }
+
+
+/* =========================================================
+   CASA ROSIER — EL ESTUDIO RESPONSIVE
+   Desktop + Tablet + Mobile
+   ========================================================= */
+
+
+/* =========================================================
+   BASE
+   ========================================================= */
+
+.studio-page {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.studio-page .studio-page-hero {
+  width: 100%;
+}
+
+.studio-page .studio-page-hero .public-hero-content,
+.studio-page .studio-page-hero .public-hero-title {
+  max-width: 100%;
+}
+
+
+/* =========================================================
+   TABLET
+   641px - 1024px
+   ========================================================= */
+
+@media (max-width: 1024px) {
+
+  /* -----------------------------------------
+     HERO EL ESTUDIO
+     ----------------------------------------- */
+
+  .studio-page .studio-page-hero.header-interno {
+    height: clamp(500px, 70svh, 680px) !important;
+    min-height: 500px !important;
+    max-height: 680px;
+  }
+
+
+  /* -----------------------------------------
+     INTRO
+     ----------------------------------------- */
+
+  .studio-editorial-intro {
+    min-height: auto !important;
+    padding: 64px 0 72px;
+  }
+
+  .studio-editorial-intro__inner {
+    width: min(calc(100% - 40px), 760px);
+    margin-left: auto;
+    margin-right: auto;
+
+    padding-top: 0;
+  }
+
+
+  /* -----------------------------------------
+     HISTORIA / EQUIPO
+     ----------------------------------------- */
+
+  .studio-narrative {
+    min-height: auto;
+
+    margin-top: 56px;
+
+    padding-top: 0;
+    padding-bottom: 56px;
+  }
+
+  .studio-narrative__container {
+    width: min(calc(100% - 40px), 760px);
+
+    margin-left: auto;
+    margin-right: auto;
+
+    grid-template-columns: 1fr;
+
+    gap: 34px;
+  }
+
+  .studio-narrative__media {
+    width: 100%;
+
+    justify-items: center;
+  }
+
+  .studio-narrative__media img {
+    width: min(100%, 520px);
+
+    max-width: 520px;
+
+    display: block;
+  }
+
+  .studio-narrative__copy {
+    width: 100%;
+
+    max-width: 100%;
+  }
+
+
+  /* -----------------------------------------
+     GALERÍA
+     ----------------------------------------- */
+
+  .studio-gallery {
+    padding-top: 80px;
+    padding-bottom: 28px;
+  }
+
+  .studio-gallery__head {
+    width: min(calc(100% - 40px), 760px);
+
+    max-width: none;
+
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .studio-gallery__grid {
+    width: min(calc(100% - 40px), 760px);
+
+    margin-left: auto;
+    margin-right: auto;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+  }
+
+}
+
+
+/* =========================================================
+   MÓVIL
+   0px - 640px
+   ========================================================= */
+
+@media (max-width: 640px) {
+
+  /* =======================================================
+     HERO
+     Antes ocupaba prácticamente toda la pantalla.
+     Ahora conserva el diseño pero adaptado.
+     ======================================================= */
+
+  .studio-page .studio-page-hero.header-interno {
+    height: clamp(
+      420px,
+      58svh,
+      520px
+    ) !important;
+
+    min-height: 420px !important;
+
+    max-height: 520px;
+
+    overflow: hidden;
+  }
+
+
+  /* -----------------------------------------
+     IMAGEN DEL TÍTULO DEL HERO
+     ----------------------------------------- */
+
+  .studio-page
+    .studio-page-hero
+    .public-hero-content
+    > .public-hero-title[data-hero-overlay="primary"],
+  .studio-page
+    .studio-page-hero
+    .public-hero-content
+    > .public-hero-title[data-hero-overlay="secondary"] {
+
+    width: min(
+      76vw,
+      330px
+    ) !important;
+
+    max-width: min(
+      76vw,
+      330px
+    ) !important;
+  }
+
+
+  /* -----------------------------------------
+     TÍTULO TEXTO
+     ----------------------------------------- */
+
+  .studio-page
+    .studio-page-hero
+    .page-hero__title {
+
+    max-width:
+      calc(100vw - 40px);
+
+    font-size:
+      clamp(
+        40px,
+        12vw,
+        56px
+      );
+
+    line-height: 0.98;
+
+    white-space: normal;
+  }
+
+
+  /* =======================================================
+     INTRO EL ESTUDIO
+     ======================================================= */
+
+  .studio-editorial-intro {
+    min-height: auto !important;
+
+    height: auto !important;
+
+    padding:
+      44px
+      0
+      48px;
+  }
+
+  .studio-editorial-intro__inner {
+    width:
+      min(
+        calc(100% - 32px),
+        560px
+      );
+
+    margin-left: auto;
+    margin-right: auto;
+
+    padding-top: 0;
+
+    place-items: center;
+
+    text-align: center;
+  }
+
+
+  /* -----------------------------------------
+     TITULAR INTRO
+     ----------------------------------------- */
+
+  .studio-editorial-intro__eyebrow {
+    margin-top: 0;
+
+    margin-bottom: 12px;
+
+    font-size:
+      clamp(
+        29px,
+        9vw,
+        36px
+      );
+
+    line-height: 1.04;
+
+    letter-spacing: 0.01em;
+  }
+
+
+  /* -----------------------------------------
+     TEXTO INTRO
+     ----------------------------------------- */
+
+  .studio-editorial-intro__text {
+    width: 100%;
+
+    max-width: 100%;
+
+    margin: 0 auto;
+
+    font-size:
+      clamp(
+        19px,
+        5.8vw,
+        23px
+      );
+
+    line-height: 1.3;
+
+    letter-spacing: 0.01em;
+  }
+
+
+  /* =======================================================
+     NARRATIVA / EQUIPO
+     ======================================================= */
+
+  .studio-narrative {
+    min-height: auto;
+
+    height: auto;
+
+    margin-top: 24px;
+
+    padding-top: 0;
+
+    padding-bottom: 44px;
+  }
+
+
+  .studio-narrative__container {
+    width:
+      min(
+        calc(100% - 32px),
+        560px
+      );
+
+    margin-left: auto;
+
+    margin-right: auto;
+
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    gap: 28px;
+  }
+
+
+  /* -----------------------------------------
+     FOTO
+     ----------------------------------------- */
+
+  .studio-narrative__media {
+    width: 100%;
+
+    display: grid;
+
+    justify-items: stretch;
+  }
+
+  .studio-narrative__media img {
+    width: 100%;
+
+    max-width: none;
+
+    height: auto;
+
+    aspect-ratio: 4 / 5;
+
+    object-fit: cover;
+
+    display: block;
+  }
+
+
+  /* -----------------------------------------
+     TEXTO
+     ----------------------------------------- */
+
+  .studio-narrative__copy {
+    width: 100%;
+
+    max-width: 100%;
+
+    padding-top: 0;
+  }
+
+
+  .studio-narrative__copy h2 {
+    margin-top: 0;
+
+    margin-bottom: 14px;
+
+    font-size:
+      clamp(
+        32px,
+        9vw,
+        40px
+      );
+
+    line-height: 1.02;
+  }
+
+
+  .studio-narrative__role {
+    margin-top: 0;
+
+    margin-bottom: 16px;
+
+    font-size: 11px;
+
+    line-height: 1.45;
+
+    letter-spacing: 0.2em;
+  }
+
+
+  .studio-narrative__copy p,
+  .studio-gallery__head p,
+  .studio-closing__text {
+
+    font-size: 15.5px;
+
+    line-height: 1.72;
+  }
+
+
+  /* =======================================================
+     GALERÍA
+     ======================================================= */
+
+  .studio-gallery {
+    padding-top: 52px;
+
+    padding-bottom: 24px;
+  }
+
+
+  .studio-gallery__container {
+    width: 100%;
+
+    max-width: none;
+  }
+
+
+  /* -----------------------------------------
+     CABECERA GALERÍA
+     ----------------------------------------- */
+
+  .studio-gallery__head {
+    width:
+      min(
+        calc(100% - 32px),
+        560px
+      );
+
+    max-width: none;
+
+    margin-left: auto;
+
+    margin-right: auto;
+
+    margin-bottom: 22px;
+
+    text-align: center;
+  }
+
+
+  .studio-gallery__head h2 {
+    margin-top: 0;
+
+    font-size:
+      clamp(
+        28px,
+        8.5vw,
+        36px
+      );
+
+    line-height: 1.04;
+  }
+
+
+  /* -----------------------------------------
+     FOTOS GALERÍA
+     ----------------------------------------- */
+
+  .studio-gallery__grid {
+    width:
+      min(
+        calc(100% - 24px),
+        560px
+      );
+
+    margin-left: auto;
+
+    margin-right: auto;
+
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+  }
+
+
+  .studio-gallery__item {
+    width: 100%;
+
+    margin: 0;
+
+    overflow: hidden;
+  }
+
+
+  .studio-gallery__trigger {
+    width: 100%;
+
+    display: block;
+  }
+
+
+  .studio-gallery__item img {
+    width: 100%;
+
+    height: auto;
+
+    aspect-ratio: 4 / 5;
+
+    object-fit: cover;
+
+    display: block;
+  }
+
+
+  /* =======================================================
+     CIERRE
+     ======================================================= */
+
+  .studio-closing {
+    padding:
+      28px
+      16px
+      20px;
+  }
+
+
+  .studio-closing__container {
+    width: 100%;
+
+    max-width: 560px;
+
+    margin-left: auto;
+
+    margin-right: auto;
+  }
+
+
+  .studio-closing__text {
+    margin-bottom: 20px;
+  }
+
+
+  .studio-closing__button {
+    min-height: 44px;
+
+    padding:
+      12px
+      20px;
+  }
+
+
+  /* =======================================================
+     LIGHTBOX
+     ======================================================= */
+
+  .studio-lightbox__panel {
+    padding:
+      64px
+      12px
+      20px;
+  }
+
+
+  .studio-lightbox__image {
+    max-width: 94vw;
+
+    max-height: 78svh;
+  }
+
+
+  .studio-lightbox__close {
+    top:
+      max(
+        14px,
+        env(safe-area-inset-top)
+      );
+
+    right: 14px;
+
+    width: 42px;
+
+    height: 42px;
+  }
+
+}
+
+
+/* =========================================================
+   CELULARES PEQUEÑOS
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+  .studio-page .studio-page-hero.header-interno {
+    height: 400px !important;
+
+    min-height: 400px !important;
+  }
+
+
+  .studio-editorial-intro__inner,
+  .studio-narrative__container,
+  .studio-gallery__head {
+
+    width:
+      calc(100% - 24px);
+  }
+
+
+  .studio-gallery__grid {
+    width:
+      calc(100% - 16px);
+  }
+
+}
