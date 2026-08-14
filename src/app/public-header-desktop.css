@@ -1,5 +1,17 @@
-/* Cabecera pública de escritorio: misma identidad visual, adaptada a todos los anchos desktop. */
+/* =========================================================
+   CASA ROSIER — HEADER DESKTOP
+   Objetivo: igualar la segunda imagen de referencia:
+   - fondo limpio
+   - logo centrado y más grande
+   - navegación sin cápsula gris
+   - texto oscuro
+   - separadores finos
+   - incluye Inicio
+   ========================================================= */
+
 @media (min-width: 1025px) {
+
+  /* Mantener el hero en altura completa cuando corresponda */
   .header-home.hero {
     height: 100vh;
     height: 100svh;
@@ -7,73 +19,317 @@
     min-height: 100svh;
   }
 
-  .header-home .navbar-global.hero__top.container {
+  /* Contenedor principal de la cabecera */
+  .header-home .navbar-global.hero__top.container,
+  .header-interno .navbar-global.hero__top.container,
+  .page-hero .navbar-global.hero__top.container {
     width: 100%;
     max-width: none;
-    padding-inline: clamp(20px, 3.5vw, 56px);
+    padding-top: 58px;
+    padding-inline: clamp(24px, 4vw, 72px);
+    padding-bottom: 12px;
+    text-align: center;
+  }
+
+  /* Logo */
+  .header-home .navbar-global .hero__logo,
+  .header-interno .navbar-global .hero__logo,
+  .page-hero .navbar-global .hero__logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
   }
 
   .header-home .navbar-global .hero__logo-image,
-  .header-home .navbar-global .hero__logo-tint {
-    filter: drop-shadow(0 2px 10px rgba(20, 16, 12, 0.34));
+  .header-interno .navbar-global .hero__logo-image,
+  .page-hero .navbar-global .hero__logo-image {
+    width: clamp(145px, 9.5vw, 175px) !important;
+    height: auto !important;
+    max-height: none !important;
+    display: block;
+    filter: brightness(0) saturate(100%) opacity(0.88) !important;
   }
 
-  .header-home .navbar-global .hero__nav {
-    width: min(96vw, 1360px);
-    max-width: 96vw;
+  .header-home .navbar-global .hero__logo-tint,
+  .header-interno .navbar-global .hero__logo-tint,
+  .page-hero .navbar-global .hero__logo-tint {
+    width: clamp(145px, 9.5vw, 175px) !important;
+    height: auto;
+    aspect-ratio: 2.2 / 1;
+    background: #403b36 !important;
+    filter: none !important;
   }
 
-  .header-home .navbar-global .hero__nav-list {
-    width: 100%;
+  /* Navegación */
+  .header-home .navbar-global .hero__nav,
+  .header-interno .navbar-global .hero__nav,
+  .page-hero .navbar-global .hero__nav {
+    position: absolute !important;
+    left: 50% !important;
+    top: 214px !important;
+    width: max-content;
+    max-width: calc(100vw - 80px);
+    margin-top: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(-50%) !important;
+    transform-origin: top center !important;
+  }
+
+  /* Quitar completamente la cápsula gris */
+  .header-home .navbar-global .hero__nav-list,
+  .header-interno .navbar-global .hero__nav-list,
+  .page-hero .navbar-global .hero__nav-list {
+    width: auto;
     max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-wrap: nowrap;
-    gap: clamp(0px, 0.35vw, 6px);
-    padding: 0 clamp(6px, 0.8vw, 10px);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 999px;
-    background: rgba(28, 23, 18, 0.24);
-    box-shadow: 0 8px 28px rgba(20, 16, 12, 0.12);
-    -webkit-backdrop-filter: blur(8px) saturate(112%);
-    backdrop-filter: blur(8px) saturate(112%);
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
 
+  .header-home .navbar-global .hero__nav-item,
+  .header-interno .navbar-global .hero__nav-item,
+  .page-hero .navbar-global .hero__nav-item {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  /* Texto del menú */
   .header-home .navbar-global .hero__nav-link,
-  .header-home .navbar-global .hero__nav-toggle {
-    min-height: 40px;
-    padding-inline: clamp(8px, 0.95vw, 14px);
-    font-size: clamp(12px, 0.95vw, 16px);
-    text-shadow: 0 1px 8px rgba(20, 16, 12, 0.5);
+  .header-home .navbar-global .hero__nav-toggle,
+  .header-interno .navbar-global .hero__nav-link,
+  .header-interno .navbar-global .hero__nav-toggle,
+  .page-hero .navbar-global .hero__nav-link,
+  .page-hero .navbar-global .hero__nav-toggle {
+    min-height: 44px;
+    padding: 0 clamp(18px, 1.45vw, 27px);
+    border: 0;
+    background: transparent !important;
+    color: #403b36 !important;
+    font-family: var(--font-menu);
+    font-size: clamp(15px, 1.15vw, 20px);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-shadow: none !important;
+    white-space: nowrap;
   }
 
-  .header-home .navbar-global .hero__nav-item--has-children .hero__nav-link {
-    padding-right: clamp(6px, 0.6vw, 10px);
+  /* En ítems con submenu, acercamos la flecha al texto */
+  .header-home .navbar-global .hero__nav-item--has-children .hero__nav-link,
+  .header-interno .navbar-global .hero__nav-item--has-children .hero__nav-link,
+  .page-hero .navbar-global .hero__nav-item--has-children .hero__nav-link {
+    padding-right: 10px;
   }
 
-  .header-home .navbar-global .hero__nav-toggle {
-    padding-left: clamp(4px, 0.45vw, 6px);
-    padding-right: clamp(8px, 0.8vw, 12px);
+  .header-home .navbar-global .hero__nav-toggle,
+  .header-interno .navbar-global .hero__nav-toggle,
+  .page-hero .navbar-global .hero__nav-toggle {
+    padding-left: 4px;
+    padding-right: clamp(18px, 1.45vw, 27px);
+    color: #403b36 !important;
+  }
+
+  /* Separadores verticales como en la segunda foto */
+  .header-home .navbar-global .hero__nav-link::after,
+  .header-home .navbar-global .hero__nav-toggle::after,
+  .header-interno .navbar-global .hero__nav-link::after,
+  .header-interno .navbar-global .hero__nav-toggle::after,
+  .page-hero .navbar-global .hero__nav-link::after,
+  .page-hero .navbar-global .hero__nav-toggle::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 1px;
+    height: 26px;
+    transform: translateY(-50%);
+    background: #c9b9a8;
+    color: transparent;
+  }
+
+  /* No separador al final */
+  .header-home .navbar-global .hero__nav-item:last-child .hero__nav-link::after,
+  .header-home .navbar-global .hero__nav-item:last-child .hero__nav-toggle::after,
+  .header-interno .navbar-global .hero__nav-item:last-child .hero__nav-link::after,
+  .header-interno .navbar-global .hero__nav-item:last-child .hero__nav-toggle::after,
+  .page-hero .navbar-global .hero__nav-item:last-child .hero__nav-link::after,
+  .page-hero .navbar-global .hero__nav-item:last-child .hero__nav-toggle::after {
+    content: none;
+  }
+
+  /* Para Comunidad, el separador va después de la flecha */
+  .header-home .navbar-global .hero__nav-item--has-children .hero__nav-link::after,
+  .header-interno .navbar-global .hero__nav-item--has-children .hero__nav-link::after,
+  .page-hero .navbar-global .hero__nav-item--has-children .hero__nav-link::after {
+    content: none;
+  }
+
+  .header-home .navbar-global .hero__nav-item--has-children .hero__nav-toggle::after,
+  .header-interno .navbar-global .hero__nav-item--has-children .hero__nav-toggle::after,
+  .page-hero .navbar-global .hero__nav-item--has-children .hero__nav-toggle::after {
+    content: "";
+  }
+
+  /* Flecha */
+  .header-home .navbar-global .hero__plus,
+  .header-interno .navbar-global .hero__plus,
+  .page-hero .navbar-global .hero__plus {
+    width: 11px;
+    height: 11px;
+    border-right: 1.5px solid #403b36;
+    border-bottom: 1.5px solid #403b36;
+  }
+
+  /* Hover limpio */
+  .header-home .navbar-global .hero__nav-item--open .hero__nav-group,
+  .header-home .navbar-global .hero__nav-item:hover .hero__nav-group,
+  .header-home .navbar-global .hero__nav-item:focus-within .hero__nav-group,
+  .header-interno .navbar-global .hero__nav-item--open .hero__nav-group,
+  .header-interno .navbar-global .hero__nav-item:hover .hero__nav-group,
+  .header-interno .navbar-global .hero__nav-item:focus-within .hero__nav-group,
+  .page-hero .navbar-global .hero__nav-item--open .hero__nav-group,
+  .page-hero .navbar-global .hero__nav-item:hover .hero__nav-group,
+  .page-hero .navbar-global .hero__nav-item:focus-within .hero__nav-group {
+    background: transparent !important;
+  }
+
+  .header-home .navbar-global .hero__nav-link:hover,
+  .header-home .navbar-global .hero__nav-link:focus-visible,
+  .header-interno .navbar-global .hero__nav-link:hover,
+  .header-interno .navbar-global .hero__nav-link:focus-visible,
+  .page-hero .navbar-global .hero__nav-link:hover,
+  .page-hero .navbar-global .hero__nav-link:focus-visible {
+    color: #8c7457 !important;
   }
 }
 
-/* Laptop pequeño: conserva el diseño web evitando que el menú se desborde. */
-@media (min-width: 1025px) and (max-width: 1180px) {
-  .header-home .navbar-global .hero__nav {
-    width: min(98vw, 1180px);
+
+/* Laptop: misma composición, un poco más compacta */
+@media (min-width: 1025px) and (max-width: 1280px) {
+
+  .header-home .navbar-global .hero__logo-image,
+  .header-interno .navbar-global .hero__logo-image,
+  .page-hero .navbar-global .hero__logo-image,
+  .header-home .navbar-global .hero__logo-tint,
+  .header-interno .navbar-global .hero__logo-tint,
+  .page-hero .navbar-global .hero__logo-tint {
+    width: 142px !important;
   }
 
-  .header-home .navbar-global .hero__nav-list {
-    padding-inline: 6px;
+  .header-home .navbar-global .hero__nav,
+  .header-interno .navbar-global .hero__nav,
+  .page-hero .navbar-global .hero__nav {
+    top: 204px !important;
+    margin-top: 0 !important;
   }
 
   .header-home .navbar-global .hero__nav-link,
-  .header-home .navbar-global .hero__nav-toggle {
-    min-height: 38px;
-    padding-inline: 8px;
-    font-size: 12px;
+  .header-home .navbar-global .hero__nav-toggle,
+  .header-interno .navbar-global .hero__nav-link,
+  .header-interno .navbar-global .hero__nav-toggle,
+  .page-hero .navbar-global .hero__nav-link,
+  .page-hero .navbar-global .hero__nav-toggle {
+    padding-inline: 14px;
+    font-size: 15px;
   }
 
-  .header-home .navbar-global .hero__nav-toggle {
-    padding-left: 4px;
+  .header-home .navbar-global .hero__nav-item--has-children .hero__nav-link,
+  .header-interno .navbar-global .hero__nav-item--has-children .hero__nav-link,
+  .page-hero .navbar-global .hero__nav-item--has-children .hero__nav-link {
     padding-right: 8px;
+  }
+
+  .header-home .navbar-global .hero__nav-toggle,
+  .header-interno .navbar-global .hero__nav-toggle,
+  .page-hero .navbar-global .hero__nav-toggle {
+    padding-left: 3px;
+    padding-right: 14px;
+  }
+}
+
+
+/* =========================================================
+   AJUSTE FINAL DE POSICION — igual a la referencia
+   ========================================================= */
+@media (min-width: 1025px) {
+  .header-home .navbar-global .hero__logo,
+  .header-interno .navbar-global .hero__logo,
+  .page-hero .navbar-global .hero__logo {
+    position: absolute !important;
+    left: 50% !important;
+    top: 62px !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .header-home .navbar-global .hero__nav,
+  .header-interno .navbar-global .hero__nav,
+  .page-hero .navbar-global .hero__nav {
+    position: absolute !important;
+    left: 50% !important;
+    top: 214px !important;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .header-home .navbar-global .hero__logo,
+  .header-interno .navbar-global .hero__logo,
+  .page-hero .navbar-global .hero__logo {
+    top: 54px !important;
+  }
+
+  .header-home .navbar-global .hero__nav,
+  .header-interno .navbar-global .hero__nav,
+  .page-hero .navbar-global .hero__nav {
+    top: 190px !important;
+  }
+}
+
+
+/* =========================================================
+   AJUSTE TITULOS INTERNOS — evita sobreposición con el menú
+   Clases / Workshops / Experiencias / Gift Cards / etc.
+   ========================================================= */
+@media (min-width: 1025px) {
+
+  /* El título de la página empieza después del menú principal */
+  .header-interno--text-hero + .page-title-block {
+    padding-top: 92px !important;
+  }
+
+  /* Si el bloque es tipográfico, dejamos suficiente aire arriba */
+  .header-interno--text-hero + .page-title-block.page-title-block--typographic {
+    padding-top: 92px !important;
+  }
+
+  /* Asegura una banda de header suficientemente alta */
+  .header-interno.header-interno--text-hero {
+    min-height: 292px !important;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .header-interno--text-hero + .page-title-block,
+  .header-interno--text-hero + .page-title-block.page-title-block--typographic {
+    padding-top: 78px !important;
+  }
+
+  .header-interno.header-interno--text-hero {
+    min-height: 274px !important;
   }
 }

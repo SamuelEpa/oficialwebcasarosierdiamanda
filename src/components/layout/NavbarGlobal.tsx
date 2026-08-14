@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -89,9 +90,9 @@ export function NavbarGlobal({
   const mobileItems = navigationItems
     .filter((item) => item.visible)
     .sort((a, b) => a.order - b.order);
-  const desktopItems = mobileItems.filter(
-    (item) => !home || item.href !== "/#hero"
-  );
+  // En escritorio mostramos también "Inicio" para conservar
+  // la misma estructura visual del header de referencia.
+  const desktopItems = mobileItems;
   const scrollDesktopItems = desktopItems;
   const showDesktopScrollNav = isDesktopViewport && desktopScrolled;
   const effectiveScrollIconColor = scrollMenuIconColor || scrollMenuTextColor;
@@ -457,7 +458,6 @@ export function NavbarGlobal({
         className={classNames(
           "mobile-scroll-nav",
           !isDesktopViewport && "is-visible",
-          showDesktopScrollNav && "is-desktop-sticky",
           !mobileScrolled && !mobileOpen && "is-at-top",
           mobileOpen && "is-open"
         )}
@@ -562,6 +562,35 @@ export function NavbarGlobal({
           </ul>
         </nav>
       </div>
+
+      {showDesktopScrollNav && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              className="desktop-sticky-nav-portal"
+              style={navStyle}
+              role="navigation"
+              aria-label="Navegacion fija"
+            >
+              <ScrollStickyNavBar
+                variant="editorial"
+                items={scrollDesktopItems}
+                logoUrl={logoUrl}
+                useLogoTint={scrollMenuLogoTintEnabled}
+                logoTintStyle={scrollLogoTintStyle}
+                openHref={scrollDesktopOpen}
+                current={current}
+                onOpen={openScrollDesktopMenu}
+                onScheduleClose={scheduleScrollDesktopMenuClose}
+                onClose={closeScrollDesktopMenu}
+                showDesktopNav
+                mobileToggleRef={scrollMobileToggleRef}
+                mobileOpen={false}
+                onToggleMobile={() => undefined}
+              />
+            </div>,
+            document.body
+          )
+        : null}
     </div>
   );
 }

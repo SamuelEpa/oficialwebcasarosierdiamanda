@@ -1,160 +1,209 @@
 /**
- * Navegación sticky editorial.
- * Mantiene la composición de escritorio y adapta tamaños para laptop,
- * tablet y móvil sin cambiar la identidad visual del sitio.
+ * CASA ROSIER — HEADER STICKY DESKTOP ROBUSTO
+ *
+ * El header sticky se renderiza por portal directamente en document.body,
+ * fuera del hero. Así no queda limitado por overflow/altura del hero.
  */
 
 @media (min-width: 1025px) {
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial {
-    min-height: 88px;
+  .desktop-sticky-nav-portal {
+    position: fixed !important;
+    inset: 0 0 auto 0 !important;
+    z-index: 2147482000 !important;
     width: 100%;
-    padding: 14px clamp(24px, 4vw, 64px);
-    background: var(--site-scroll-menu-bg, #f9f8f3);
-    box-shadow:
-      0 1px 0 rgba(63, 57, 51, 0.06),
-      0 10px 28px rgba(63, 57, 51, 0.1);
+    pointer-events: auto;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial-split {
-    display: grid;
+  .desktop-sticky-nav-portal .mobile-scroll-nav__bar {
+    position: relative;
+    width: 100%;
+    min-height: 118px;
+    box-sizing: border-box;
+    display: grid !important;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-rows: 54px 42px;
     align-items: center;
-    justify-content: stretch;
-    gap: clamp(12px, 2vw, 32px);
+    gap: 0 clamp(12px, 1.4vw, 24px);
+    padding: 10px clamp(24px, 4vw, 72px) 12px;
+    background: #fbfaf6 !important;
+    color: #403b36 !important;
+    box-shadow:
+      0 1px 0 rgba(64, 59, 54, 0.08),
+      0 10px 28px rgba(64, 59, 54, 0.10);
   }
 
-  .mobile-scroll-nav.is-desktop-sticky
+  .desktop-sticky-nav-portal
     .mobile-scroll-nav__bar--editorial-split
     .mobile-scroll-nav__logo {
-    justify-self: center;
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+    justify-self: center !important;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    text-decoration: none;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky .scroll-desktop-nav--left {
-    justify-content: flex-end;
-  }
-
-  .mobile-scroll-nav.is-desktop-sticky .scroll-desktop-nav--right {
-    justify-content: flex-start;
-  }
-
-  .mobile-scroll-nav.is-desktop-sticky
-    .scroll-desktop-nav--left
-    .scroll-desktop-nav__list {
-    justify-content: flex-end;
-  }
-
-  .mobile-scroll-nav.is-desktop-sticky
-    .scroll-desktop-nav--right
-    .scroll-desktop-nav__list {
-    justify-content: flex-start;
-  }
-
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial
-    .scroll-desktop-nav__list {
-    max-width: 100%;
-    gap: clamp(10px, 1.65vw, 28px);
-  }
-
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial
-    .scroll-desktop-nav__item {
-    gap: 0;
+  .desktop-sticky-nav-portal .scroll-desktop-nav--left {
+    grid-column: 1 / 2 !important;
+    grid-row: 2 !important;
+    justify-content: flex-end !important;
     min-width: 0;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial
-    .scroll-desktop-nav__separator {
-    display: none;
+  .desktop-sticky-nav-portal .scroll-desktop-nav--right {
+    grid-column: 3 / 4 !important;
+    grid-row: 2 !important;
+    justify-content: flex-start !important;
+    min-width: 0;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial
-    .scroll-desktop-nav__link {
-    min-height: 40px;
-    color: var(--site-scroll-menu-text, #3f3933);
-    font: 400 clamp(12px, 0.95vw, 14px) / 1.2 var(--font-menu);
-    letter-spacing: 0.01em;
-    text-transform: lowercase;
-  }
-
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial
-    .scroll-desktop-nav__link:hover,
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial
-    .scroll-desktop-nav__link:focus-visible,
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial
-    .scroll-desktop-nav__link[aria-current="page"] {
-    color: var(--site-scroll-menu-text, #3f3933);
-    opacity: 0.78;
-  }
-
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial
-    .scroll-desktop-nav__plus {
-    color: var(--site-scroll-menu-icon, var(--site-scroll-menu-text, #3f3933));
-    font-size: 13px;
-    font-weight: 400;
-  }
-
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial
-    .mobile-scroll-nav__logo-image {
-    width: auto;
-    height: clamp(48px, 5vw, 64px);
-    max-width: clamp(104px, 11vw, 140px);
-    object-fit: contain;
-  }
-
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial
-    .mobile-scroll-nav__logo-tint {
-    width: clamp(104px, 11vw, 140px);
-    height: clamp(48px, 5vw, 64px);
-    background: var(
-      --site-scroll-logo-tint,
-      var(--site-scroll-menu-icon, #3f3933)
-    );
-  }
-}
-
-@media (min-width: 1025px) and (max-width: 1180px) {
-  .mobile-scroll-nav.is-desktop-sticky .mobile-scroll-nav__bar--editorial {
-    padding-inline: 20px;
-  }
-
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial-split {
-    gap: 10px;
-  }
-
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial
+  .desktop-sticky-nav-portal
+    .scroll-desktop-nav--left
     .scroll-desktop-nav__list {
-    gap: 9px;
+    justify-content: flex-end !important;
   }
 
-  .mobile-scroll-nav.is-desktop-sticky
-    .mobile-scroll-nav__bar--editorial
-    .scroll-desktop-nav__link {
-    font-size: 12px;
+  .desktop-sticky-nav-portal
+    .scroll-desktop-nav--right
+    .scroll-desktop-nav__list {
+    justify-content: flex-start !important;
+  }
+
+  .desktop-sticky-nav-portal .mobile-scroll-nav__logo-image {
+    display: block;
+    width: clamp(104px, 7vw, 126px) !important;
+    height: auto !important;
+    max-height: 52px !important;
+    object-fit: contain;
+    filter: brightness(0) saturate(100%) opacity(0.9) !important;
+  }
+
+  .desktop-sticky-nav-portal .mobile-scroll-nav__logo-tint {
+    display: block;
+    width: clamp(104px, 7vw, 126px) !important;
+    height: 50px !important;
+    background: #403b36 !important;
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+  }
+
+  .desktop-sticky-nav-portal .scroll-desktop-nav,
+  .desktop-sticky-nav-portal .scroll-desktop-nav__list,
+  .desktop-sticky-nav-portal .scroll-desktop-nav__item {
+    display: flex !important;
+    align-items: center;
+  }
+
+  .desktop-sticky-nav-portal .scroll-desktop-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0 !important;
+  }
+
+  .desktop-sticky-nav-portal .scroll-desktop-nav__item {
+    position: relative;
+    gap: 0 !important;
+    white-space: nowrap;
+  }
+
+  .desktop-sticky-nav-portal .scroll-desktop-nav__link {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 clamp(12px, 1.1vw, 20px);
+    color: #403b36 !important;
+    text-decoration: none;
+    font-family: var(--font-menu);
+    font-size: clamp(13px, 0.95vw, 16px) !important;
+    font-weight: 400 !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .desktop-sticky-nav-portal .scroll-desktop-nav__link:hover,
+  .desktop-sticky-nav-portal .scroll-desktop-nav__link:focus-visible,
+  .desktop-sticky-nav-portal .scroll-desktop-nav__link[aria-current="page"] {
+    color: #8c7457 !important;
+    opacity: 1 !important;
+  }
+
+  .desktop-sticky-nav-portal .scroll-desktop-nav__separator {
+    display: inline-block !important;
+    flex: 0 0 1px;
+    width: 1px;
+    height: 22px;
+    margin: 0;
+    overflow: hidden;
+    color: transparent !important;
+    background: #c9b9a8 !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+  }
+
+  .desktop-sticky-nav-portal .scroll-desktop-nav__plus {
+    margin-left: 7px;
+    color: #403b36 !important;
+    font-size: 14px !important;
+    line-height: 1;
+  }
+
+  .desktop-sticky-nav-portal .scroll-desktop-submenu {
+    z-index: 2147482001 !important;
+    background: #fbfaf6 !important;
+    border: 1px solid rgba(64, 59, 54, 0.08);
+    box-shadow: 0 14px 34px rgba(64, 59, 54, 0.14);
+  }
+
+  .desktop-sticky-nav-portal .scroll-desktop-submenu__link {
+    color: #403b36 !important;
+  }
+
+  .desktop-sticky-nav-portal .scroll-desktop-submenu__link:hover,
+  .desktop-sticky-nav-portal .scroll-desktop-submenu__link:focus-visible,
+  .desktop-sticky-nav-portal .scroll-desktop-submenu__link[aria-current="page"] {
+    color: #8c7457 !important;
+    background: #f3eee6 !important;
+  }
+
+  .desktop-sticky-nav-portal .mobile-scroll-nav__toggle {
+    display: none !important;
   }
 }
 
-/* Tablet y móvil: la barra conserva logo + menú hamburguesa.
-   Los colores siguen viniendo del CMS, igual que en escritorio. */
-@media (max-width: 1024px) {
-  .mobile-scroll-nav__bar--editorial {
-    width: 100%;
-    box-sizing: border-box;
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .desktop-sticky-nav-portal .mobile-scroll-nav__bar {
+    min-height: 108px;
+    grid-template-rows: 48px 38px;
+    padding: 8px 16px 10px;
+    gap: 0 10px;
   }
 
-  .mobile-scroll-nav:not(.is-at-top) .mobile-scroll-nav__bar--editorial {
-    box-shadow:
-      0 1px 0 rgba(63, 57, 51, 0.05),
-      0 8px 24px rgba(63, 57, 51, 0.1);
+  .desktop-sticky-nav-portal .mobile-scroll-nav__logo-image,
+  .desktop-sticky-nav-portal .mobile-scroll-nav__logo-tint {
+    width: 102px !important;
+    max-height: 46px !important;
+  }
+
+  .desktop-sticky-nav-portal .scroll-desktop-nav__link {
+    padding-inline: 9px;
+    font-size: 13px !important;
+  }
+}
+
+/* Tablet y móvil: no se usa este portal. */
+@media (max-width: 1024px) {
+  .desktop-sticky-nav-portal {
+    display: none !important;
   }
 }
