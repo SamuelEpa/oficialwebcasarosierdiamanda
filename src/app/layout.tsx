@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Baskervville, Inter, Manrope, Roboto_Flex } from "next/font/google";
 import { SiteChrome } from "@/components/layout/SiteChrome";
+import { getSettings } from "@/lib/cms/settings";
 import "./tailwind.css";
 import "./legacy/base.css";
 import "./legacy/home.css";
@@ -75,14 +76,49 @@ const nunito = localFont({
   display: "swap"
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://casarosierceramica.com"),
-  title: {
-    default: "Casa Rosier",
-    template: "%s | Casa Rosier"
-  },
-  description: "Studio de ceramica en Barcelona"
-};
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://casarosierceramica.com";
+
+export const revalidate = 900;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  const siteName = settings.site.site_name || "Casa Rosier";
+  const title = settings.seo.default_seo_title || siteName;
+  const description = settings.seo.default_seo_description || "Studio de ceramica en Barcelona";
+  const ogImage = settings.seo.default_og_image_url?.trim();
+  const images = ogImage ? [ogImage] : undefined;
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: title,
+      template: `%s | ${siteName}`,
+    },
+    description,
+    robots: {
+      index: settings.seo.robots_index,
+      follow: settings.seo.robots_follow,
+    },
+    openGraph: {
+      title,
+      description,
+      siteName,
+      locale: "es_ES",
+      type: "website",
+      ...(images ? { images } : {}),
+    },
+    ...(images
+      ? {
+          twitter: {
+            card: "summary_large_image",
+            title,
+            description,
+            images,
+          },
+        }
+      : {}),
+  };
+}
 
 export default function RootLayout({
   children
