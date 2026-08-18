@@ -36,7 +36,11 @@ export interface ExperienceItem {
   homeImage?: string;
   homeImageAlt?: string;
   homeEyebrow?: string;
+  homeEyebrowTypography?: RichTextTypography;
   homeTitle?: string;
+  homeTitleTypography?: RichTextTypography;
+  homeTagline?: string;
+  homeTaglineTypography?: RichTextTypography;
   homeExcerpt?: string;
   homeExcerptTypography?: RichTextTypography;
   heroImage: string;

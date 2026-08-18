@@ -5,19 +5,47 @@ import Link from "next/link";
 import { MarkdownContent } from "@/components/ui/MarkdownContent";
 import type { ExperienceItem } from "@/data/types";
 import { assetPath } from "@/lib/assets";
-import { DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography } from "@/lib/cms/rich-text-typography";
+import {
+  DEFAULT_DESCRIPTION_TYPOGRAPHY,
+  DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  normalizeRichTextTypography,
+  type RichTextTypography,
+} from "@/lib/cms/rich-text-typography";
 import { experienceHref } from "@/lib/routes";
 import { Carousel } from "@/components/ui/Carousel";
 
-function giftExcerptStyle(item: ExperienceItem): CSSProperties {
-  const typography = normalizeRichTextTypography(
-    item.homeExcerptTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY,
-  );
+const DEFAULT_GIFT_EYEBROW_TYPOGRAPHY: RichTextTypography = {
+  ...DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  fontSize: 14,
+};
+
+const DEFAULT_GIFT_TITLE_TYPOGRAPHY: RichTextTypography = {
+  ...DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  fontSize: 26,
+};
+
+const DEFAULT_GIFT_TAGLINE_TYPOGRAPHY: RichTextTypography = {
+  ...DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  fontSize: 21,
+};
+
+function typographyVars(prefix: string, value: RichTextTypography | undefined, fallback: RichTextTypography): CSSProperties {
+  const typography = normalizeRichTextTypography(value ?? fallback);
   return {
-    fontWeight: typography.weight,
-    fontStyle: typography.italic ? "italic" : "normal",
-    fontVariationSettings: `"wdth" ${typography.width}, "wght" ${typography.weight}`,
-  };
+    [`--${prefix}-font-size`]: `${typography.fontSize}px`,
+    [`--${prefix}-font-weight`]: String(typography.weight),
+    [`--${prefix}-font-stretch`]: `${typography.width}%`,
+    [`--${prefix}-font-width`]: String(typography.width),
+    [`--${prefix}-font-style`]: typography.italic ? "italic" : "normal",
+  } as CSSProperties;
+}
+
+function stripMarkdown(value: string) {
+  return value
+    .replace(/[#*_~`>\[\]()]/g, "")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 interface GiftCarouselProps {
@@ -26,7 +54,7 @@ interface GiftCarouselProps {
 
 function giftHomeContent(item: ExperienceItem) {
   const eyebrow = (item.homeEyebrow || item.category || "").trim();
-  const tagline = (item.subtitle || "").trim();
+  const tagline = (item.homeTagline || item.subtitle || "").trim();
   return {
     image: item.homeImage || item.coverImage,
     imageAlt: item.homeImageAlt || item.homeTitle || item.title,
@@ -40,9 +68,15 @@ function giftHomeContent(item: ExperienceItem) {
 function GiftCard({ item }: { item: ExperienceItem }) {
   const content = giftHomeContent(item);
   const href = experienceHref(item.kind, item.slug);
+  const style = {
+    ...typographyVars("gift-eyebrow", item.homeEyebrowTypography, DEFAULT_GIFT_EYEBROW_TYPOGRAPHY),
+    ...typographyVars("gift-title", item.homeTitleTypography, DEFAULT_GIFT_TITLE_TYPOGRAPHY),
+    ...typographyVars("gift-tagline", item.homeTaglineTypography ?? item.subtitleTypography, DEFAULT_GIFT_TAGLINE_TYPOGRAPHY),
+    ...typographyVars("gift-excerpt", item.homeExcerptTypography, DEFAULT_DESCRIPTION_TYPOGRAPHY),
+  };
 
   return (
-    <Link className="gift-carousel__card-link" href={href} aria-label={`Ver ${content.title}`}>
+    <Link className="gift-carousel__card-link" href={href} aria-label={`Ver ${stripMarkdown(content.title) || item.title}`} style={style}>
       <span className="gift-carousel__media">
         <img
           src={assetPath(content.image)}
@@ -51,21 +85,20 @@ function GiftCard({ item }: { item: ExperienceItem }) {
           decoding="async"
         />
       </span>
-      <span className="gift-carousel__body">
-        {content.eyebrow ? <span className="gift-carousel__eyebrow">{content.eyebrow}</span> : null}
-        <span className="gift-carousel__headline">
-          <span className="gift-carousel__title">{content.title}</span>
-          {content.tagline ? <span className="gift-carousel__tagline">{content.tagline}</span> : null}
-        </span>
+      <div className="gift-carousel__body">
+        {content.eyebrow ? <MarkdownContent className="gift-carousel__eyebrow" source={content.eyebrow} /> : null}
+        <div className="gift-carousel__headline">
+          <MarkdownContent className="gift-carousel__title" source={content.title} />
+          {content.tagline ? <MarkdownContent className="gift-carousel__tagline" source={content.tagline} /> : null}
+        </div>
         <MarkdownContent
           className="gift-carousel__text"
-          style={giftExcerptStyle(item)}
           source={content.excerpt}
         />
         <span className="gift-carousel__cta" aria-hidden="true">
           ver más
         </span>
-      </span>
+      </div>
     </Link>
   );
 }

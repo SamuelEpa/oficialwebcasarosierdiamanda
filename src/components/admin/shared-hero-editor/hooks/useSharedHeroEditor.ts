@@ -55,7 +55,8 @@ export function useSharedHeroEditor({
   const menuStyle = useMemo(() => ({
     top: heroText(details, keys.menuY) || "132px",
     color: navColor,
-    transform: `translateX(-50%) scale(${device === "desktop" ? details.heroMenuScale ?? 1 : 1})`,
+    fontSize: `${12 * (device === "desktop" ? details.heroMenuScale ?? 1 : 1)}px`,
+    transform: "translateX(-50%)",
   }) as CSSProperties, [details, device, keys.menuY, navColor]);
 
   const logoMask = useMemo(() => ({

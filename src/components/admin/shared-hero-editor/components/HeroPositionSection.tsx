@@ -59,7 +59,7 @@ function HeroLogoMenuFields({
                   type="range"
                   min="0.75"
                   max="1.4"
-                  step="0.05"
+                  step="0.01"
                   value={details.heroMenuScale ?? 1}
                   aria-valuetext={`${(details.heroMenuScale ?? 1).toFixed(2)}x`}
                   onChange={(event) => onChange({ heroMenuScale: Number(event.target.value) })}

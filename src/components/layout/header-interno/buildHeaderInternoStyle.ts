@@ -2,6 +2,30 @@ import type { CSSProperties } from "react";
 import { assetPath } from "@/lib/assets";
 import type { HeaderInternoProps } from "./headerInternoTypes";
 
+const TEXT_HERO_DESKTOP_BASE_HEIGHT = 292;
+const TEXT_HERO_LAPTOP_BASE_HEIGHT = 274;
+const TEXT_HERO_TABLET_BASE_HEIGHT = 272;
+const TEXT_HERO_MOBILE_BASE_HEIGHT = 244;
+const TEXT_HERO_TITLE_BLOCK_HEIGHT = 210;
+const TEXT_HERO_TITLE_BOTTOM_GAP = 56;
+
+function lengthToPixels(value: string | undefined, percentBase: number) {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+  const numeric = Number.parseFloat(trimmed);
+  if (!Number.isFinite(numeric)) return null;
+  if (trimmed.endsWith("%")) return (numeric / 100) * percentBase;
+  if (trimmed.endsWith("px") || /^-?\d+(\.\d+)?$/.test(trimmed)) return numeric;
+  return null;
+}
+
+function textHeroTitleClearance(positionY: string | undefined, scale: number | undefined, baseHeight: number) {
+  const top = lengthToPixels(positionY, baseHeight) ?? baseHeight * 0.5;
+  const safeScale = Number.isFinite(scale) ? Number(scale) : 1;
+  const clearance = top + TEXT_HERO_TITLE_BLOCK_HEIGHT * Math.max(safeScale, 0.6) + TEXT_HERO_TITLE_BOTTOM_GAP;
+  return `${Math.ceil(clearance)}px`;
+}
+
 export function buildHeaderInternoStyle(props: HeaderInternoProps): CSSProperties {
   const {
     image = "img/hero-bg.jpg",
@@ -135,6 +159,26 @@ export function buildHeaderInternoStyle(props: HeaderInternoProps): CSSPropertie
     "--hero-title-scale": heroTitleScale ?? 1,
     "--hero-title-scale-tablet": heroTitleScaleTablet ?? heroTitleScale ?? 1,
     "--hero-title-scale-mobile": heroTitleScaleMobile ?? heroTitleScaleTablet ?? heroTitleScale ?? 1,
+    "--hero-title-clearance": textHeroTitleClearance(
+      heroTitlePositionY,
+      heroTitleScale,
+      TEXT_HERO_DESKTOP_BASE_HEIGHT,
+    ),
+    "--hero-title-clearance-laptop": textHeroTitleClearance(
+      heroTitlePositionY,
+      heroTitleScale,
+      TEXT_HERO_LAPTOP_BASE_HEIGHT,
+    ),
+    "--hero-title-clearance-tablet": textHeroTitleClearance(
+      heroTitlePositionYTablet ?? heroTitlePositionY,
+      heroTitleScaleTablet ?? heroTitleScale,
+      TEXT_HERO_TABLET_BASE_HEIGHT,
+    ),
+    "--hero-title-clearance-mobile": textHeroTitleClearance(
+      heroTitlePositionYMobile ?? heroTitlePositionYTablet ?? heroTitlePositionY,
+      heroTitleScaleMobile ?? heroTitleScaleTablet ?? heroTitleScale,
+      TEXT_HERO_MOBILE_BASE_HEIGHT,
+    ),
     "--presentation-text-position-x": presentationTextPositionX ?? "8%",
     "--presentation-text-position-y": presentationTextPositionY ?? "50%",
     "--presentation-text-position-x-tablet":

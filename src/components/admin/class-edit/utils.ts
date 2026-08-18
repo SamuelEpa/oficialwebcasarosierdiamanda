@@ -340,9 +340,21 @@ export function toClassDetails(offering: Offering): ClassOfferingDetails {
       image: firstText(persistedHomeCard.image),
       imageAlt: firstText(persistedHomeCard.imageAlt),
       eyebrow: firstText(persistedHomeCard.eyebrow),
+      eyebrowTypography: normalizeRichTextTypography(
+        persistedHomeCard.eyebrowTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 14 },
+      ),
       title: firstText(persistedHomeCard.title),
+      titleTypography: normalizeRichTextTypography(
+        persistedHomeCard.titleTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 26 },
+      ),
+      tagline: firstText(persistedHomeCard.tagline),
+      taglineTypography: normalizeRichTextTypography(
+        persistedHomeCard.taglineTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 21 },
+      ),
       excerpt: firstText(persistedHomeCard.excerpt, fromDetails.homeExcerpt),
-      excerptTypography: normalizeRichTextTypography(persistedHomeCard.excerptTypography),
+      excerptTypography: normalizeRichTextTypography(
+        persistedHomeCard.excerptTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY,
+      ),
     },
     durationText: firstText(fromDetails.durationText, offering.duration),
     heroImage: fromDetails.heroImage || offering.cover_image_url || DEFAULT_HERO_IMAGE,
@@ -538,9 +550,19 @@ export function buildPreviewItem({
     homeImage: details.homeCard.image.trim() || galleryImages[0] || coverImage,
     homeImageAlt: details.homeCard.imageAlt || details.homeCard.title || title || "Tarjeta destacada",
     homeEyebrow: details.homeCard.eyebrow || details.heroSubtitle || offeringType,
+    homeEyebrowTypography: normalizeRichTextTypography(
+      details.homeCard.eyebrowTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 14 },
+    ),
     homeTitle: details.homeCard.title || title || "Título del producto",
+    homeTitleTypography: normalizeRichTextTypography(
+      details.homeCard.titleTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 26 },
+    ),
+    homeTagline: details.homeCard.tagline || subtitle || title || "Título del producto",
+    homeTaglineTypography: normalizeRichTextTypography(
+      details.homeCard.taglineTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 21 },
+    ),
     homeExcerpt: details.homeCard.excerpt || details.homeExcerpt || details.highlightDescription,
-    homeExcerptTypography: normalizeRichTextTypography(details.homeCard.excerptTypography),
+    homeExcerptTypography: normalizeRichTextTypography(details.homeCard.excerptTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY),
     heroImage,
     heroImageMobile: details.heroImageMobile || undefined,
     heroVideoUrl: details.heroVideoUrl || undefined,
@@ -1044,9 +1066,22 @@ export function buildOfferingPayload({
           image: details.homeCard.image.trim(),
           imageAlt: details.homeCard.imageAlt.trim(),
           eyebrow: details.homeCard.eyebrow.trim(),
+          eyebrowTypography: normalizeRichTextTypography(details.homeCard.eyebrowTypography ?? {
+            ...DEFAULT_RICH_TEXT_TYPOGRAPHY,
+            fontSize: 14,
+          }),
           title: details.homeCard.title.trim(),
+          titleTypography: normalizeRichTextTypography(details.homeCard.titleTypography ?? {
+            ...DEFAULT_RICH_TEXT_TYPOGRAPHY,
+            fontSize: 26,
+          }),
+          tagline: details.homeCard.tagline.trim(),
+          taglineTypography: normalizeRichTextTypography(details.homeCard.taglineTypography ?? {
+            ...DEFAULT_RICH_TEXT_TYPOGRAPHY,
+            fontSize: 21,
+          }),
           excerpt: details.homeCard.excerpt.trim(),
-          excerptTypography: normalizeRichTextTypography(details.homeCard.excerptTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY),
+          excerptTypography: normalizeRichTextTypography(details.homeCard.excerptTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY),
         },
         homeExcerpt: details.homeCard.excerpt.trim(),
         durationText: details.durationText.trim(),

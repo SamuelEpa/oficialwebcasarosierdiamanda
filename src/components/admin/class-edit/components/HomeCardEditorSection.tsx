@@ -2,12 +2,20 @@
 
 import { AdminInput } from "@/components/ui/AdminField";
 import { AdminRichTextField } from "@/components/ui/AdminRichTextField";
-import { DEFAULT_RICH_TEXT_TYPOGRAPHY, normalizeRichTextTypography } from "@/lib/cms/rich-text-typography";
+import {
+  DEFAULT_DESCRIPTION_TYPOGRAPHY,
+  DEFAULT_RICH_TEXT_TYPOGRAPHY,
+  normalizeRichTextTypography,
+} from "@/lib/cms/rich-text-typography";
 import type { Offering } from "@/lib/cms/types";
 import { DETAIL_PAGE_RICH_TEXT_CONTROLS } from "../constants/rich-text-controls";
 import type { ClassEditFormState } from "../hooks/useClassEditForm";
 import { MediaPickerField } from "./MediaPickerField";
 import { SectionCard } from "./SectionCard";
+
+const HOME_CARD_SHORT_TEXT_CONTROLS = DETAIL_PAGE_RICH_TEXT_CONTROLS.filter(
+  (control) => control !== "ul" && control !== "ol" && control !== "blockquote",
+);
 
 type HomeCardEditorSectionProps = {
   offering: Offering;
@@ -16,7 +24,16 @@ type HomeCardEditorSectionProps = {
 
 export function HomeCardEditorSection({ offering, form }: HomeCardEditorSectionProps) {
   const { title, details, uploadingTarget, uploadImage, setPickerTarget, updateHomeCard } = form;
-  const excerptTypography = normalizeRichTextTypography(details.homeCard.excerptTypography ?? DEFAULT_RICH_TEXT_TYPOGRAPHY);
+  const eyebrowTypography = normalizeRichTextTypography(
+    details.homeCard.eyebrowTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 14 },
+  );
+  const titleTypography = normalizeRichTextTypography(
+    details.homeCard.titleTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 26 },
+  );
+  const taglineTypography = normalizeRichTextTypography(
+    details.homeCard.taglineTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 21 },
+  );
+  const excerptTypography = normalizeRichTextTypography(details.homeCard.excerptTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY);
 
   return (
     <SectionCard
@@ -47,20 +64,42 @@ export function HomeCardEditorSection({ offering, form }: HomeCardEditorSectionP
         </div>
 
         <div className="class-edit-home-editor-grid__copy space-y-4">
-          <div className="class-edit-field-grid class-edit-field-grid--meta">
-            <AdminInput
+          <div className="class-edit-home-text-fields">
+            <AdminRichTextField
               label="Etiqueta superior"
               value={details.homeCard.eyebrow}
               placeholder={details.heroSubtitle || offering.type}
+              typography={eyebrowTypography}
+              controls={HOME_CARD_SHORT_TEXT_CONTROLS}
+              layout="compact"
+              minHeight="58px"
               help="Ejemplo: CLASES · INICIACIÓN."
-              onChange={(event) => updateHomeCard({ eyebrow: event.target.value })}
+              onChange={(value) => updateHomeCard({ eyebrow: value })}
+              onTypographyChange={(next) => updateHomeCard({ eyebrowTypography: next })}
             />
-            <AdminInput
+            <AdminRichTextField
               label="Título para Home"
               value={details.homeCard.title}
               placeholder={title || "Título de la tarjeta"}
+              typography={titleTypography}
+              controls={HOME_CARD_SHORT_TEXT_CONTROLS}
+              layout="compact"
+              minHeight="68px"
               help="Puede ser distinto del título del Hero y de la página detallada."
-              onChange={(event) => updateHomeCard({ title: event.target.value })}
+              onChange={(value) => updateHomeCard({ title: value })}
+              onTypographyChange={(next) => updateHomeCard({ titleTypography: next })}
+            />
+            <AdminRichTextField
+              label="Subtítulo para Home"
+              value={details.homeCard.tagline}
+              placeholder={form.subtitle || title || "Segunda línea de la tarjeta"}
+              typography={taglineTypography}
+              controls={HOME_CARD_SHORT_TEXT_CONTROLS}
+              layout="compact"
+              minHeight="64px"
+              help="Si queda vacío, usa el título de página."
+              onChange={(value) => updateHomeCard({ tagline: value })}
+              onTypographyChange={(next) => updateHomeCard({ taglineTypography: next })}
             />
           </div>
 

@@ -21,7 +21,7 @@ type Props = {
 };
 
 export function ClassDetailCalendarLabels({ item, labels }: Props) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   if (!labels.length) return null;
 
   const title = item.calendarLabelsTitle?.trim() || DEFAULT_TITLE;

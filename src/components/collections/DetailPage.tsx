@@ -83,13 +83,13 @@ function formatCalendarDays(days: number[]) {
 }
 
 function visibleCalendarLabels(item: ExperienceItem) {
-  return (item.showCalendarLabels ? item.calendarLabels ?? [] : [])
+  return (item.calendarLabels ?? [])
     .filter((label) => label.active && label.days.length > 0 && daysInMonth(label.year, label.month) > 0)
     .sort((a, b) => a.year - b.year || a.month - b.month || a.order - b.order);
 }
 
 function CalendarLabelsSection({ item }: { item: ExperienceItem }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const labels = visibleCalendarLabels(item);
 
   if (!labels.length) return null;

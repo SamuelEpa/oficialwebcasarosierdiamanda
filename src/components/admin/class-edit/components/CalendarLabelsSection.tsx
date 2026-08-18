@@ -50,7 +50,7 @@ function CalendarLabelsSectionComponent({ form }: CalendarLabelsSectionProps) {
       <Switch
         checked={details.showCalendarLabels}
         label="Mostrar etiquetas calendario"
-        description="Si esta apagado, no se renderiza nada en el frontend publico."
+        description="Las etiquetas activas con dias seleccionados se muestran en el frontend publico."
         onCheckedChange={setShowCalendarLabels}
       />
 

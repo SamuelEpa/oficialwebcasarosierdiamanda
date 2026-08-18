@@ -107,19 +107,19 @@
 .header-interno--image-hero .hero__nav-link,
 .header-interno--image-hero .hero__nav-toggle,
 .header-interno--image-hero .nav-mobile {
-  color: rgba(255, 255, 255, 0.94);
+  color: var(--site-hero-menu-color, var(--hero-menu-color, rgba(255, 255, 255, 0.94)));
 }
 
 .header-interno--image-hero .hero__nav-link::after,
 .header-interno--image-hero .hero__nav-toggle::after {
-  color: rgba(255, 255, 255, 0.42);
+  color: color-mix(in srgb, var(--site-hero-menu-color, var(--hero-menu-color, #ffffff)) 42%, transparent);
 }
 
 .header-interno--image-hero .hero__nav-link:hover,
 .header-interno--image-hero .hero__nav-link:focus-visible,
 .header-interno--image-hero .hero__nav-toggle:hover,
 .header-interno--image-hero .hero__nav-toggle:focus-visible {
-  color: #ffffff;
+  color: var(--site-hero-menu-color, var(--hero-menu-color, #ffffff));
 }
 
 .header-interno--image-hero .hero__nav-item--open .hero__nav-group,
@@ -137,14 +137,14 @@
 .header-interno--image-hero.header-interno--menu-dark .hero__nav-toggle,
 .header-interno--text-hero.header-interno--menu-dark .hero__nav-link,
 .header-interno--text-hero.header-interno--menu-dark .hero__nav-toggle {
-  color: #3f3933;
+  color: var(--site-hero-menu-color, var(--hero-menu-color, #3f3933));
 }
 
 .header-interno--image-hero.header-interno--menu-dark .hero__nav-link::after,
 .header-interno--image-hero.header-interno--menu-dark .hero__nav-toggle::after,
 .header-interno--text-hero.header-interno--menu-dark .hero__nav-link::after,
 .header-interno--text-hero.header-interno--menu-dark .hero__nav-toggle::after {
-  color: rgba(63, 57, 51, 0.34);
+  color: color-mix(in srgb, var(--site-hero-menu-color, var(--hero-menu-color, #3f3933)) 34%, transparent);
 }
 
 .header-interno--image-hero.header-interno--menu-light .hero__logo-image,
@@ -156,7 +156,7 @@
 .header-interno--image-hero.header-interno--menu-light .hero__nav-toggle,
 .header-interno--text-hero.header-interno--menu-light .hero__nav-link,
 .header-interno--text-hero.header-interno--menu-light .hero__nav-toggle {
-  color: rgba(255, 255, 255, 0.94);
+  color: var(--site-hero-menu-color, var(--hero-menu-color, rgba(255, 255, 255, 0.94)));
 }
 
 .page-hero__script-stack {
@@ -282,14 +282,14 @@
 .header-interno .hero__nav-toggle,
 .page-hero .hero__nav-link,
 .page-hero .hero__nav-toggle {
-  color: #3f3933;
+  color: var(--site-hero-menu-color, var(--hero-menu-color, #3f3933));
 }
 
 .header-interno .hero__nav-link::after,
 .header-interno .hero__nav-toggle::after,
 .page-hero .hero__nav-link::after,
 .page-hero .hero__nav-toggle::after {
-  color: rgba(93, 85, 75, 0.34);
+  color: color-mix(in srgb, var(--site-hero-menu-color, var(--hero-menu-color, #5d554b)) 34%, transparent);
 }
 
 .header-interno .hero__nav-group,
@@ -308,7 +308,7 @@
 
 .header-interno .hero__nav-toggle,
 .page-hero .hero__nav-toggle {
-  color: #534c45;
+  color: var(--site-hero-menu-color, var(--hero-menu-color, #534c45));
 }
 
 .header-interno .nav-submenu,
@@ -342,12 +342,12 @@
 .page-hero .hero__nav-link:focus-visible,
 .page-hero .hero__nav-toggle:hover,
 .page-hero .hero__nav-toggle:focus-visible {
-  color: #171310;
+  color: color-mix(in srgb, var(--site-hero-menu-color, var(--hero-menu-color, #171310)) 82%, #171310 18%);
 }
 
 .header-interno .nav-mobile,
 .page-hero .nav-mobile {
-  color: #3f3933;
+  color: var(--site-hero-menu-color, var(--hero-menu-color, #3f3933));
 }
 
 .header-interno .mobile-menu,

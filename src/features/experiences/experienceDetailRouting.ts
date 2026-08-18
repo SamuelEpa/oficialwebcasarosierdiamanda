@@ -278,9 +278,19 @@ function cmsOfferingToExperienceItem(offering: Offering): ExperienceItem {
     homeImage: stringValue(homeCard?.image) || defaultHomeImage,
     homeImageAlt: stringValue(homeCard?.imageAlt) || stringValue(homeCard?.title) || offering.title,
     homeEyebrow: stringValue(homeCard?.eyebrow) || defaultHomeEyebrow,
+    homeEyebrowTypography: normalizeRichTextTypography(
+      homeCard?.eyebrowTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 14 },
+    ),
     homeTitle: stringValue(homeCard?.title) || offering.title,
+    homeTitleTypography: normalizeRichTextTypography(
+      homeCard?.titleTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 26 },
+    ),
+    homeTagline: stringValue(homeCard?.tagline) || offering.subtitle || offering.title,
+    homeTaglineTypography: normalizeRichTextTypography(
+      homeCard?.taglineTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 21 },
+    ),
     homeExcerpt: stringValue(homeCard?.excerpt) || stringValue(classDetails?.homeExcerpt) || offering.excerpt,
-    homeExcerptTypography: normalizeRichTextTypography(homeCard?.excerptTypography),
+    homeExcerptTypography: normalizeRichTextTypography(homeCard?.excerptTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY),
     heroImage: hero.heroImage || offering.cover_image_url || "img/hero-bg.jpg",
     heroImageMobile: hero.heroImageMobile || undefined,
     heroVideoUrl: hero.heroVideoUrl || undefined,

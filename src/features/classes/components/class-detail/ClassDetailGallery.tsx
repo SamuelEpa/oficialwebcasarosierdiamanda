@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import type { ExperienceItem } from "@/data/types";
 import { assetPath } from "@/lib/assets";
 import { classNames } from "@/lib/utils";
@@ -29,6 +30,31 @@ function GalleryMainMedia({
   isPlaying: boolean;
   onPlay: () => void;
 }) {
+  const posterSrc = assetPath(item.poster);
+  const lastPosterSrc = useRef(posterSrc);
+  const swapTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [previousPosterSrc, setPreviousPosterSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (lastPosterSrc.current === posterSrc) return;
+
+    setPreviousPosterSrc(lastPosterSrc.current);
+    lastPosterSrc.current = posterSrc;
+
+    if (swapTimeout.current) clearTimeout(swapTimeout.current);
+    swapTimeout.current = setTimeout(() => {
+      setPreviousPosterSrc(null);
+      swapTimeout.current = null;
+    }, 980);
+
+    return () => {
+      if (swapTimeout.current) {
+        clearTimeout(swapTimeout.current);
+        swapTimeout.current = null;
+      }
+    };
+  }, [posterSrc]);
+
   if (item.kind === "video" && item.videoUrl && isPlaying) {
     const embedUrl = offeringVideoEmbedUrl(item.videoUrl, true);
     if (embedUrl) {
@@ -66,7 +92,16 @@ function GalleryMainMedia({
 
   return (
     <div className="class-gallery__main-wrap">
-      <img className="class-gallery__main" src={assetPath(item.poster)} alt={title} />
+      <img className="class-gallery__main-ghost" src={posterSrc} alt="" aria-hidden="true" />
+      <img className="class-gallery__main" src={posterSrc} alt={title} />
+      {previousPosterSrc ? (
+        <img
+          className="class-gallery__main class-gallery__main--previous"
+          src={previousPosterSrc}
+          alt=""
+          aria-hidden="true"
+        />
+      ) : null}
       {showPlay ? (
         <GalleryPlayButton label={`Reproducir video de ${title}`} onClick={onPlay} />
       ) : null}

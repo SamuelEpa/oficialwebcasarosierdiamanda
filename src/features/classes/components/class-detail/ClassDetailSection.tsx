@@ -7,6 +7,7 @@ import { ClassDetailBodySections } from "./ClassDetailBodySections";
 import { ClassDetailEnrollActions } from "./ClassDetailEnrollActions";
 import { ClassDetailIntro } from "./ClassDetailIntro";
 import { ClassDetailLeadCopy } from "./ClassDetailLeadCopy";
+import { ClassDetailGallery } from "./ClassDetailGallery";
 import { ClassDetailMediaColumn } from "./ClassDetailMediaColumn";
 import { ClassDetailPriceDuration } from "./ClassDetailPriceDuration";
 
@@ -22,6 +23,11 @@ export function ClassDetailSection({ item, titleLevel = "h1" }: Props) {
   return (
     <section className="class-detail section">
       <div className="container class-detail__container">
+        <div className="class-detail__mobile-intro">
+          <ClassDetailIntro item={item} titleLevel={titleLevel} />
+          <ClassDetailLeadCopy item={item} />
+        </div>
+
         <div className="class-detail__layout">
           <ClassDetailMediaColumn
             item={item}
@@ -31,8 +37,10 @@ export function ClassDetailSection({ item, titleLevel = "h1" }: Props) {
           />
 
           <section className="class-detail__content-column">
-            <ClassDetailIntro item={item} titleLevel={titleLevel} />
-            <ClassDetailLeadCopy item={item} />
+            <div className="class-detail__desktop-intro-flow">
+              <ClassDetailIntro item={item} titleLevel={titleLevel} />
+              <ClassDetailLeadCopy item={item} />
+            </div>
             <ClassDetailPriceDuration item={item} />
             <ClassDetailEnrollActions
               item={item}
@@ -45,6 +53,9 @@ export function ClassDetailSection({ item, titleLevel = "h1" }: Props) {
               defaultPrice={enroll.defaultPrice}
               onAddGiftCard={enroll.addGiftCard}
             />
+            <div className="class-detail__mobile-gallery">
+              <ClassDetailGallery item={item} />
+            </div>
             <ClassDetailBodySections
               item={item}
               showIncluded={viewModel.showIncluded}

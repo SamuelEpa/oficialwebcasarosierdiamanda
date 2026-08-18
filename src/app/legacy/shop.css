@@ -9,8 +9,9 @@
 }
 
 .shop-page .header-interno--text-hero {
-  min-height: clamp(420px, 48vw, 560px);
-  --header-interno-band-height: clamp(420px, 48vw, 560px);
+  --shop-text-hero-height: max(clamp(420px, 48vw, 560px), var(--hero-title-clearance, 0px));
+  min-height: var(--shop-text-hero-height);
+  --header-interno-band-height: var(--shop-text-hero-height);
 }
 
 .shop-page:has(.header-interno--text-hero) .shop-listing {
@@ -487,8 +488,9 @@
 
 @media (max-width: 640px) {
   .shop-page .header-interno--text-hero {
-    min-height: 340px;
-    --header-interno-band-height: 340px;
+    --shop-text-hero-height: max(340px, var(--hero-title-clearance-mobile, var(--hero-title-clearance-tablet, 0px)));
+    min-height: var(--shop-text-hero-height);
+    --header-interno-band-height: var(--shop-text-hero-height);
   }
 
   .shop-page:has(.header-interno--text-hero) .shop-listing {

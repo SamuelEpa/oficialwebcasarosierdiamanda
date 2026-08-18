@@ -59,7 +59,11 @@ export interface ClassHomeCard {
   image: string;
   imageAlt: string;
   eyebrow: string;
+  eyebrowTypography?: RichTextTypography;
   title: string;
+  titleTypography?: RichTextTypography;
+  tagline: string;
+  taglineTypography?: RichTextTypography;
   excerpt: string;
   excerptTypography?: RichTextTypography;
 }

@@ -42,6 +42,9 @@ export function classEditPreviewTypographyRevision(details: ClassOfferingDetails
     .join("|");
   return [
     basicInfoTypographyRevision(details),
+    richTextTypographyRevision(details.homeCard?.eyebrowTypography),
+    richTextTypographyRevision(details.homeCard?.titleTypography),
+    richTextTypographyRevision(details.homeCard?.taglineTypography),
     richTextTypographyRevision(details.homeCard?.excerptTypography),
     richTextTypographyRevision(details.heroPresentationTextTypography),
     richTextTypographyRevision(details.heroPresentationSubtitleTypography),

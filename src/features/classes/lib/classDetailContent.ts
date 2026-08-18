@@ -52,7 +52,7 @@ export function hasMeaningfulProgramItem(item: ExperienceItem["program"][number]
 }
 
 export function visibleCalendarLabels(item: ExperienceItem) {
-  return (item.showCalendarLabels ? item.calendarLabels ?? [] : [])
+  return (item.calendarLabels ?? [])
     .filter((label) => label.active && label.days.length > 0 && daysInMonth(label.year, label.month) > 0)
     .sort((a, b) => a.year - b.year || a.month - b.month || a.order - b.order);
 }

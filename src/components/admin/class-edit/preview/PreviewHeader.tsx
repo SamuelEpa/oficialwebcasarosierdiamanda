@@ -9,6 +9,30 @@ import type { ClassOfferingDetails } from "@/lib/cms/types";
 import type { ExperienceItem } from "@/data/types";
 import type { PreviewDevice } from "../types";
 
+const TEXT_HERO_DESKTOP_BASE_HEIGHT = 292;
+const TEXT_HERO_LAPTOP_BASE_HEIGHT = 274;
+const TEXT_HERO_TABLET_BASE_HEIGHT = 272;
+const TEXT_HERO_MOBILE_BASE_HEIGHT = 244;
+const TEXT_HERO_TITLE_BLOCK_HEIGHT = 210;
+const TEXT_HERO_TITLE_BOTTOM_GAP = 56;
+
+function lengthToPixels(value: string | undefined, percentBase: number) {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+  const numeric = Number.parseFloat(trimmed);
+  if (!Number.isFinite(numeric)) return null;
+  if (trimmed.endsWith("%")) return (numeric / 100) * percentBase;
+  if (trimmed.endsWith("px") || /^-?\d+(\.\d+)?$/.test(trimmed)) return numeric;
+  return null;
+}
+
+function textHeroTitleClearance(positionY: string | undefined, scale: number | undefined, baseHeight: number) {
+  const top = lengthToPixels(positionY, baseHeight) ?? baseHeight * 0.5;
+  const safeScale = Number.isFinite(scale) ? Number(scale) : 1;
+  const clearance = top + TEXT_HERO_TITLE_BLOCK_HEIGHT * Math.max(safeScale, 0.6) + TEXT_HERO_TITLE_BOTTOM_GAP;
+  return `${Math.ceil(clearance)}px`;
+}
+
 export function PreviewHeader({
   item,
   details,
@@ -25,6 +49,8 @@ export function PreviewHeader({
   const isTabletPreview = previewDevice === "tablet";
   const responsiveValue = <T,>(desktop: T, tablet: T, phone: T) => isPhonePreview ? phone : isTabletPreview ? tablet : desktop;
   const isImageLike = variant === "image" || variant === "presentation";
+  const heroTitlePositionY = responsiveValue(details.heroTitlePositionY ?? "50%", details.heroTitlePositionYTablet ?? details.heroTitlePositionY ?? "50%", details.heroTitlePositionYMobile ?? "50%");
+  const heroTitleScale = responsiveValue(details.heroTitleScale ?? 1, details.heroTitleScaleTablet ?? details.heroTitleScale ?? 1, details.heroTitleScaleMobile ?? 1);
   const style = {
     "--page-hero-image": `url("${assetPath(isPhonePreview && item.heroImageMobile ? item.heroImageMobile : item.heroImage)}")`,
     "--page-hero-image-mobile": `url("${assetPath(item.heroImageMobile || item.heroImage)}")`,
@@ -61,8 +87,12 @@ export function PreviewHeader({
     "--title-image-secondary-position-x-mobile": details.titleImageSecondaryPositionXMobile ?? details.titleImageSecondaryPositionX ?? "50%",
     "--title-image-secondary-position-y-mobile": details.titleImageSecondaryPositionYMobile ?? "50%",
     "--hero-title-position-x": responsiveValue(details.heroTitlePositionX ?? "50%", details.heroTitlePositionXTablet ?? details.heroTitlePositionX ?? "50%", details.heroTitlePositionXMobile ?? "50%"),
-    "--hero-title-position-y": responsiveValue(details.heroTitlePositionY ?? "50%", details.heroTitlePositionYTablet ?? details.heroTitlePositionY ?? "50%", details.heroTitlePositionYMobile ?? "50%"),
-    "--hero-title-scale": responsiveValue(details.heroTitleScale ?? 1, details.heroTitleScaleTablet ?? details.heroTitleScale ?? 1, details.heroTitleScaleMobile ?? 1),
+    "--hero-title-position-y": heroTitlePositionY,
+    "--hero-title-scale": heroTitleScale,
+    "--hero-title-clearance": textHeroTitleClearance(heroTitlePositionY, heroTitleScale, TEXT_HERO_DESKTOP_BASE_HEIGHT),
+    "--hero-title-clearance-laptop": textHeroTitleClearance(heroTitlePositionY, heroTitleScale, TEXT_HERO_LAPTOP_BASE_HEIGHT),
+    "--hero-title-clearance-tablet": textHeroTitleClearance(heroTitlePositionY, heroTitleScale, TEXT_HERO_TABLET_BASE_HEIGHT),
+    "--hero-title-clearance-mobile": textHeroTitleClearance(heroTitlePositionY, heroTitleScale, TEXT_HERO_MOBILE_BASE_HEIGHT),
     "--presentation-text-position-x": details.presentationTextPositionX ?? "8%",
     "--presentation-text-position-y": details.presentationTextPositionY ?? "50%",
     "--presentation-text-position-x-tablet": details.presentationTextPositionXTablet ?? details.presentationTextPositionX ?? "8%",
@@ -114,6 +144,18 @@ export function PreviewHeader({
           mobileScrollThreshold={Number.parseInt(item.heroMenuMobilePositionY ?? "", 10) || 96}
           heroMenuColor={item.heroMenuColor}
           heroMenuScale={item.heroMenuScale}
+          heroLogoPositionX={item.heroLogoPositionX}
+          heroLogoPositionY={item.heroLogoPositionY}
+          heroLogoWidth={item.heroLogoWidth}
+          heroLogoTabletPositionX={item.heroLogoTabletPositionX}
+          heroLogoTabletPositionY={item.heroLogoTabletPositionY}
+          heroLogoTabletWidth={item.heroLogoTabletWidth}
+          heroLogoMobilePositionX={item.heroLogoMobilePositionX}
+          heroLogoMobilePositionY={item.heroLogoMobilePositionY}
+          heroLogoMobileWidth={item.heroLogoMobileWidth}
+          heroMenuPositionY={item.heroMenuPositionY}
+          heroMenuTabletPositionY={item.heroMenuTabletPositionY}
+          heroMenuMobilePositionY={item.heroMenuMobilePositionY}
         />
         {isImageLike ? (
           <PublicHeroContent
