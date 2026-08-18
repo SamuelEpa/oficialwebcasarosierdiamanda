@@ -1,11 +1,11 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { CookieBar } from "@/components/layout/CookieBar";
 import MarketingPageViewTracker from "@/components/marketing/MarketingPageViewTracker";
-import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
 
-export function SiteChrome() {
+export function SiteChrome({ whatsappFloat }: { whatsappFloat?: ReactNode }) {
   const pathname = usePathname();
   if (pathname === "/auth" || pathname.startsWith("/admin")) {
     return null;
@@ -15,7 +15,7 @@ export function SiteChrome() {
     <>
       <MarketingPageViewTracker />
       <CookieBar />
-      {pathname !== "/politica-privacidad" && <WhatsAppFloat />}
+      {pathname !== "/politica-privacidad" && whatsappFloat}
     </>
   );
 }

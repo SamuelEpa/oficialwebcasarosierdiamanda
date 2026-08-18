@@ -1,8 +1,12 @@
-export function WhatsAppFloat() {
+import { getWhatsappHref } from "@/lib/whatsapp";
+
+export async function WhatsAppFloat() {
+  const href = await getWhatsappHref();
+
   return (
     <a
       className="whatsapp-float"
-      href="https://wa.me/34633788860"
+      href={href}
       aria-label="Escribenos por WhatsApp"
       target="_blank"
       rel="noopener noreferrer"

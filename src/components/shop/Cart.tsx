@@ -9,7 +9,11 @@ import {
   removeCartItem
 } from "@/lib/cart";
 
-export function Cart() {
+export function Cart({
+  whatsappHref = "https://wa.me/34633788860",
+}: {
+  whatsappHref?: string;
+}) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
@@ -126,7 +130,7 @@ export function Cart() {
           </div>
           <a
             className="class-detail__button class-detail__button--primary"
-            href="https://wa.me/34633788860"
+            href={whatsappHref}
             target="_blank"
             rel="noopener noreferrer"
           >

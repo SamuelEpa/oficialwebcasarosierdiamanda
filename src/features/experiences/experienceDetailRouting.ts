@@ -8,6 +8,7 @@ import {
   normalizeRichTextTypography,
 } from "@/lib/cms/rich-text-typography";
 import type { CalendarLabel, ClassOfferingDetails, Offering } from "@/lib/cms/types";
+import { DEFAULT_WHATSAPP_NUMBER, getWhatsappNumber } from "@/lib/whatsapp";
 
 type LegacyProgramItem = {
   title?: unknown;
@@ -74,19 +75,36 @@ function formatPrice(value: number | null) {
   return value === null ? "" : `${value} EUR`;
 }
 
-function fallbackWhatsappHref(details: LegacyOfferingDetails) {
-  const whatsapp = details.whatsappNumber || details.content?.contactWhatsapp || "34633788860";
+function fallbackWhatsappHref(
+  details: LegacyOfferingDetails,
+  defaultNumber = DEFAULT_WHATSAPP_NUMBER,
+) {
+  const whatsapp = details.whatsappNumber || details.content?.contactWhatsapp || defaultNumber;
   return `https://wa.me/${whatsapp}`;
 }
 
-function ctaConsultHref(details: LegacyOfferingDetails) {
+function ctaConsultHref(
+  details: LegacyOfferingDetails,
+  defaultNumber = DEFAULT_WHATSAPP_NUMBER,
+) {
   if (details.showConsultCta === false) return "";
-  return stringValue(details.ctaConsultHref) || stringValue(details.ctaHref) || fallbackWhatsappHref(details);
+  return (
+    stringValue(details.ctaConsultHref) ||
+    stringValue(details.ctaHref) ||
+    fallbackWhatsappHref(details, defaultNumber)
+  );
 }
 
-function ctaEnrollHref(details: LegacyOfferingDetails) {
+function ctaEnrollHref(
+  details: LegacyOfferingDetails,
+  defaultNumber = DEFAULT_WHATSAPP_NUMBER,
+) {
   if (details.showEnrollCta === false) return "";
-  return stringValue(details.ctaEnrollHref) || stringValue(details.ctaHref) || fallbackWhatsappHref(details);
+  return (
+    stringValue(details.ctaEnrollHref) ||
+    stringValue(details.ctaHref) ||
+    fallbackWhatsappHref(details, defaultNumber)
+  );
 }
 
 function ctaConsultLabel(details: LegacyOfferingDetails, type: Offering["type"]) {
@@ -212,7 +230,10 @@ function programForDetails(content: Partial<ClassOfferingDetails["content"]>, de
     .filter((item) => item.title || item.content || item.points?.length);
 }
 
-function cmsOfferingToExperienceItem(offering: Offering): ExperienceItem {
+function cmsOfferingToExperienceItem(
+  offering: Offering,
+  defaultWhatsappNumber = DEFAULT_WHATSAPP_NUMBER,
+): ExperienceItem {
   const details = detailsForOffering(offering);
   const content = { ...details.content };
   const classDetails = (offering.details as LegacyOfferingDetails).class;
@@ -233,8 +254,8 @@ function cmsOfferingToExperienceItem(offering: Offering): ExperienceItem {
     .map((item) => ({ label: item.description || "Precio", price: formatPrice(item.price) }));
   const schedule = scheduleForOffering(offering, details);
   const calendarLabels = normalizeCalendarLabels(details.calendarLabels).filter((label) => label.active);
-  const consultHref = ctaConsultHref(details);
-  const enrollHref = ctaEnrollHref(details);
+  const consultHref = ctaConsultHref(details, defaultWhatsappNumber);
+  const enrollHref = ctaEnrollHref(details, defaultWhatsappNumber);
   const hero = normalizeHeroSettings(details, {
     heroTitle: details.heroTitle || offering.title,
     heroSubtitle: details.heroSubtitle || stringValue(details.category) || offering.type,
@@ -436,16 +457,16 @@ function cmsOfferingToExperienceItem(offering: Offering): ExperienceItem {
 }
 
 export async function getPublicExperienceItems() {
-  const offerings = await getOfferings();
+  const [offerings, defaultNumber] = await Promise.all([getOfferings(), getWhatsappNumber()]);
   return offerings
     .filter((item) => item.status === "published" && !item.deleted_at)
-    .map(cmsOfferingToExperienceItem);
+    .map((item) => cmsOfferingToExperienceItem(item, defaultNumber));
 }
 
 async function bySlug(slug: string) {
-  const offering = await getOfferingBySlug(slug);
+  const [offering, defaultNumber] = await Promise.all([getOfferingBySlug(slug), getWhatsappNumber()]);
   if (!offering || offering.status !== "published" || offering.deleted_at) return null;
-  return cmsOfferingToExperienceItem(offering);
+  return cmsOfferingToExperienceItem(offering, defaultNumber);
 }
 
 export async function generateExperienceStaticParams(kind: ExperienceKind) {

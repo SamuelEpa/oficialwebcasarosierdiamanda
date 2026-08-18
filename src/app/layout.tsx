@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Baskervville, Inter, Manrope, Roboto_Flex } from "next/font/google";
 import { SiteChrome } from "@/components/layout/SiteChrome";
+import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
+import { PostHogProvider } from "@/components/analytics/PostHogProvider";
 import { getSettings } from "@/lib/cms/settings";
 import "./tailwind.css";
 import "./legacy/base.css";
@@ -130,7 +132,8 @@ export default function RootLayout({
         className={`${baskervville.variable} ${inter.variable} ${manrope.variable} ${robotoFlex.variable} ${nunito.variable}`}
       >
         {children}
-        <SiteChrome />
+        <SiteChrome whatsappFloat={<WhatsAppFloat />} />
+        <PostHogProvider />
       </body>
     </html>
   );

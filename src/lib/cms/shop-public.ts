@@ -6,6 +6,7 @@ import {
   deriveShopProductBadge,
   formatShopPrice,
 } from "@/lib/cms/shop-product-presentation";
+import { getWhatsappHref } from "@/lib/whatsapp";
 
 function findCategory(product: Product, categories: ProductCategory[]) {
   return categories.find((item) => item.id === product.category_id || item.slug === product.category_id);
@@ -38,6 +39,7 @@ function productToShopItem(
   product: Product,
   categories: ProductCategory[],
   index: number,
+  defaultCtaUrl: string,
 ): ShopItem {
   const gallery = [product.main_image_id, ...(product.gallery ?? [])].filter(Boolean);
 
@@ -60,7 +62,7 @@ function productToShopItem(
     details: detailsFromProduct(product),
     availabilityNote: product.excerpt || (product.stock === null ? "" : `${product.stock} disponible(s)`),
     ctaLabel: product.cta_label || "Comprar",
-    ctaUrl: product.cta_url || "https://wa.me/34633788860",
+    ctaUrl: product.cta_url || defaultCtaUrl,
     seoTitle: product.seo_title || `${product.name} | Casa Rosier`,
     seoDescription: product.seo_description || product.excerpt || product.description,
     order: orderFromProduct(product),
@@ -70,11 +72,15 @@ function productToShopItem(
 }
 
 export async function getPublicShopData() {
-  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+  const [products, categories, defaultCtaUrl] = await Promise.all([
+    getProducts(),
+    getCategories(),
+    getWhatsappHref(),
+  ]);
   const published = products
     .filter((product) => product.status === "published" && product.deleted_at === null)
     .sort((a, b) => orderFromProduct(a) - orderFromProduct(b) || a.name.localeCompare(b.name, "es"))
-    .map((product, index) => productToShopItem(product, categories, index));
+    .map((product, index) => productToShopItem(product, categories, index, defaultCtaUrl));
 
   const usedCategoryIds = new Set(published.map((item) => item.category).filter(Boolean));
 
