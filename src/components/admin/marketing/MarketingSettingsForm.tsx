@@ -240,6 +240,7 @@ export default function MarketingSettingsForm() {
             <StatusRow active={false} label="GA4" value={settings.ga4_measurement_id ? `${settings.ga4_measurement_id} · integración pendiente` : "Sin Measurement ID"} />
             <StatusRow active={false} label="Search Console" value={settings.google_search_console_id ? `${settings.google_search_console_id} · integración pendiente` : "Sin propiedad"} />
             <StatusRow active={false} label="Meta Pixel" value={settings.meta_pixel_id ? `${settings.meta_pixel_id} · integración pendiente` : "Sin Pixel ID"} />
+            <StatusRow active={settings.posthog_enabled && Boolean(settings.posthog_key)} label="PostHog" value={settings.posthog_key ? (settings.posthog_enabled ? "Activo" : "Desactivado") : "Sin API key"} />
           </div>
         </div>
       </section>
@@ -258,6 +259,28 @@ export default function MarketingSettingsForm() {
           </Field>
           <Field label="Microsoft Clarity ID">
             <input type="text" value={settings.microsoft_clarity_id} onChange={(event) => update("microsoft_clarity_id", event.target.value)} placeholder="Clarity ID" className="admin-marketing-input" />
+          </Field>
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-outline-variant bg-white p-5 shadow-[0_12px_28px_rgba(11,28,48,0.05)]">
+        <h3 className="text-title-md font-bold text-on-surface">PostHog</h3>
+        <p className="mt-1 text-body-sm text-on-surface-variant">Analítica de producto: page views y eventos en posthog.com. Respeta la preferencia de cookies del visitante.</p>
+        <div className="mt-4 grid gap-3">
+          <MarketingSwitch
+            checked={settings.posthog_enabled}
+            onCheckedChange={(checked) => toggle("posthog_enabled", checked)}
+            label="PostHog"
+            description="Activa el envío de page views y eventos a tu proyecto de PostHog."
+            icon="insights"
+          />
+        </div>
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Field label="Project API Key">
+            <input type="text" value={settings.posthog_key} onChange={(event) => update("posthog_key", event.target.value)} placeholder="phc_..." className="admin-marketing-input" />
+          </Field>
+          <Field label="API Host">
+            <input type="text" value={settings.posthog_host} onChange={(event) => update("posthog_host", event.target.value)} placeholder="https://eu.i.posthog.com" className="admin-marketing-input" />
           </Field>
         </div>
       </section>

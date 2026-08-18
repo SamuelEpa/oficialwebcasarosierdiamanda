@@ -29,29 +29,40 @@ function hasAnalyticsConsent(): boolean {
   }
 }
 
-function PageViewTracker() {
+function PageViewTracker({ posthogKey }: { posthogKey: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (!POSTHOG_KEY || !posthog.has_opted_in_capturing()) return;
+    if (!posthogKey || !posthog.has_opted_in_capturing()) return;
     const search = searchParams?.toString();
     posthog.capture("$pageview", {
       pathname,
       url: `${pathname}${search ? `?${search}` : ""}`,
       referrer: document.referrer || "",
     });
-  }, [pathname, searchParams]);
+  }, [pathname, searchParams, posthogKey]);
 
   return null;
 }
 
-export function PostHogProvider({ children }: { children?: React.ReactNode }) {
-  useEffect(() => {
-    if (!POSTHOG_KEY) return;
+export function PostHogProvider({
+  posthogKey,
+  posthogHost,
+  children,
+}: {
+  posthogKey?: string;
+  posthogHost?: string;
+  children?: React.ReactNode;
+}) {
+  const key = posthogKey || POSTHOG_KEY;
+  const host = posthogHost || POSTHOG_HOST;
 
-    posthog.init(POSTHOG_KEY, {
-      api_host: POSTHOG_HOST,
+  useEffect(() => {
+    if (!key) return;
+
+    posthog.init(key, {
+      api_host: host,
       capture_pageview: false,
       capture_pageleave: false,
       disable_session_recording: true,
@@ -73,13 +84,13 @@ export function PostHogProvider({ children }: { children?: React.ReactNode }) {
       window.removeEventListener(COOKIE_CONSENT_EVENT, applyConsent);
       window.removeEventListener("storage", applyConsent);
     };
-  }, []);
+  }, [key, host]);
 
   return (
     <>
       {children}
       <Suspense fallback={null}>
-        <PageViewTracker />
+        <PageViewTracker posthogKey={key} />
       </Suspense>
     </>
   );

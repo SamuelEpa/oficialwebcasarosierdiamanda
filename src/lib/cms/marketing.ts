@@ -21,6 +21,35 @@ const EVENT_LOGS_FILE = "marketing-event-logs.json";
 const EVENT_TYPES_FILE = "marketing-event-types.json";
 const REPORTS_FILE = "marketing-reports.json";
 
+const MARKETING_CACHE_TTL_MS = 15_000;
+const MARKETING_READ_TIMEOUT_MS = 1_500;
+let marketingSettingsCache: { item: MarketingSettings; expiresAt: number } | null = null;
+
+function getCachedMarketingSettings(): MarketingSettings | null {
+  if (!marketingSettingsCache || marketingSettingsCache.expiresAt <= Date.now()) return null;
+  return marketingSettingsCache.item;
+}
+
+function cacheMarketingSettings(settings: MarketingSettings) {
+  marketingSettingsCache = { item: settings, expiresAt: Date.now() + MARKETING_CACHE_TTL_MS };
+}
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T): Promise<T> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise.catch(() => fallback).finally(() => {
+        if (timeout) clearTimeout(timeout);
+      }),
+      new Promise<T>((resolve) => {
+        timeout = setTimeout(() => resolve(fallback), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+}
+
 /* ── Settings (existing) ── */
 
 function flattenMarketing(s: MarketingSettings): Record<string, unknown> {
@@ -30,6 +59,9 @@ function flattenMarketing(s: MarketingSettings): Record<string, unknown> {
     gtm_container_id: s.gtm_container_id || null,
     google_search_console_id: s.google_search_console_id || null,
     microsoft_clarity_id: s.microsoft_clarity_id || null,
+    posthog_enabled: s.posthog_enabled,
+    posthog_key: s.posthog_key || null,
+    posthog_host: s.posthog_host || null,
     meta_pixel_enabled: s.meta_pixel_enabled,
     meta_pixel_id: s.meta_pixel_id || null,
     meta_conversion_api_enabled: s.meta_conversion_api_enabled,
@@ -76,6 +108,9 @@ function rowToMarketing(row: Record<string, unknown>): MarketingSettings {
     gtm_container_id: String(row.gtm_container_id ?? ""),
     google_search_console_id: String(row.google_search_console_id ?? ""),
     microsoft_clarity_id: String(row.microsoft_clarity_id ?? ""),
+    posthog_enabled: Boolean(row.posthog_enabled),
+    posthog_key: String(row.posthog_key ?? ""),
+    posthog_host: String(row.posthog_host ?? ""),
     meta_pixel_enabled: Boolean(row.meta_pixel_enabled),
     meta_pixel_id: String(row.meta_pixel_id ?? ""),
     meta_conversion_api_enabled: Boolean(row.meta_conversion_api_enabled),
@@ -132,10 +167,17 @@ async function writeSettingsToSupabase(settings: MarketingSettings): Promise<boo
 }
 
 export async function getMarketingSettings(): Promise<MarketingSettings> {
-  const fromSupabase = await readSettingsFromSupabase();
+  const cached = getCachedMarketingSettings();
+  if (cached) return cached;
+
+  const fromSupabase = await withTimeout(readSettingsFromSupabase(), MARKETING_READ_TIMEOUT_MS, null);
   const data = await readJsonFile<Partial<MarketingSettings>>("marketing.json", {});
-  if (fromSupabase) return { ...fromSupabase, ...(Array.isArray(data.public_button_links) ? { public_button_links: data.public_button_links } : {}) };
-  return { ...defaultMarketingSettings(), ...data };
+  const result = fromSupabase
+    ? { ...fromSupabase, ...(Array.isArray(data.public_button_links) ? { public_button_links: data.public_button_links } : {}) }
+    : { ...defaultMarketingSettings(), ...data };
+
+  cacheMarketingSettings(result);
+  return result;
 }
 
 export async function updateMarketingSettings(input: Partial<MarketingSettings>): Promise<MarketingSettings> {
@@ -144,6 +186,7 @@ export async function updateMarketingSettings(input: Partial<MarketingSettings>)
   if (input.meta_access_token === undefined) next.meta_access_token = current.meta_access_token;
   await writeSettingsToSupabase(next);
   await writeJsonFile("marketing.json", next);
+  cacheMarketingSettings(next);
   return next;
 }
 

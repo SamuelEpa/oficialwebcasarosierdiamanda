@@ -4,6 +4,7 @@ import { Baskervville, Inter, Manrope, Roboto_Flex } from "next/font/google";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
 import { PostHogProvider } from "@/components/analytics/PostHogProvider";
+import { getMarketingSettings } from "@/lib/cms/marketing";
 import { getSettings } from "@/lib/cms/settings";
 import "./tailwind.css";
 import "./legacy/base.css";
@@ -122,9 +123,15 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{ children: React.ReactNode }>) {
+  const marketing = await getMarketingSettings();
+  const posthogKey = marketing.posthog_enabled && marketing.posthog_key.trim()
+    ? marketing.posthog_key.trim()
+    : process.env.NEXT_PUBLIC_POSTHOG_KEY || "";
+  const posthogHost = marketing.posthog_host.trim() || process.env.NEXT_PUBLIC_POSTHOG_HOST || "";
+
   return (
     <html lang="es" data-scroll-behavior="smooth">
       <body
@@ -133,7 +140,7 @@ export default function RootLayout({
       >
         {children}
         <SiteChrome whatsappFloat={<WhatsAppFloat />} />
-        <PostHogProvider />
+        <PostHogProvider posthogKey={posthogKey} posthogHost={posthogHost} />
       </body>
     </html>
   );

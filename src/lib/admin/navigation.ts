@@ -15,6 +15,7 @@ export const adminRoutes = {
   dashboard: "/admin/dashboard",
   classes: "/admin/clases",
   newClass: "/admin/clases/new",
+  links: "/admin/links",
   workshops: "/admin/workshops",
   experiences: "/admin/experiencias",
   giftCards: "/admin/gift-cards",
@@ -61,6 +62,7 @@ export const adminRoutes = {
 
 export const adminSections: AdminNavSection[] = [
   { label: "Dashboard", icon: "home", href: adminRoutes.dashboard },
+  { label: "Links externos", icon: "link", href: adminRoutes.links },
   {
     label: "Actividades",
     icon: "school",
