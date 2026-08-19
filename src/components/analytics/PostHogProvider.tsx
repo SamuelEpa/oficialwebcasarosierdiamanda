@@ -4,9 +4,6 @@ import { Suspense, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
 
-const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY || "";
-const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
-
 const CONSENT_KEY = "casarosier_cookie_consent_v2";
 const LEGACY_CONSENT_KEY = "casarosier_cookie_accept_v1";
 export const COOKIE_CONSENT_EVENT = "casarosier:cookie-consent";
@@ -55,8 +52,8 @@ export function PostHogProvider({
   posthogHost?: string;
   children?: React.ReactNode;
 }) {
-  const key = posthogKey || POSTHOG_KEY;
-  const host = posthogHost || POSTHOG_HOST;
+  const key = posthogKey || "";
+  const host = posthogHost || "https://us.i.posthog.com";
 
   useEffect(() => {
     if (!key) return;

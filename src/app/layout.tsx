@@ -127,10 +127,12 @@ export default async function RootLayout({
   children
 }: Readonly<{ children: React.ReactNode }>) {
   const marketing = await getMarketingSettings();
-  const posthogKey = marketing.posthog_enabled && marketing.posthog_key.trim()
-    ? marketing.posthog_key.trim()
-    : process.env.NEXT_PUBLIC_POSTHOG_KEY || "";
-  const posthogHost = marketing.posthog_host.trim() || process.env.NEXT_PUBLIC_POSTHOG_HOST || "";
+  const posthogEnabled = marketing.posthog_enabled && marketing.posthog_key.trim().length > 0;
+  const posthogKey = posthogEnabled ? marketing.posthog_key.trim() : "";
+  const posthogHost =
+    posthogEnabled && marketing.posthog_host.trim()
+      ? marketing.posthog_host.trim()
+      : "";
 
   return (
     <html lang="es" data-scroll-behavior="smooth">
