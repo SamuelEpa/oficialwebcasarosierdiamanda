@@ -11,6 +11,7 @@ const SIMPLE_FILES: Record<string, string> = {
   "form-submissions.json": "form_submissions",
   "headers.json": "headers",
   "history-logs.json": "history_logs",
+  "internal-links.json": "internal_links",
   "media.json": "media_assets",
   "offerings.json": "offerings",
   "pages.json": "pages",
