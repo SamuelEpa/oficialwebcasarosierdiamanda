@@ -81,6 +81,15 @@ export default function Sidebar({ userName, userEmail }: SidebarProps) {
         <div className="admin-sidebar__user">
           <span title={userName}>{userName}</span>
           <small title={userEmail}>{userEmail}</small>
+          <a
+            href={process.env.NEXT_PUBLIC_SITE_URL || "/"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 inline-flex items-center gap-1 text-label-sm font-bold text-[#0b1c30] hover:underline"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>open_in_new</span>
+            Ver web
+          </a>
         </div>
       </header>
 
