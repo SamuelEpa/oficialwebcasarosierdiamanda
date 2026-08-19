@@ -5,12 +5,6 @@ import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import type { InternalLink } from "@/lib/cms/types";
 
-type LinkDraft = {
-  label: string;
-  url: string;
-  description: string;
-};
-
 export default function InternalLinksManager({ items }: { items: InternalLink[] }) {
   const router = useRouter();
 
@@ -19,33 +13,10 @@ export default function InternalLinksManager({ items }: { items: InternalLink[] 
     [items],
   );
 
-  const initialDrafts = useMemo(() => {
-    return Object.fromEntries(
-      sorted.map((item) => [
-        item.id,
-        { label: item.label, url: item.url, description: item.description },
-      ]),
-    ) as Record<string, LinkDraft>;
-  }, [sorted]);
-
-  const [drafts, setDrafts] = useState(initialDrafts);
-  const [newLink, setNewLink] = useState<LinkDraft>({ label: "", url: "", description: "" });
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [newLink, setNewLink] = useState<{ label: string; url: string; description: string }>({ label: "", url: "", description: "" });
   const [isCreating, setIsCreating] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  function updateDraft(id: string, field: keyof LinkDraft, value: string) {
-    setDrafts((current) => ({
-      ...current,
-      [id]: { ...current[id], [field]: value },
-    }));
-  }
-
-  function isDirty(item: InternalLink) {
-    const draft = drafts[item.id];
-    if (!draft) return false;
-    return draft.label !== item.label || draft.url !== item.url || draft.description !== item.description;
-  }
 
   function normalizeLinkUrl(url: string) {
     const trimmed = url.trim();
@@ -82,55 +53,10 @@ export default function InternalLinksManager({ items }: { items: InternalLink[] 
     setIsCreating(false);
   }
 
-  async function save(item: InternalLink) {
-    const draft = drafts[item.id];
-    if (!draft) return;
-    const label = draft.label.trim();
-    const url = normalizeLinkUrl(draft.url);
-
-    setError(null);
-    if (!label || !url) {
-      setError("La etiqueta y la URL son obligatorias.");
-      return;
-    }
-
-    setBusyId(item.id);
-    const response = await fetch(`/api/admin/links/${item.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ label, url, description: draft.description.trim() }),
-    });
-
-    if (response.ok) {
-      router.refresh();
-    } else {
-      const data = await response.json().catch(() => ({ error: "No se pudo guardar el link." }));
-      setError(data.error || "No se pudo guardar el link.");
-    }
-    setBusyId(null);
-  }
-
-  async function toggleActive(item: InternalLink) {
-    setBusyId(item.id);
-    setError(null);
-    const response = await fetch(`/api/admin/links/${item.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "toggle_active" }),
-    });
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({ error: "No se pudo actualizar el estado." }));
-      setError(data.error || "No se pudo actualizar el estado.");
-    } else {
-      router.refresh();
-    }
-    setBusyId(null);
-  }
-
   async function remove(id: string) {
     const confirmed = window.confirm("¿Eliminar este link externo?");
     if (!confirmed) return;
-    setBusyId(id);
+    setDeletingId(id);
     setError(null);
     const response = await fetch(`/api/admin/links/${id}`, { method: "DELETE" });
     if (!response.ok) {
@@ -139,7 +65,7 @@ export default function InternalLinksManager({ items }: { items: InternalLink[] 
     } else {
       router.refresh();
     }
-    setBusyId(null);
+    setDeletingId(null);
   }
 
   return (
@@ -147,7 +73,7 @@ export default function InternalLinksManager({ items }: { items: InternalLink[] 
       <div className="mb-6">
         <p className="auth-kicker">Configuración</p>
         <h2 className="text-title-lg font-bold text-on-surface">Links externos</h2>
-        <p className="muted">Enlaces de uso interno del CMS. Al pulsar «Abrir» se abren en una pestaña nueva.</p>
+        <p className="muted">Enlaces de uso interno del CMS. Al pulsar un link se abre en una pestaña nueva.</p>
       </div>
 
       <section className="rounded-xl border border-outline-variant bg-white p-5 shadow-[0_12px_28px_rgba(11,28,48,0.05)]">
@@ -205,72 +131,38 @@ export default function InternalLinksManager({ items }: { items: InternalLink[] 
             <p className="muted">No hay links externos. Añade el primero arriba.</p>
           </div>
         ) : (
-          sorted.map((item) => {
-            const draft = drafts[item.id] ?? { label: item.label, url: item.url, description: item.description };
-            const dirty = isDirty(item);
-            return (
-              <div
-                key={item.id}
-                className="rounded-xl border border-outline-variant bg-white p-5 shadow-[0_12px_28px_rgba(11,28,48,0.05)]"
-              >
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_1.4fr]">
-                  <div>
-                    <label className="mb-1 block text-label-sm font-semibold text-on-surface-variant">Etiqueta</label>
-                    <input
-                      type="text"
-                      value={draft.label}
-                      onChange={(event) => updateDraft(item.id, "label", event.target.value)}
-                      placeholder="Etiqueta"
-                      className="admin-marketing-input"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-label-sm font-semibold text-on-surface-variant">URL</label>
-                    <input
-                      type="text"
-                      value={draft.url}
-                      onChange={(event) => updateDraft(item.id, "url", event.target.value)}
-                      placeholder="https://..."
-                      className="admin-marketing-input"
-                    />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="mb-1 block text-label-sm font-semibold text-on-surface-variant">Descripción (opcional)</label>
-                    <input
-                      type="text"
-                      value={draft.description}
-                      onChange={(event) => updateDraft(item.id, "description", event.target.value)}
-                      placeholder="Para qué sirve este enlace"
-                      className="admin-marketing-input"
-                    />
-                  </div>
-                </div>
-                <div className="mt-4 flex flex-wrap items-center gap-3">
+          sorted.map((item) => (
+            <div
+              key={item.id}
+              className="rounded-xl border border-outline-variant bg-white p-5 shadow-[0_12px_28px_rgba(11,28,48,0.05)]"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
                   <a
                     href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-secondary px-4 py-2 text-label-sm font-bold text-on-secondary transition-colors hover:bg-secondary/90"
+                    className="inline-flex items-center gap-2 text-label-md font-bold text-secondary underline-offset-4 hover:underline"
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 18 }}>open_in_new</span>
-                    Abrir
+                    {item.label}
                   </a>
-                  <label className="inline-flex cursor-pointer items-center gap-2 text-label-sm font-semibold text-on-surface-variant">
-                    <input type="checkbox" checked={item.is_active} onChange={() => toggleActive(item)} disabled={busyId === item.id} />
-                    Activo
-                  </label>
-                  {dirty ? (
-                    <button type="button" className="primary-btn" onClick={() => save(item)} disabled={busyId === item.id}>
-                      {busyId === item.id ? "Guardando..." : "Guardar cambios"}
-                    </button>
-                  ) : null}
-                  <button type="button" className="danger-btn" onClick={() => remove(item.id)} disabled={busyId === item.id}>
-                    Eliminar
-                  </button>
+                  {item.description ? <p className="muted mt-1">{item.description}</p> : null}
+                  <p className="mt-1 truncate text-body-sm text-on-surface-variant">{item.url}</p>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => remove(item.id)}
+                  disabled={deletingId === item.id}
+                  aria-label="Eliminar link"
+                  title="Eliminar link"
+                  className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-red-600"
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>delete</span>
+                </button>
               </div>
-            );
-          })
+            </div>
+          ))
         )}
       </div>
     </div>
