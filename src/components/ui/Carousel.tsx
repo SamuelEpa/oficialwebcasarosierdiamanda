@@ -76,6 +76,7 @@ export function Carousel<T>({
   const [paused, setPaused] = useState(false);
   const [dragOffsetPx, setDragOffsetPx] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isInView, setIsInView] = useState(true);
   const viewportRef = useRef<HTMLDivElement>(null);
   const suppressClickRef = useRef(false);
   const dragRef = useRef({
@@ -118,6 +119,22 @@ export function Carousel<T>({
 
     return () => window.clearInterval(timer);
   }, [autoPlayMs, canNavigate, goTo, index, isDragging, marquee, paused]);
+
+  useEffect(() => {
+    if (!marquee) return;
+    const element = viewportRef.current;
+    if (!element) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          setIsInView(entry.isIntersecting);
+        }
+      },
+      { rootMargin: "300px" }
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [marquee]);
 
   const endDrag = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
@@ -212,6 +229,7 @@ export function Carousel<T>({
       className={classNames(
         "carousel",
         marquee && "carousel--marquee",
+        marquee && (isInView ? "is-in-view" : "is-out-of-view"),
         enableDrag && "carousel--draggable",
         isDragging && "is-dragging",
         className

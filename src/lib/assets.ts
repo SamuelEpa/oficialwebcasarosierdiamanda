@@ -7,9 +7,29 @@ const missingAssetFallbacks: Record<string, string> = {
   "img/5fd27c84-15dd-43ef-b039-2e8458a3f1a6.png": "/img/social-5.png"
 };
 
-export function assetPath(value: string): string {
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://hhxftxxshwgmfxuyrjmz.supabase.co";
+const STORAGE_MEDIA_ORIGIN = `${SUPABASE_URL}/storage/v1/object/public/media`;
+const STORAGE_IMAGE_EXT = /\.(avif|jpe?g|png|webp)$/i;
+
+export function assetPath(
+  value: string,
+  options?: { width?: number; quality?: number }
+): string {
   if (!value) return value;
-  if (/^(https?:|data:|blob:|\/)/.test(value)) return value;
+  if (/^(data:|blob:|\/)/.test(value)) return value;
+  if (/^https?:/.test(value)) {
+    if (
+      value.startsWith(STORAGE_MEDIA_ORIGIN) &&
+      STORAGE_IMAGE_EXT.test(value.split("?")[0])
+    ) {
+      const [base, search = ""] = value.split("?");
+      const params = new URLSearchParams(search);
+      if (!params.has("width")) params.set("width", String(options?.width ?? 1200));
+      if (!params.has("quality")) params.set("quality", String(options?.quality ?? 75));
+      return `${base}?${params.toString()}`;
+    }
+    return value;
+  }
   return missingAssetFallbacks[value] ?? `/${value.replace(/^\.?\//, "")}`;
 }
 

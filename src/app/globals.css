@@ -14319,3 +14319,11 @@ body {
   color: var(--color-error, #ba1a1a);
 }
 
+.is-animated {
+  will-change: transform;
+}
+
+.carousel--marquee.is-out-of-view .is-animated {
+  animation-play-state: paused;
+}
+
