@@ -138,28 +138,31 @@ export default function InternalLinksManager({ items }: { items: InternalLink[] 
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
+                  <span className="block text-title-md font-bold text-on-surface">{item.label}</span>
+                  {item.description ? <p className="muted mt-1">{item.description}</p> : null}
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
                   <a
                     href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-label-md font-bold text-secondary underline-offset-4 hover:underline"
+                    aria-label={`Abrir ${item.label} en una pestaña nueva`}
+                    title="Abrir en pestaña nueva"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-secondary transition-colors hover:bg-surface-container-high"
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: 18 }}>open_in_new</span>
-                    {item.label}
+                    <span className="material-symbols-outlined" style={{ fontSize: 22 }}>open_in_new</span>
                   </a>
-                  {item.description ? <p className="muted mt-1">{item.description}</p> : null}
-                  <p className="mt-1 truncate text-body-sm text-on-surface-variant">{item.url}</p>
+                  <button
+                    type="button"
+                    onClick={() => remove(item.id)}
+                    disabled={deletingId === item.id}
+                    aria-label="Eliminar link"
+                    title="Eliminar link"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-red-600"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>delete</span>
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => remove(item.id)}
-                  disabled={deletingId === item.id}
-                  aria-label="Eliminar link"
-                  title="Eliminar link"
-                  className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-red-600"
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>delete</span>
-                </button>
               </div>
             </div>
           ))
