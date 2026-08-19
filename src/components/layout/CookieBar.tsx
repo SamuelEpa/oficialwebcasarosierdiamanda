@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { COOKIE_CONSENT_EVENT } from "@/components/analytics/PostHogProvider";
 
 const COOKIE_CONSENT_KEY = "casarosier_cookie_consent_v2";
 const LEGACY_COOKIE_KEY = "casarosier_cookie_accept_v1";
@@ -55,7 +54,6 @@ export function CookieBar() {
     } catch {
       // The preference still applies for the current page.
     }
-    window.dispatchEvent(new Event(COOKIE_CONSENT_EVENT));
     setVisible(false);
   };
 

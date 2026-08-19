@@ -3,8 +3,6 @@ import localFont from "next/font/local";
 import { Baskervville, Inter, Manrope, Roboto_Flex } from "next/font/google";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
-import { PostHogProvider } from "@/components/analytics/PostHogProvider";
-import { getMarketingSettings } from "@/lib/cms/marketing";
 import { getSettings } from "@/lib/cms/settings";
 import "./tailwind.css";
 import "./legacy/base.css";
@@ -126,14 +124,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({
   children
 }: Readonly<{ children: React.ReactNode }>) {
-  const marketing = await getMarketingSettings();
-  const posthogEnabled = marketing.posthog_enabled && marketing.posthog_key.trim().length > 0;
-  const posthogKey = posthogEnabled ? marketing.posthog_key.trim() : "";
-  const posthogHost =
-    posthogEnabled && marketing.posthog_host.trim()
-      ? marketing.posthog_host.trim()
-      : "";
-
   return (
     <html lang="es" data-scroll-behavior="smooth">
       <body
@@ -142,7 +132,6 @@ export default async function RootLayout({
       >
         {children}
         <SiteChrome whatsappFloat={<WhatsAppFloat />} />
-        <PostHogProvider posthogKey={posthogKey} posthogHost={posthogHost} />
       </body>
     </html>
   );

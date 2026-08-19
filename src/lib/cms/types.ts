@@ -1299,9 +1299,6 @@ export interface MarketingSettings {
   gtm_container_id: string;
   google_search_console_id: string;
   microsoft_clarity_id: string;
-  posthog_enabled: boolean;
-  posthog_key: string;
-  posthog_host: string;
   meta_pixel_enabled: boolean;
   meta_pixel_id: string;
   meta_conversion_api_enabled: boolean;
@@ -1332,7 +1329,6 @@ export interface MarketingSettings {
 export function defaultMarketingSettings(): MarketingSettings {
   return {
     analytics_enabled: false, ga4_measurement_id: "", gtm_container_id: "", google_search_console_id: "", microsoft_clarity_id: "",
-    posthog_enabled: false, posthog_key: "", posthog_host: "",
     meta_pixel_enabled: false, meta_pixel_id: "", meta_conversion_api_enabled: false, meta_access_token: "", meta_dataset_id: "",
     tiktok_pixel_enabled: false, tiktok_pixel_id: "", pinterest_tag_enabled: false, pinterest_tag_id: "", linkedin_insight_enabled: false, linkedin_partner_id: "",
     seo_global_title: "", seo_global_description: "", seo_og_image: "", robots_enabled: true, sitemap_enabled: true, schema_enabled: true,
