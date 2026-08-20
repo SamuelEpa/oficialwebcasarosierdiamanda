@@ -103,12 +103,12 @@
 
 .featured--classes .content-card--home-flip .content-card__caption,
 .featured--workshops .content-card--home-flip .content-card__caption {
-  margin: clamp(14px, 2.2vw, 18px) 0 0;
+  margin: clamp(11px, 1.9vw, 15px) 0 0;
   padding: 0 clamp(4px, 1vw, 8px);
   text-align: center;
   font: 300 clamp(11px, 1.05vw, 13px) / 1.38 var(--font-menu);
   letter-spacing: 0.07em;
-  text-transform: uppercase;
+  text-transform: capitalize;
   color: #4a4a4a;
   text-wrap: balance;
 }
@@ -147,6 +147,6 @@
   .featured--workshops .content-card--home-flip .content-card__caption {
     font-size: 12px;
     letter-spacing: 0.06em;
-    margin-top: 16px;
+    margin-top: 13px;
   }
 }
