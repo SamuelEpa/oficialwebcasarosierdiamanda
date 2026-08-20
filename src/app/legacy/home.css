@@ -548,9 +548,10 @@ main {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
 }
-.featured--classes .cards-grid,
-.featured--workshops .cards-grid {
-  gap: 19px;
+.featured--classes .featured__grid.cards-grid,
+.featured--workshops .featured__grid.cards-grid {
+  column-gap: 0;
+  row-gap: clamp(32px, 4vw, 48px);
 }
 .featured--classes .content-card,
 .featured--workshops .content-card {
