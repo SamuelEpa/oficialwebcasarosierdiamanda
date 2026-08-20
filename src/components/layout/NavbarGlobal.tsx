@@ -563,10 +563,13 @@ export function NavbarGlobal({
         </nav>
       </div>
 
-      {showDesktopScrollNav && typeof document !== "undefined"
+      {isDesktopViewport && typeof document !== "undefined"
         ? createPortal(
             <div
-              className="desktop-sticky-nav-portal"
+              className={classNames(
+                "desktop-sticky-nav-portal",
+                showDesktopScrollNav && "is-sticky-active"
+              )}
               style={navStyle}
               role="navigation"
               aria-label="Navegacion fija"
