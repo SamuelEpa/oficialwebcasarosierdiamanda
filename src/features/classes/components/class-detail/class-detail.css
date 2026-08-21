@@ -37,7 +37,7 @@
 
 .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-sidecard--soft .class-detail__content-copy.markdown-content,
 .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-sidecard--soft .class-detail__content-copy.markdown-content > * {
-  font-size: 22px !important;
+  font-size: 17px !important;
 }
 
 /* Editorial hero: title >> question >> highlight (mockup hierarchy) */
@@ -119,7 +119,7 @@
   font-family: var(--font-menu);
   font-size: clamp(14px, 1.45vw, 16px);
   font-weight: 300;
-  line-height: 1.65;
+  line-height: 1.75 !important;
 }
 
 .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__copy--editorial p:last-child {
