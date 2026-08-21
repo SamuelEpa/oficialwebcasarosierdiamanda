@@ -127,7 +127,8 @@ export function SocialGallery({
           className={classNames(
             "container",
             "social__container",
-            isHomeStrip && "featured__container",
+            "mx-auto",
+            "max-w-276",
           )}
         >
           <header className="social__head">

@@ -51,7 +51,7 @@ export function HomeSection({
       <div
         className={classNames(
           "container mx-auto",
-          isGift ? "max-w-[min(920px,94vw)]" : "max-w-196",
+          isGift ? "max-w-[min(920px,94vw)]" : "max-w-276",
         )}
       >
         <header className="mb-[clamp(32px,4.2vw,42px)] text-center max-[640px]:mb-7">
