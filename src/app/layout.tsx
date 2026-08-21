@@ -27,7 +27,6 @@ import "./public-header-desktop.css";
 import "./admin-offerings-table.css";
 import "../components/home/gift-carousel.css";
 import "../components/home/social-gallery-home.css";
-import "../components/home/testimonial-slider-home.css";
 import "../components/layout/footer/public-footer-editorial.css";
 import "../components/layout/scroll-nav/home-scroll-sticky-nav.css";
 
