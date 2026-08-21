@@ -10,7 +10,7 @@ section.home-section--editorial.gift {
   margin-top: 0;
 }
 
-.home-intro-slider.section + section.home-section--editorial.featured {
+.home-intro-slider-marker + section.home-section--editorial.featured {
   padding-top: clamp(72px, 10vw, 108px);
 }
 
@@ -53,7 +53,7 @@ section.home-section--editorial.gift {
     padding-bottom: clamp(48px, 12vw, 64px);
   }
 
-  .home-intro-slider.section + section.home-section--editorial.featured {
+  .home-intro-slider-marker + section.home-section--editorial.featured {
     padding-top: clamp(56px, 14vw, 80px);
   }
 
