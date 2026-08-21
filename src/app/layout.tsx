@@ -19,7 +19,6 @@ import "./legacy/cart.css";
 import "./legacy/studio.css";
 import "./legacy/promo-entry.css";
 import "./legacy/footer.css";
-import "./legacy/cookiebar.css";
 import "./legacy/site.css";
 import "./globals.css";
 import "./responsive-tuning.css";
