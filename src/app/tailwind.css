@@ -27,7 +27,7 @@
   --color-outline-variant: #cac4d4;
   --color-error: #ba1a1a;
   --font-sans: var(--font-manrope), Manrope, sans-serif;
-  --font-inter: var(--font-inter), Inter, sans-serif;
+  --font-inter: Inter, sans-serif;
   --text-headline-lg: 24px;
   --text-headline-lg--line-height: 32px;
   --text-headline-lg--font-weight: 700;

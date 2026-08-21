@@ -8,7 +8,6 @@ import "./tailwind.css";
 import "./legacy/base.css";
 import "./legacy/home.css";
 import "../components/home/home-section.css";
-import "../components/home/featured-experience-cards.css";
 import "./legacy/classes.css";
 import "./legacy/shop.css";
 import "../features/shop/components/catalog/shop-catalog.css";
