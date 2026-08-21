@@ -2,12 +2,8 @@
  * Home gift carousel — editorial layout (square image + left-aligned copy + ghost CTA).
  */
 
-.gift.home-section--editorial .gift__container {
-  max-width: min(920px, 94vw);
-}
-
-.gift.home-section--editorial .gift-carousel__title,
-.gift.home-section--editorial .gift-carousel__text {
+.gift-carousel__title,
+.gift-carousel__text {
   margin-bottom: 0;
 }
 
