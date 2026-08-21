@@ -23,7 +23,7 @@ export function IntroSlider({ slides }: { slides: readonly HomeIntroSlide[] }) {
         className="container mx-auto flex h-full max-w-208 flex-col justify-center"
         viewportClassName="h-full overflow-hidden"
         trackClassName="flex h-full w-full transition-transform duration-[700ms] ease-in-out will-change-transform"
-        slideClassName="grid h-full min-h-0 min-w-0 basis-full grid-cols-2 items-center gap-[14px] max-[640px]:grid-cols-1 max-[640px]:gap-3 max-[640px]:text-center"
+        slideClassName="grid h-full min-h-0 min-w-0 flex-[0_0_100%] grid-cols-2 items-center gap-[14px] max-[640px]:grid-cols-1 max-[640px]:gap-3 max-[640px]:text-center"
         dotsClassName="absolute inset-x-0 bottom-5 z-[2] m-0 flex items-center justify-center gap-2"
         dotClassName="h-[10px] w-[10px] rounded-full border-0 bg-[rgba(157,148,139,0.4)] p-0 transition-[transform,background-color] duration-150 ease-in-out aria-[pressed=true]:scale-[1.08] aria-[pressed=true]:bg-[#70665d] focus-visible:outline-2 focus-visible:outline-[rgba(111,98,85,0.5)] focus-visible:outline-offset-4"
         showDots
