@@ -18,14 +18,14 @@ export function FooterContactInfo({
     <div className="grid justify-items-center text-center gap-[clamp(8px,1.2vw,12px)] pt-0">
       <h2 className="m-0 mb-[clamp(4px,0.6vw,8px)] text-[clamp(28px,3.2vw,36px)] leading-[1.1] font-normal text-[#1a1a1a] [font-family:var(--font-display)]">{model.contactTitle}</h2>
       {model.contactLines.map((line, index) => (
-        <p className="m-0 text-[clamp(13px,1.15vw,15px)] leading-[1.5] font-light text-[#3a3a3a] [font-family:var(--font-menu)]" key={`${line}-${index}`}>
+        <p className="m-0 text-[clamp(13px,1.15vw,15px)] leading-normal font-light text-[#3a3a3a] [font-family:var(--font-menu)]" key={`${line}-${index}`}>
           {line}
         </p>
       ))}
-      {model.extraAddress ? <p className="m-0 text-[clamp(13px,1.15vw,15px)] leading-[1.5] font-light text-[#3a3a3a] [font-family:var(--font-menu)]">{model.extraAddress}</p> : null}
+      {model.extraAddress ? <p className="m-0 text-[clamp(13px,1.15vw,15px)] leading-normal font-light text-[#3a3a3a] [font-family:var(--font-menu)]">{model.extraAddress}</p> : null}
       {model.socialLinks.length > 0 ? (
         <>
-          <p className="mt-[clamp(6px,1vw,10px)] mb-0 text-[clamp(13px,1.15vw,15px)] leading-[1.5] font-light text-[#3a3a3a] [font-family:var(--font-menu)]">{model.socialTitle}</p>
+          <p className="mt-[clamp(6px,1vw,10px)] mb-0 text-[clamp(13px,1.15vw,15px)] leading-normal font-light text-[#3a3a3a] [font-family:var(--font-menu)]">{model.socialTitle}</p>
           <div className="mt-[clamp(8px,1.2vw,12px)] flex items-center justify-center gap-4">
             {model.socialLinks.map((link, index) => (
               <a

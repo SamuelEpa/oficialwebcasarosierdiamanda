@@ -34,7 +34,7 @@ function FooterContactFormComponent({
         ),
       )}
       <button
-        className="mt-[clamp(8px,1.2vw,12px)] w-fit min-w-[88px] cursor-pointer justify-self-start rounded-lg border-0 bg-[var(--contact-submit-bg,#111)] py-3 px-7 text-[clamp(13px,1.1vw,14px)] leading-none font-normal text-[var(--contact-submit-color,#fff)] [font-family:var(--font-menu)]"
+        className="mt-[clamp(8px,1.2vw,12px)] w-fit min-w-22 cursor-pointer justify-self-start rounded-lg border-0 bg-(--contact-submit-bg,#111) py-3 px-7 text-[clamp(13px,1.1vw,14px)] leading-none font-normal text-(--contact-submit-color,#fff) [font-family:var(--font-menu)]"
         type={preview ? "button" : "submit"}
         disabled={preview || isSubmitting}
       >
