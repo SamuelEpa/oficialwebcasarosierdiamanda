@@ -38,14 +38,6 @@ button:disabled {
   color: white !important;
 }
 
-.site-legal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-
 .cms-admin,
 .cms-admin * {
   box-sizing: border-box;
@@ -8324,7 +8316,7 @@ body {
 .site-nav-shell .navbar-global .nav-submenu {
   top: calc(100% - 8px);
   min-width: 232px;
-  padding: 8px 0;
+  padding: 8px 0 !important;
 }
 
 .nav-submenu__item + .nav-submenu__item {
@@ -8334,10 +8326,10 @@ body {
 .nav-submenu__link,
 .header-interno .nav-submenu__link,
 .page-hero .nav-submenu__link {
-  padding: 8px 18px;
-  font-size: 13px;
+  padding: 7px 12px !important;
+  font-size: 13px !important;
   line-height: 1.22;
-  letter-spacing: 0.015em;
+  letter-spacing: 0.015em!important;
 }
 
 @media (min-width: 1025px) {

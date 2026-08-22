@@ -6,43 +6,11 @@
   overflow: hidden;
   background: #d8d1c6;
 }
-.hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 3;
-  background: linear-gradient(
-    to bottom,
-    rgba(251, 250, 246, 0) 0%,
-    rgba(251, 250, 246, 0.03) 42%,
-    rgba(251, 250, 246, 0.16) 58%,
-    rgba(251, 250, 246, 0.42) 72%,
-    rgba(251, 250, 246, 0.72) 84%,
-    rgba(251, 250, 246, 0.94) 94%,
-    rgba(251, 250, 246, 1) 100%
-  );
-}
 .hero__bg {
   position: absolute;
   inset: 0;
   z-index: 0;
   background: url("/img/hero-bg.jpg") center top/cover no-repeat;
-}
-.hero__bg::after {
-  content: none;
-}
-.hero__overlays {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-}
-.hero__overlay {
-  position: absolute;
-  object-fit: contain;
-  max-width: none;
-  will-change: transform, opacity;
 }
 .hero__overlay--1 {
   width: min(430px, 28vw);
@@ -366,20 +334,6 @@ main {
   padding-bottom: 120px;
 }
 
-@media (max-width: 768px) {
-  .hero::after {
-    background: linear-gradient(
-      to bottom,
-      rgba(251, 250, 246, 0) 0%,
-      rgba(251, 250, 246, 0.04) 36%,
-      rgba(251, 250, 246, 0.18) 52%,
-      rgba(251, 250, 246, 0.44) 68%,
-      rgba(251, 250, 246, 0.72) 82%,
-      rgba(251, 250, 246, 0.94) 94%,
-      rgba(251, 250, 246, 1) 100%
-    );
-  }
-}
 .featured {
   background: #fbfaf6;
   padding-top: 48px;
