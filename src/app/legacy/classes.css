@@ -159,45 +159,6 @@
   color: var(--site-hero-menu-color, var(--hero-menu-color, rgba(255, 255, 255, 0.94)));
 }
 
-.page-hero__script-stack {
-  position: relative;
-  width: min(520px, 78vw);
-  height: 170px;
-}
-
-.page-hero__script-image {
-  object-fit: contain;
-}
-
-.page-hero__script-image--back {
-  opacity: 0.48;
-  transform: scale(1.12);
-}
-
-.page-hero__script-image--front {
-  opacity: 0.95;
-}
-
-.page-hero__script-fallback {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-family: var(--font-display);
-  font-style: italic;
-  line-height: 1;
-}
-
-.page-hero__script-fallback--back {
-  color: rgba(63, 48, 40, 0.48);
-  font-size: clamp(72px, 10vw, 140px);
-}
-
-.page-hero__script-fallback--front {
-  color: rgba(255, 255, 255, 0.96);
-  font-size: clamp(36px, 5vw, 72px);
-}
-
 .page-hero__eyebrow {
   order: 2;
   margin: 0;
@@ -632,14 +593,6 @@
   margin-bottom: 14px;
 }
 
-.class-detail__eyebrow {
-  margin: 0 0 12px;
-  color: #8e857d;
-  font: 300 14px/1.4 var(--font-menu);
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-}
-
 .class-detail__title {
   margin: 0;
   color: #54504c;
@@ -681,11 +634,6 @@
   border-radius: 14px;
 }
 
-.class-detail__fact-block--selector {
-  display: grid;
-  gap: 18px;
-}
-
 .class-detail__price-row {
   display: flex;
   align-items: center;
@@ -710,53 +658,6 @@
   margin: 0 0 18px;
   color: #c27649;
   font: 400 18px/1.45 var(--font-menu);
-}
-
-.gift-card-selector {
-  display: grid;
-  grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
-  gap: 20px;
-  align-items: center;
-}
-
-.gift-card-selector__label {
-  color: #5a534b;
-  font: 300 16px/1.5 var(--font-menu);
-}
-
-.gift-card-selector__control {
-  position: relative;
-}
-
-.gift-card-selector__control::after {
-  content: "";
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  width: 9px;
-  height: 9px;
-  border-right: 1px solid rgba(89, 78, 66, 0.86);
-  border-bottom: 1px solid rgba(89, 78, 66, 0.86);
-  transform: translateY(-65%) rotate(45deg);
-  pointer-events: none;
-}
-
-.gift-card-selector__input {
-  width: 100%;
-  min-height: 52px;
-  padding: 14px 44px 14px 16px;
-  border: 1px solid rgba(147, 124, 97, 0.2);
-  border-radius: 14px;
-  background: #fff;
-  color: #5b544d;
-  font: 300 15px/1.4 var(--font-menu);
-  appearance: none;
-  -webkit-appearance: none;
-}
-
-.gift-card-selector__input:focus-visible {
-  outline: 2px solid rgba(176, 111, 52, 0.28);
-  outline-offset: 2px;
 }
 
 .class-detail__schedule {
@@ -894,11 +795,6 @@
 @media (max-width: 992px) {
   .class-detail__facts {
     grid-template-columns: 1fr;
-  }
-
-  .gift-card-selector {
-    grid-template-columns: 1fr;
-    gap: 12px;
   }
 }
 

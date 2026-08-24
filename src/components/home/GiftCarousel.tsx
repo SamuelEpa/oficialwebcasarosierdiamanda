@@ -139,7 +139,7 @@ export function GiftCarousel({ items }: GiftCarouselProps) {
       viewportClassName="overflow-hidden"
       trackClassName="transition-transform duration-[420ms] ease-in-out"
       slideClassName="block text-left flex-[0_0_100%]"
-      arrowClassName="self-center text-[#98918b]"
+      arrowClassName="w-[40px] h-[40px] inline-flex items-center justify-center border-0 bg-transparent cursor-pointer font-light text-[28px] [font-family:var(--font-menu)] text-[#98918b] transition-[color,transform] duration-[180ms] ease hover:text-[#4f4943] hover:-translate-y-px self-center"
       previousLabel="Experiencia anterior"
       nextLabel="Experiencia siguiente"
       showArrows

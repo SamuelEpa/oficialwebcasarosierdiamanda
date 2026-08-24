@@ -62,6 +62,9 @@
   body.cookiebar-visible {
     padding-bottom: var(--cookiebar-offset, 0px);
   }
+  body.modal-open {
+    overflow: hidden;
+  }
 }
 
 .public-faq__item summary::-webkit-details-marker {

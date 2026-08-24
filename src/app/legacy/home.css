@@ -637,26 +637,6 @@ main {
   background: currentColor;
 }
 
-.gift-carousel__arrow {
-  width: 44px;
-  height: 44px;
-  border: 0;
-  background: transparent;
-  color: #98918b;
-  cursor: pointer;
-  font: 300 27px/1 var(--font-menu);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 180ms ease, transform 180ms ease;
-}
-
-.gift-carousel__arrow:hover,
-.gift-carousel__arrow:focus-visible {
-  color: #4f4943;
-  transform: translateY(-1px);
-}
-
 .social__viewport {
   overflow: hidden;
   max-width: 700px;

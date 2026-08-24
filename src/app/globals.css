@@ -9846,6 +9846,29 @@ body {
   height: 100%;
 }
 
+.social__track.is-animated {
+  animation: socialMarquee 100s linear infinite;
+}
+
+.social__viewport:hover .social__track,
+.social__viewport:focus-within .social__track {
+  animation-play-state: paused;
+}
+
+.social__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.1);
+  transition: transform .8s cubic-bezier(.37,0,.63,1);
+}
+
+.social__item:hover img,
+.social__item:focus-visible img {
+  transform: scale(1.1) translateX(4%);
+}
+
 .ig-modal__link {
   display: inline-flex;
   align-items: center;
@@ -11533,8 +11556,8 @@ body {
 }
 
 .ig-modal__panel {
-  width: min(784px, calc(100vw - 48px));
-  height: min(60dvh, 448px);
+  width: min(860px, calc(100vw - 48px));
+  height: min(68dvh, 520px);
   max-height: calc(100dvh - 64px);
   margin: 0;
   border: 0;
