@@ -63,3 +63,18 @@
     padding-bottom: var(--cookiebar-offset, 0px);
   }
 }
+
+.public-faq__item summary::-webkit-details-marker {
+  display: none;
+}
+
+.public-faq__item summary::after {
+  content: "+";
+  flex: 0 0 auto;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.public-faq__item[open] summary::after {
+  content: "-";
+}

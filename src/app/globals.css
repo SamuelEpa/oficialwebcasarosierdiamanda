@@ -11522,7 +11522,7 @@ body {
 .testimonial-modal,
 .studio-lightbox,
 .promo-entrada {
-  z-index: 2147484000;
+  z-index: 2147484000 !important;
 }
 
 .ig-modal.is-open {
