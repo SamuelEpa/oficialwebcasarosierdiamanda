@@ -17,12 +17,12 @@ export function ClassDetailLeadCopy({ item }: Props) {
       <div className="class-detail__lead-center flex flex-col items-center gap-[clamp(14px,2vw,20px)] text-center">
         <MarkdownContent
           source={item.detailQuestion}
-          className="class-detail__question class-detail__question--editorial class-detail__question--styled m-0 max-w-[36ch] text-[#7c746d] text-[22px]/[1.4] [font-family:var(--font-menu)] uppercase tracking-wider max-[640px]:text-[clamp(16px,4.2vw,18px)]"
+          className="class-detail__question class-detail__question--editorial class-detail__question--styled m-0 max-w-[36ch] text-[#7c746d] text-[18px] [font-family:var(--font-menu)] uppercase tracking-wider max-[1024px]:text-[14px] max-[640px]:text-[13px]!"
           style={editorialDetailTypographyStyle(item.detailQuestionTypography)}
         />
         <MarkdownContent
           source={item.introHighlight}
-          className="class-detail__highlight class-detail__highlight--editorial class-detail__highlight--styled m-0 mb-5.5 text-[#c27649] italic text-[20px]/[1.55] [font-family:var(--font-display)] max-[640px]:text-[14px]"
+          className="class-detail__highlight class-detail__highlight--editorial class-detail__highlight--styled m-0 mb-5.5 text-[#c27649] italic text-[clamp(16px,1.8vw,20px)]/[1.55] [font-family:var(--font-display)] max-[1024px]:text-[15px] max-[640px]:text-[14px]"
           style={editorialDetailTypographyStyle(item.introHighlightTypography)}
         />
       </div>

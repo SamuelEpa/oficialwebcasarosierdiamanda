@@ -30,7 +30,7 @@ export function ClassDetailBodySections({
     <div className="class-detail__body-stack">
       {showIncluded ? (
         <section className="class-detail__includes class-detail__includes--editorial mt-0 pt-[clamp(28px,3.5vw,36px)] pb-[clamp(20px,3vw,32px)]">
-          <h2 className="m-0 mb-3.5 text-[#3d3935] text-[clamp(20px,2.2vw,24px)]/[1.05] [font-family:var(--font-display)] font-normal uppercase tracking-[0.04em] max-[992px]:text-[21px]">Incluye</h2>
+          <h2 className="m-0 mb-3.5 text-[#3d3935] text-[20px]! [font-family:var(--font-display)] font-normal uppercase tracking-[0.04em] max-[992px]:text-[18px]! max-[640px]:text-[16px]!">Incluye</h2>
           <ClassDetailIncludesList
             included={item.included}
             typography={item.includedTypography ?? { ...DEFAULT_RICH_TEXT_TYPOGRAPHY, fontSize: 16 }}
@@ -40,7 +40,7 @@ export function ClassDetailBodySections({
 
       {hasLearningContent ? (
         <section className="class-detail__text-block mt-0 pt-[clamp(28px,3.5vw,36px)]">
-          <h2 className="m-0 mb-3 text-[#3d3935] text-[26px]/[1.05] [font-family:var(--font-display)] uppercase tracking-[0.03em] max-[992px]:text-[21px]">{item.learningSectionTitle || "Que aprendes..."}</h2>
+          <h2 className="m-0 mb-3 text-[#3d3935] text-[20px]! [font-family:var(--font-display)] uppercase tracking-[0.03em] max-[992px]:text-[18px]! max-[640px]:text-[16px]!">{item.learningSectionTitle || "Que aprendes..."}</h2>
           <MarkdownContent
             source={item.whatYouWillLearn}
             className="class-detail__content-copy"
@@ -53,7 +53,7 @@ export function ClassDetailBodySections({
 
       {hasParticipationContent ? (
         <section className="class-detail__text-block mt-0 pt-[clamp(28px,3.5vw,36px)]">
-          <h2 className="m-0 mb-3 text-[#3d3935] text-[26px]/[1.05] [font-family:var(--font-display)] uppercase tracking-[0.03em] max-[992px]:text-[21px]">{item.participationSectionTitle || "Quien puede ser"}</h2>
+          <h2 className="m-0 mb-3 text-[#3d3935] text-[20px]! [font-family:var(--font-display)] uppercase tracking-[0.03em] max-[992px]:text-[18px]! max-[640px]:text-[16px]!">{item.participationSectionTitle || "Quien puede ser"}</h2>
           <MarkdownContent
             source={item.whoCanJoin}
             className="class-detail__content-copy"
@@ -66,7 +66,7 @@ export function ClassDetailBodySections({
 
       {showProgram ? (
         <section className="class-detail__program mt-0 pt-[clamp(28px,3.5vw,36px)]">
-          <h2 className="m-0 mb-3 text-[#3d3935] text-[26px]/[1.05] [font-family:var(--font-display)] uppercase tracking-[0.03em] max-[992px]:text-[21px]">{item.programSectionTitle || "Silabus del curso"}</h2>
+          <h2 className="m-0 mb-3 text-[#3d3935] text-[20px]! [font-family:var(--font-display)] uppercase tracking-[0.03em] max-[992px]:text-[18px]! max-[640px]:text-[16px]!">{item.programSectionTitle || "Silabus del curso"}</h2>
           <Accordion items={programItems} />
         </section>
       ) : null}
