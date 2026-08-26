@@ -34,7 +34,7 @@ export function ClassDetailEnrollActions({
   if (!showEnroll && !showConsult) return null;
 
   return (
-    <div className="class-detail__actions flex flex-col items-start gap-3 w-full mt-[clamp(18px,2.5vw,24px)] mb-[clamp(36px,4.5vw,48px)]">
+    <div className="class-detail__actions flex flex-col items-start gap-3 w-full mt-[clamp(18px,2.5vw,24px)] mb-[clamp(36px,4.5vw,48px)] max-[640px]:pl-[clamp(28px,18vw,112px)]">
       {showEnroll ? (
         isGiftCard ? (
           <>

@@ -28,7 +28,7 @@ export function ClassDetailLeadCopy({ item }: Props) {
       </div>
       <MarkdownContent
         source={item.description}
-        className="class-detail__copy class-detail__copy--editorial class-detail__copy--styled m-0 text-left"
+        className="class-detail__copy class-detail__copy--editorial class-detail__copy--styled m-0"
         style={detailTextTypographyStyle(
           normalizeRichTextTypography(item.descriptionTypography ?? DEFAULT_DESCRIPTION_TYPOGRAPHY),
           "description",

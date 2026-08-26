@@ -4655,6 +4655,7 @@ body {
 @media (max-width: 1024px) {
   .experience-detail-hero.header-interno--text-hero {
     min-height: 0;
+    padding-top: 200px;
     padding-bottom: clamp(34px, 5vw, 52px);
     overflow: hidden;
   }
@@ -4694,6 +4695,7 @@ body {
 
 @media (max-width: 640px) {
   .experience-detail-hero.header-interno--text-hero {
+    padding-top: 230px;
     padding-bottom: 30px;
   }
 
