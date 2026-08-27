@@ -787,33 +787,36 @@
 
 /* Detalle de clase textual: deja el logo por encima del titular del hero. */
 @media (min-width: 641px) and (max-width: 1024px) {
-  .experience-detail-hero.header-interno--text-hero {
-    padding-top: 140px;
-    padding-bottom: 26px;
+  .experience-detail-hero:not(.header-interno--image-hero):not(.header-interno--presentation-hero) {
+    height: 240px !important;
+    min-height: 240px !important;
+    padding: 0 !important;
   }
 
   .experience-detail-hero .mobile-scroll-nav.is-at-top .mobile-scroll-nav__logo {
-    top: 30px !important;
+    top: 42px !important;
   }
 
   .experience-detail-hero .mobile-scroll-nav.is-at-top .mobile-scroll-nav__logo-image,
   .experience-detail-hero .mobile-scroll-nav.is-at-top .mobile-scroll-nav__logo-tint {
-    width: 110px !important;
+    width: 120px !important;
   }
 }
 
 @media (max-width: 640px) {
-  .experience-detail-hero.header-interno--text-hero {
-    padding-top: 135px;
-    padding-bottom: 22px;
+  .experience-detail-hero:not(.header-interno--image-hero):not(.header-interno--presentation-hero) {
+    height: 180px !important;
+    min-height: 180px !important;
+        padding-bottom: 10px;
+    /* padding: 0 !important; */
   }
 
   .experience-detail-hero .mobile-scroll-nav.is-at-top .mobile-scroll-nav__logo {
-    top: calc(30px + env(safe-area-inset-top, 0px)) !important;
+    top: calc(40px + env(safe-area-inset-top, 0px)) !important;
   }
 
   .experience-detail-hero .mobile-scroll-nav.is-at-top .mobile-scroll-nav__logo-image,
   .experience-detail-hero .mobile-scroll-nav.is-at-top .mobile-scroll-nav__logo-tint {
-    width: 108px !important;
+    width: 118px !important;
   }
 }
