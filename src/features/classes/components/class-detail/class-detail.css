@@ -404,6 +404,33 @@
     width: min(100% - 32px, 944px);
   }
 
+  .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__mobile-intro,
+  .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__mobile-gallery,
+  .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__media-column,
+  .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__body-stack,
+  .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__facts--fit,
+  .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__actions {
+    width: 90%;
+    margin-inline: auto;
+  }
+
+  .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__lead {
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__body-stack {
+    width: 90%;
+    margin-inline: auto;
+  }
+
+  .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__copy--editorial,
+  .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__content-copy,
+  .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .course-accordion__copy {
+    width: 100%;
+    margin-inline: auto;
+  }
+
   .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__title--editorial,
   .class-detail-page:is([data-promo-page="class"], [data-promo-page="workshop"], [data-promo-page="experience"], [data-promo-page="gift-card"]) .class-detail__title--editorial.class-detail__title--styled {
     max-width: min(100%, 18ch);

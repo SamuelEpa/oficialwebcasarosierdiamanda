@@ -3092,6 +3092,21 @@ body {
   }
 }
 
+/* El estudio: contenido móvil con el mismo margen visual que los detalles. */
+@media (max-width: 640px) {
+  .studio-page .studio-editorial-split__inner {
+    width: min(85%, 390px);
+  }
+
+  .studio-page .studio-editorial-split__intro,
+  .studio-page .studio-editorial-split__heading,
+  .studio-page .studio-editorial-split__lede,
+  .studio-page .studio-team-member__copy,
+  .studio-page .studio-team-member__media {
+    width: 100%;
+  }
+}
+
 .blog-page .blog-featured__container {
   max-width: min(100%, 1080px);
 }
