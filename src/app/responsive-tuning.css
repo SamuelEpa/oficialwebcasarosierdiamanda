@@ -788,7 +788,7 @@
 /* Detalle de clase textual: deja el logo por encima del titular del hero. */
 @media (min-width: 641px) and (max-width: 1024px) {
   .experience-detail-hero.header-interno--text-hero {
-    padding-top: 160px;
+    padding-top: 140px;
     padding-bottom: 26px;
   }
 
@@ -804,7 +804,7 @@
 
 @media (max-width: 640px) {
   .experience-detail-hero.header-interno--text-hero {
-    padding-top: 165px;
+    padding-top: 135px;
     padding-bottom: 22px;
   }
 
