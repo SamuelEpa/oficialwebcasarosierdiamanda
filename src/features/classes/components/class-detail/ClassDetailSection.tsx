@@ -1,7 +1,6 @@
 "use client";
 
 import type { ExperienceItem } from "@/data/types";
-import { useClassDetailEnroll } from "../../hooks/useClassDetailEnroll";
 import { useClassDetailViewModel } from "../../hooks/useClassDetailViewModel";
 import { ClassDetailBodySections } from "./ClassDetailBodySections";
 import { ClassDetailEnrollActions } from "./ClassDetailEnrollActions";
@@ -18,7 +17,6 @@ type Props = {
 
 export function ClassDetailSection({ item, titleLevel = "h1" }: Props) {
   const viewModel = useClassDetailViewModel(item);
-  const enroll = useClassDetailEnroll(item);
 
   return (
     <section className="class-detail section pt-9 pb-24">
@@ -43,15 +41,8 @@ export function ClassDetailSection({ item, titleLevel = "h1" }: Props) {
             </div>
             <ClassDetailPriceDuration item={item} />
             <ClassDetailEnrollActions
-              item={item}
-              enrollHref={viewModel.enrollHref}
-              enrollLabel={viewModel.enrollLabel}
               consultHref={viewModel.consultHref}
               consultLabel={viewModel.consultLabel}
-              isGiftCard={enroll.isGiftCard}
-              added={enroll.added}
-              defaultPrice={enroll.defaultPrice}
-              onAddGiftCard={enroll.addGiftCard}
             />
             <div className="class-detail__mobile-gallery hidden max-[992px]:block max-[992px]:w-[min(100%,680px)] max-[992px]:mx-auto max-[992px]:mb-[clamp(28px,6vw,40px)] max-[992px]:order-5">
               <ClassDetailGallery item={item} />
