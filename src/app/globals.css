@@ -2055,8 +2055,8 @@ body {
   }
 
   .social__item {
-    flex: 0 0 calc((100vw - 32px - 12px) / 2);
-    width: calc((100vw - 32px - 12px) / 2);
+    flex: 0 0 calc((100vw - 48px - 12px) / 2);
+    width: calc((100vw - 48px - 12px) / 2);
   }
 
   .testimonial__track {
@@ -2535,8 +2535,8 @@ body {
   }
 
   .social__slide {
-    flex: 0 0 calc((100vw - 32px - 12px) / 2);
-    width: calc((100vw - 32px - 12px) / 2);
+    flex: 0 0 calc((100vw - 48px - 12px) / 2);
+    width: calc((100vw - 48px - 12px) / 2);
   }
 
   .testimonial__track {

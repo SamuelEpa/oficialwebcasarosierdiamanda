@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Carousel } from "@/components/ui/Carousel";
 import { classNames } from "@/lib/utils";
 
@@ -153,7 +154,7 @@ export function SocialGallery({
         </div>
       </section>
 
-      {current && (
+      {current && typeof document !== "undefined" && createPortal(
         <div
           className="ig-modal is-open"
           id="ig-modal"
@@ -232,7 +233,8 @@ export function SocialGallery({
               ) : null}
             </section>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
