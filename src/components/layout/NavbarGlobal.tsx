@@ -80,6 +80,7 @@ export function NavbarGlobal({
   >(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileScrolled, setMobileScrolled] = useState(false);
+  const [mobileScrolledAny, setMobileScrolledAny] = useState(false);
   const [desktopScrolled, setDesktopScrolled] = useState(false);
   const [isDesktopViewport, setIsDesktopViewport] = useState(false);
   const [desktopOpen, setDesktopOpen] = useState<string | null>(null);
@@ -230,6 +231,10 @@ export function NavbarGlobal({
       const scrolled = scrollY > threshold;
 
       setIsDesktopViewport((previous) => previous === isDesktop ? previous : isDesktop);
+      setMobileScrolledAny((previous) => {
+        const next = scrollY > 0;
+        return previous === next ? previous : next;
+      });
       setMobileScrolled((previous) => previous === scrolled ? previous : scrolled);
 
       setDesktopScrolled((previous) => {
@@ -382,10 +387,32 @@ export function NavbarGlobal({
         className={classNames(
           "mobile-scroll-nav",
           !isDesktopViewport && "is-visible",
-          !mobileScrolled && !mobileOpen && "is-at-top",
+          !mobileScrolledAny && !mobileOpen && "is-at-top",
+          mobileScrolledAny && !mobileOpen && "is-scrolled-any",
           mobileOpen && "is-open"
         )}
       >
+        <Link
+          className="mobile-scroll-nav__hero-logo"
+          href="/#hero"
+          aria-label="Casa Rosier"
+          style={{ display: mobileScrolledAny ? "none" : undefined }}
+        >
+          {heroMenuColor ? (
+            <span
+              className="mobile-scroll-nav__hero-logo-tint"
+              style={scrollLogoTintStyle}
+              aria-hidden="true"
+            />
+          ) : (
+            <img
+              className="mobile-scroll-nav__hero-logo-image"
+              src={logoUrl}
+              alt="Casa Rosier"
+            />
+          )}
+        </Link>
+
         <ScrollStickyNavBar
           variant={home || editorialScrollNav ? "editorial" : "default"}
           items={scrollDesktopItems}
