@@ -25,14 +25,32 @@ export function ShopItemPurchasePanel({ item }: { item: ShopItem }) {
       ) : null}
 
       <div className="shop-item-purchase__cta">
-        <button
-          type="button"
-          className="shop-item-purchase__button"
-          disabled={purchase.isSoldOut}
-          onClick={purchase.addToCart}
-        >
-          {purchase.isSoldOut ? "Agotado" : purchase.ctaLabel}
-        </button>
+        {purchase.isSoldOut ? (
+          <button
+            type="button"
+            className="shop-item-purchase__button"
+            disabled
+          >
+            Agotado
+          </button>
+        ) : item.ctaUrl.trim() ? (
+          <a
+            className="shop-item-purchase__button"
+            href={item.ctaUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {purchase.ctaLabel}
+          </a>
+        ) : (
+          <button
+            type="button"
+            className="shop-item-purchase__button"
+            onClick={purchase.addToCart}
+          >
+            {purchase.ctaLabel}
+          </button>
+        )}
       </div>
     </div>
   );

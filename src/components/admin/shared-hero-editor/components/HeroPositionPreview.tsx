@@ -18,7 +18,7 @@ function HeroPositionPreviewComponent({
   previewHero: CmsHeroSettings;
   editor: SharedHeroEditorState;
 }) {
-  const { device, keys, isHydrated, isImageHero, isPresentationHero, isTextHero, frameStyle, menuStyle, logoMask, previewVideoEmbedUrl, previewVideoUrl } = editor;
+  const { device, keys, isHydrated, isImageHero, isPresentationHero, isTextHero, frameStyle, menuStyle, logoMask, previewVideoEmbedUrl, previewVideoUrl, previewVideoFrameStyle, previewBackgroundStyle } = editor;
   const frameClassName = [
     "cms-hero-position-preview__frame",
     "relative mx-auto overflow-hidden rounded-xl border border-outline-variant shadow-sm",
@@ -34,9 +34,11 @@ function HeroPositionPreviewComponent({
         style={frameStyle}
         data-preview-device={device}
       >
+        <div className="absolute inset-0 z-0" style={previewBackgroundStyle} aria-hidden="true" />
         {previewVideoEmbedUrl ? (
           <iframe
-            className="absolute inset-0 z-0 h-full w-full object-cover"
+            className="absolute z-0 border-0"
+            style={previewVideoFrameStyle}
             src={previewVideoEmbedUrl}
             title="Video de fondo del hero"
             allow="autoplay; fullscreen; picture-in-picture"
@@ -45,7 +47,8 @@ function HeroPositionPreviewComponent({
           />
         ) : previewVideoUrl ? (
           <video
-            className="absolute inset-0 z-0 h-full w-full object-cover"
+            className="absolute z-0 object-cover"
+            style={previewVideoFrameStyle}
             src={previewVideoUrl}
             poster={details.heroVideoPoster || details.heroImage}
             autoPlay

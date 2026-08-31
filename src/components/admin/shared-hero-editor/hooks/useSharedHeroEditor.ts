@@ -9,8 +9,8 @@ import {
   buildHeroPreviewCssVariables,
   deviceKeys,
   heroBackgroundImage,
-  heroPreviewLayoutRevision,
   heroPreviewVideoUrl,
+  heroScale,
   heroText,
   heroVideoEmbedUrl,
 } from "../utils";
@@ -39,18 +39,43 @@ export function useSharedHeroEditor({
   const previewVideoUrl = heroPreviewVideoUrl(details, device);
   const previewVideoEmbedUrl = heroVideoEmbedUrl(previewVideoUrl);
   const backgroundImage = heroBackgroundImage(details, device);
-  const layoutRevision = heroPreviewLayoutRevision(details, device);
 
-  const frameStyle = useMemo(() => ({
-    width: `${preset.width}px`,
-    height: `${preset.height}px`,
-    ...buildHeroPreviewCssVariables(details, device),
+  const previewVideoFrameStyle = useMemo(() => {
+    const portraitEmbed = device === "phone" && Boolean(details.heroVideoUrlMobile);
+    const width = previewVideoEmbedUrl
+      ? Math.max(preset.width, preset.height * (portraitEmbed ? 9 / 16 : 16 / 9))
+      : preset.width;
+    const height = previewVideoEmbedUrl
+      ? Math.max(preset.height, preset.width * (portraitEmbed ? 16 / 9 : 9 / 16))
+      : preset.height;
+
+    return {
+      left: heroText(details, keys.mediaX) || "50%",
+      top: heroText(details, keys.mediaY) || "50%",
+      width: `${width}px`,
+      height: `${height}px`,
+      transform: `translate(-50%, -50%) scale(${heroScale(details, keys.mediaScale)})`,
+      transformOrigin: "center center",
+    } as CSSProperties;
+  }, [details, device, keys.mediaScale, keys.mediaX, keys.mediaY, preset.height, preset.width, previewVideoEmbedUrl]);
+
+  const previewBackgroundStyle = useMemo(() => ({
     background: isPresentationHero
       ? `url("${backgroundImage}") center / cover no-repeat`
       : isImageHero
         ? `linear-gradient(to bottom, rgba(58,48,37,.2), rgba(251,250,246,.94)), url("${backgroundImage}") center / cover no-repeat`
         : "#fbfaf6",
-  }) as CSSProperties, [backgroundImage, device, isImageHero, isPresentationHero, layoutRevision, preset.height, preset.width]);
+    backgroundPosition: `${heroText(details, keys.mediaX) || "50%"} ${heroText(details, keys.mediaY) || "50%"}`,
+    transform: `scale(${heroScale(details, keys.mediaScale)})`,
+    transformOrigin: `${heroText(details, keys.mediaX) || "50%"} ${heroText(details, keys.mediaY) || "50%"}`,
+  }) as CSSProperties, [backgroundImage, details, isImageHero, isPresentationHero, keys.mediaScale, keys.mediaX, keys.mediaY]);
+
+  const frameStyle = useMemo(() => ({
+    width: `${preset.width}px`,
+    height: `${preset.height}px`,
+    ...buildHeroPreviewCssVariables(details, device),
+    background: "#fbfaf6",
+  }) as CSSProperties, [details, device, preset.height, preset.width]);
 
   const menuStyle = useMemo(() => ({
     top: heroText(details, keys.menuY) || "132px",
@@ -80,7 +105,7 @@ export function useSharedHeroEditor({
         subtitleFallback,
       ),
     );
-  }, [onChange, subtitleFallback, titleFallback]);
+  }, [latestDetails, onChange, subtitleFallback, titleFallback]);
 
   const updateMenuColor = useCallback((heroMenuColor: string) => {
     onChange({
@@ -101,6 +126,8 @@ export function useSharedHeroEditor({
     isTextHero,
     previewVideoUrl,
     previewVideoEmbedUrl,
+    previewVideoFrameStyle,
+    previewBackgroundStyle,
     frameStyle,
     menuStyle,
     logoMask,

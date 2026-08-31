@@ -124,7 +124,7 @@ export function SocialGallery({
         id={id}
         className="social--home-strip bg-[#fbfaf6] pt-[clamp(48px,6vw,72px)] pb-[clamp(52px,6.5vw,76px)]"
       >
-        <div className="container max-w-276 mx-auto">
+        <div className="container max-w-[980px] mx-auto">
           <header className="text-center mb-[clamp(22px,3vw,34px)]">
             <h2 className="m-0 text-transform-none tracking-[0.01em] text-[clamp(26px,3vw,38px)] leading-[1.12] font-light text-[#2e2e2e] [font-family:var(--font-display)]">
               {title.split("\n").map((line, index, lines) => (

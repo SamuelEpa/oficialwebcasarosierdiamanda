@@ -15,6 +15,9 @@ export type DeviceFieldKeys = {
   logoY: keyof CmsHeroSettings;
   logoWidth: keyof CmsHeroSettings;
   menuY: keyof CmsHeroSettings;
+  mediaX: keyof CmsHeroSettings;
+  mediaY: keyof CmsHeroSettings;
+  mediaScale: keyof CmsHeroSettings;
   titleScale: keyof CmsHeroSettings;
   titlePosX: keyof CmsHeroSettings;
   titlePosY: keyof CmsHeroSettings;
@@ -53,6 +56,8 @@ export type SharedHeroEditorState = {
   isTextHero: boolean;
   previewVideoUrl: string;
   previewVideoEmbedUrl: string;
+  previewVideoFrameStyle: CSSProperties;
+  previewBackgroundStyle: CSSProperties;
   frameStyle: CSSProperties;
   menuStyle: CSSProperties;
   logoMask: CSSProperties;
