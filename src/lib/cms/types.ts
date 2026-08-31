@@ -145,6 +145,15 @@ export interface CmsHeroSettings {
   heroVideoUrl: string;
   heroVideoUrlMobile: string;
   heroVideoPoster: string;
+  heroMediaPositionX: string;
+  heroMediaPositionY: string;
+  heroMediaScale: number;
+  heroMediaTabletPositionX: string;
+  heroMediaTabletPositionY: string;
+  heroMediaTabletScale: number;
+  heroMediaMobilePositionX: string;
+  heroMediaMobilePositionY: string;
+  heroMediaMobileScale: number;
   titleImage: string;
   titleImageSecondary: string;
   /* Hero con imagen: escala + posición X/Y de cada imagen superpuesta */
@@ -261,6 +270,15 @@ export interface ClassOfferingDetails {
   heroVideoUrl: string;
   heroVideoUrlMobile: string;
   heroVideoPoster: string;
+  heroMediaPositionX: string;
+  heroMediaPositionY: string;
+  heroMediaScale: number;
+  heroMediaTabletPositionX: string;
+  heroMediaTabletPositionY: string;
+  heroMediaTabletScale: number;
+  heroMediaMobilePositionX: string;
+  heroMediaMobilePositionY: string;
+  heroMediaMobileScale: number;
   titleImage: string;
   titleImageSecondary: string;
   titleImageScale: number;

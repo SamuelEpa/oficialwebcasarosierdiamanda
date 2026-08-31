@@ -294,7 +294,13 @@ export function NavbarGlobal({
             )}
           </Link>
 
-          <nav className="hero__nav nav-desktop" aria-label="Principal">
+          <nav
+            className={classNames(
+              "hero__nav nav-desktop",
+              home && "hero__nav--home-scroll-only"
+            )}
+            aria-label="Principal"
+          >
             <ul className="hero__nav-list">
               {desktopItems.map((item, index) => {
                 const children =
@@ -393,20 +399,20 @@ export function NavbarGlobal({
         )}
       >
         <Link
-          className="mobile-scroll-nav__hero-logo"
+          className="mobile-scroll-nav__logo mobile-scroll-nav__hero-logo"
           href="/#hero"
           aria-label="Casa Rosier"
           style={{ display: mobileScrolledAny ? "none" : undefined }}
         >
           {heroMenuColor ? (
             <span
-              className="mobile-scroll-nav__hero-logo-tint"
+              className="mobile-scroll-nav__logo-tint mobile-scroll-nav__hero-logo-tint"
               style={scrollLogoTintStyle}
               aria-hidden="true"
             />
           ) : (
             <img
-              className="mobile-scroll-nav__hero-logo-image"
+              className="mobile-scroll-nav__logo-image mobile-scroll-nav__hero-logo-image"
               src={logoUrl}
               alt="Casa Rosier"
             />

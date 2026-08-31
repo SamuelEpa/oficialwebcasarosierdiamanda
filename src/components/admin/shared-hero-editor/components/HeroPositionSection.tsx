@@ -114,6 +114,46 @@ function HeroOverlayPositionFields({
   );
 }
 
+function HeroMediaPositionFields({
+  details,
+  editor,
+  onChange,
+}: {
+  details: CmsHeroSettings;
+  editor: SharedHeroEditorState;
+  onChange: (next: Partial<CmsHeroSettings>) => void;
+}) {
+  const { keys, device } = editor;
+  const deviceLabel = device === "desktop" ? "escritorio" : device === "tablet" ? "tablet" : "móvil";
+
+  return (
+    <div className="cms-hero-position-grid">
+      <fieldset className="cms-hero-position-fieldset">
+        <legend>Encuadre del fondo en {deviceLabel}</legend>
+        <div className="cms-hero-position-fields">
+          <AdminInput
+            label="Posición X"
+            value={heroText(details, keys.mediaX)}
+            help="Usa porcentajes, por ejemplo 50%."
+            onChange={(event) => onChange(patchDeviceField(keys.mediaX, event.target.value))}
+          />
+          <AdminInput
+            label="Posición Y"
+            value={heroText(details, keys.mediaY)}
+            help="Usa porcentajes, por ejemplo 50%."
+            onChange={(event) => onChange(patchDeviceField(keys.mediaY, event.target.value))}
+          />
+          <ScaleField
+            label="Escala del vídeo o imagen"
+            value={heroScale(details, keys.mediaScale)}
+            onChange={(value) => onChange(patchDeviceField(keys.mediaScale, value))}
+          />
+        </div>
+      </fieldset>
+    </div>
+  );
+}
+
 function HeroTextPositionFields({
   details,
   editor,
@@ -195,6 +235,7 @@ export function HeroPositionSection({
         <HeroLogoMenuFields details={details} editor={editor} onChange={onChange} />
       </div>
 
+      {editor.isImageHero ? <HeroMediaPositionFields details={details} editor={editor} onChange={onChange} /> : null}
       {editor.isImageHero ? <HeroOverlayPositionFields details={details} editor={editor} onChange={onChange} /> : null}
       {editor.isTextHero ? <HeroTextPositionFields details={details} editor={editor} onChange={onChange} /> : null}
       {editor.isPresentationHero ? (

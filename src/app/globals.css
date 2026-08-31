@@ -1276,17 +1276,38 @@ body {
 }
 
 .header-home .hero__video--embed {
-  top: 50%;
-  left: 50%;
+  top: var(--hero-media-position-y, 50%);
+  left: var(--hero-media-position-x, 50%);
   width: max(120%, calc(120vh * 16 / 9));
   height: max(120%, calc(120vw * 9 / 16));
   border: 0;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(var(--hero-media-scale, 1));
+  transform-origin: center;
 }
 
 .header-home--video-hero .hero__bg {
   z-index: 0;
-  background: var(--home-hero-image) center center / cover no-repeat #61563a;
+  background: var(--home-hero-image) var(--hero-media-position-x, 50%) var(--hero-media-position-y, 50%) / cover no-repeat #61563a;
+  transform: scale(var(--hero-media-scale, 1));
+  transform-origin: var(--hero-media-position-x, 50%) var(--hero-media-position-y, 50%);
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .header-home .hero__video--embed {
+    top: var(--hero-media-tablet-position-y, var(--hero-media-position-y, 50%));
+    left: var(--hero-media-tablet-position-x, var(--hero-media-position-x, 50%));
+    transform: translate(-50%, -50%) scale(var(--hero-media-tablet-scale, var(--hero-media-scale, 1)));
+  }
+
+  .header-home--video-hero .hero__bg {
+    background-position:
+      var(--hero-media-tablet-position-x, var(--hero-media-position-x, 50%))
+      var(--hero-media-tablet-position-y, var(--hero-media-position-y, 50%));
+    transform: scale(var(--hero-media-tablet-scale, var(--hero-media-scale, 1)));
+    transform-origin:
+      var(--hero-media-tablet-position-x, var(--hero-media-position-x, 50%))
+      var(--hero-media-tablet-position-y, var(--hero-media-position-y, 50%));
+  }
 }
 
 @media (max-width: 640px) {
@@ -1299,13 +1320,27 @@ body {
   }
 
   .header-home--video-hero .hero__bg {
-    background: var(--home-hero-image-mobile, var(--home-hero-image)) center center / cover no-repeat #61563a;
+    background-image: var(--home-hero-image-mobile, var(--home-hero-image));
+    background-position:
+      var(--hero-media-mobile-position-x, var(--hero-media-tablet-position-x, 50%))
+      var(--hero-media-mobile-position-y, var(--hero-media-tablet-position-y, 50%));
+    transform: scale(var(--hero-media-mobile-scale, var(--hero-media-tablet-scale, 1)));
+    transform-origin:
+      var(--hero-media-mobile-position-x, var(--hero-media-tablet-position-x, 50%))
+      var(--hero-media-mobile-position-y, var(--hero-media-tablet-position-y, 50%));
   }
 
-  /* Portrait cover: fill the hero without letterboxing */
+  /* Phone framing uses the independently configured mobile media values. */
   .header-home .hero__video--embed {
-    width: max(100%, 177.78vh);
-    height: max(100%, 56.25vw);
+    top: var(--hero-media-mobile-position-y, var(--hero-media-tablet-position-y, 50%));
+    left: var(--hero-media-mobile-position-x, var(--hero-media-tablet-position-x, 50%));
+    transform: translate(-50%, -50%) scale(var(--hero-media-mobile-scale, var(--hero-media-tablet-scale, 1)));
+  }
+
+  /* A dedicated mobile Vimeo source is expected to be portrait (9:16). */
+  .header-home--has-mobile-video .hero__video--mobile.hero__video--embed {
+    width: max(100%, 56.25vh);
+    height: max(100%, 177.78vw);
   }
 
   .header-home .hero__video {
@@ -1316,7 +1351,6 @@ body {
 @media (max-width: 1180px) {
   .header-home .hero__bg {
     background-size: cover;
-    background-position: center;
   }
 }
 
@@ -1551,7 +1585,7 @@ body {
     z-index: 4;
     right: max(12px, env(safe-area-inset-right, 0px));
     left: auto;
-    top: var(--hero-logo-tablet-position-y, var(--hero-logo-position-y, 42px)) !important;
+    top: var(--hero-menu-tablet-position-y, var(--hero-menu-position-y, 118px)) !important;
     transform: translateY(-50%);
     width: 48px;
     height: 48px;
@@ -1785,7 +1819,9 @@ body {
 
   .header-home .hero__bg {
     background-size: cover;
-    background-position: center;
+    background-position:
+      var(--hero-media-mobile-position-x, var(--hero-media-tablet-position-x, 50%))
+      var(--hero-media-mobile-position-y, var(--hero-media-tablet-position-y, 50%));
   }
 
   .header-home .hero__overlay--1 {
@@ -1877,7 +1913,7 @@ body {
   }
 
   .mobile-scroll-nav.is-at-top .mobile-scroll-nav__toggle {
-    top: var(--hero-logo-mobile-position-y, var(--hero-logo-tablet-position-y, var(--hero-logo-position-y, 34px))) !important;
+    top: var(--hero-menu-mobile-position-y, var(--hero-menu-tablet-position-y, var(--hero-menu-position-y, 96px))) !important;
     transform: translateY(-50%);
     right: max(12px, env(safe-area-inset-right, 0px));
     left: auto !important;
@@ -2323,6 +2359,26 @@ body {
 
 .header-home.header-home--ready .hero__nav-item:nth-child(7) {
   animation-delay: 1440ms;
+}
+
+.header-home .hero__video--loop-fade {
+  opacity: 1;
+  transition: opacity 900ms ease-in-out;
+  will-change: opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-home .hero__video--loop-fade {
+    opacity: 1 !important;
+    transition: none;
+  }
+}
+
+@media (min-width: 1025px) {
+  /* On Home, the desktop menu is provided by the sticky navigation after scroll. */
+  .header-home .navbar-global .hero__nav--home-scroll-only {
+    display: none !important;
+  }
 }
 
 @keyframes heroScriptLogoIn {

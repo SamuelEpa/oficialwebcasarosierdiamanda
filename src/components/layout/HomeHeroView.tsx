@@ -1,4 +1,5 @@
 import { NavbarGlobal } from "@/components/layout/NavbarGlobal";
+import { HeroVimeoVideo } from "@/components/layout/HeroVimeoVideo";
 import { PublicHeroContent, PublicHeroTitle } from "@/components/hero/PublicHeroContent";
 import type { NavigationItem } from "@/data/types";
 import type { CmsHeroSettings } from "@/lib/cms/types";
@@ -13,7 +14,7 @@ function heroVideoEmbedUrl(rawUrl: string) {
 
     if (host === "player.vimeo.com" || host === "vimeo.com") {
       const id = url.pathname.split("/").find((part) => /^\d+$/.test(part));
-      return id ? `https://player.vimeo.com/video/${id}?background=1&autoplay=1&muted=1&loop=1&autopause=0&controls=0` : "";
+      return id ? `https://player.vimeo.com/video/${id}?background=1&autoplay=1&muted=1&loop=1&autopause=0&controls=0&api=1&playsinline=1` : "";
     }
 
     if (host === "youtu.be" || host === "youtube.com" || host === "m.youtube.com") {
@@ -26,6 +27,10 @@ function heroVideoEmbedUrl(rawUrl: string) {
     return "";
   }
   return "";
+}
+
+function isVimeoEmbed(url: string) {
+  return url.startsWith("https://player.vimeo.com/");
 }
 
 
@@ -61,6 +66,18 @@ export function HomeHeroView({
   const heroStyle: CSSProperties = {
     "--home-hero-image": 'url("' + desktopImage + '")',
     "--home-hero-image-mobile": 'url("' + mobileImage + '")',
+    "--hero-media-position-x": hero.heroMediaPositionX || "50%",
+    "--hero-media-position-y": hero.heroMediaPositionY || "50%",
+    "--hero-media-scale": hero.heroMediaScale ?? 1,
+    "--hero-media-tablet-position-x": hero.heroMediaTabletPositionX || hero.heroMediaPositionX || "50%",
+    "--hero-media-tablet-position-y": hero.heroMediaTabletPositionY || hero.heroMediaPositionY || "50%",
+    "--hero-media-tablet-scale": hero.heroMediaTabletScale ?? hero.heroMediaScale ?? 1,
+    "--hero-media-mobile-position-x":
+      hero.heroMediaMobilePositionX || hero.heroMediaTabletPositionX || hero.heroMediaPositionX || "50%",
+    "--hero-media-mobile-position-y":
+      hero.heroMediaMobilePositionY || hero.heroMediaTabletPositionY || hero.heroMediaPositionY || "50%",
+    "--hero-media-mobile-scale":
+      hero.heroMediaMobileScale ?? hero.heroMediaTabletScale ?? hero.heroMediaScale ?? 1,
     "--hero-logo-position-x": hero.heroLogoPositionX || "50%",
     "--hero-logo-position-y": hero.heroLogoPositionY || "46px",
     "--hero-logo-width": hero.heroLogoWidth || "118px",
@@ -193,7 +210,13 @@ export function HomeHeroView({
       style={heroStyle}
     >
       <div className="hero__bg" aria-hidden="true" />
-      {hasHeroVideo && desktopVideoEmbed ? (
+      {hasHeroVideo && desktopVideoEmbed && isVimeoEmbed(desktopVideoEmbed) ? (
+        <HeroVimeoVideo
+          className="hero__video hero__video--embed hero__video--desktop"
+          src={desktopVideoEmbed}
+          title="Video de fondo del hero"
+        />
+      ) : hasHeroVideo && desktopVideoEmbed ? (
         <iframe
           className="hero__video hero__video--embed hero__video--desktop"
           src={desktopVideoEmbed}
@@ -215,7 +238,13 @@ export function HomeHeroView({
           aria-hidden="true"
         />
       ) : null}
-      {hasHeroVideo && mobileVideo && mobileVideo !== desktopVideo && mobileVideoEmbed ? (
+      {hasHeroVideo && mobileVideo && mobileVideo !== desktopVideo && mobileVideoEmbed && isVimeoEmbed(mobileVideoEmbed) ? (
+        <HeroVimeoVideo
+          className="hero__video hero__video--embed hero__video--mobile"
+          src={mobileVideoEmbed}
+          title="Video de fondo movil del hero"
+        />
+      ) : hasHeroVideo && mobileVideo && mobileVideo !== desktopVideo && mobileVideoEmbed ? (
         <iframe
           className="hero__video hero__video--embed hero__video--mobile"
           src={mobileVideoEmbed}

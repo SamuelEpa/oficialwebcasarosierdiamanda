@@ -13,7 +13,7 @@ export async function PUT(request: Request) {
   if (!(await requireAdminApi())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const page = await updateHomePageSettings(await request.json());
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     revalidatePath("/admin/home");
     return NextResponse.json({ page });
   } catch (error) {
